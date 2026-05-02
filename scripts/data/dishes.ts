@@ -1,0 +1,1209 @@
+import type { DishLocation } from '../lib/locations';
+
+export type DishCategory =
+  | 'main'
+  | 'soup'
+  | 'starter'
+  | 'side'
+  | 'charcuterie'
+  | 'cheese-dish'
+  | 'pastry'
+  | 'dessert'
+  | 'snack';
+
+export interface Dish {
+  id: string;
+  name: { fr: string; en: string };
+  description: { fr: string; en: string };
+  category: DishCategory;
+  region: string; // human-readable, French label (display only)
+  location: DishLocation;
+}
+
+/**
+ * Hand-curated French dishes. For each one, the location is picked at the
+ * smallest meaningful scale: a specific commune when the dish is tied to a
+ * city (Bouillabaisse → Marseille), a département for a départemental dish
+ * (Tartiflette → Haute-Savoie), a région for a broader culinary tradition
+ * (Crêpe bretonne → Bretagne), or a bespoke `area` with a hand-set centroid
+ * when the territory doesn't match an admin boundary (Aubrac, Pays Basque,
+ * Périgord). The centroid in `public/data/dishes.json` is resolved at build
+ * time by `scripts/build-dishes-data.ts`.
+ */
+export const dishes: Dish[] = [
+  // ---------------- Provence / Côte d'Azur ----------------
+  {
+    id: 'bouillabaisse',
+    name: { fr: 'Bouillabaisse', en: 'Bouillabaisse' },
+    description: {
+      fr: 'Soupe de poissons de roche au safran, servie avec rouille et croûtons aillés.',
+      en: 'Provençal rockfish stew with saffron, served with rouille and garlic croutons.',
+    },
+    category: 'soup',
+    region: 'Provence',
+    location: { type: 'commune', insee: '13055' },
+  },
+  {
+    id: 'ratatouille',
+    name: { fr: 'Ratatouille', en: 'Ratatouille' },
+    description: {
+      fr: 'Ragoût de légumes du soleil — aubergines, courgettes, poivrons, tomates, oignons.',
+      en: 'Stew of summer vegetables: aubergines, courgettes, peppers, tomatoes, onions.',
+    },
+    category: 'main',
+    region: 'Nice',
+    location: { type: 'commune', insee: '06088' },
+  },
+  {
+    id: 'pissaladiere',
+    name: { fr: 'Pissaladière', en: 'Pissaladière' },
+    description: {
+      fr: 'Tarte fine niçoise garnie d’oignons confits, d’anchois et d’olives noires.',
+      en: 'Niçoise flatbread topped with caramelised onions, anchovies and black olives.',
+    },
+    category: 'starter',
+    region: 'Nice',
+    location: { type: 'commune', insee: '06088' },
+  },
+  {
+    id: 'salade-nicoise',
+    name: { fr: 'Salade niçoise', en: 'Salade niçoise' },
+    description: {
+      fr: 'Salade composée de tomates, anchois, thon, œufs durs, haricots verts et olives.',
+      en: 'Composed salad of tomatoes, anchovies, tuna, hard-boiled eggs, green beans and olives.',
+    },
+    category: 'starter',
+    region: 'Nice',
+    location: { type: 'commune', insee: '06088' },
+  },
+  {
+    id: 'pan-bagnat',
+    name: { fr: 'Pan-bagnat', en: 'Pan-bagnat' },
+    description: {
+      fr: 'Sandwich niçois — pain rond garni des éléments d’une salade niçoise.',
+      en: 'Niçoise sandwich: a round bread roll filled with the components of a salade niçoise.',
+    },
+    category: 'snack',
+    region: 'Nice',
+    location: { type: 'commune', insee: '06088' },
+  },
+  {
+    id: 'socca',
+    name: { fr: 'Socca', en: 'Socca' },
+    description: {
+      fr: 'Galette de farine de pois chiches cuite au four, servie chaude et poivrée.',
+      en: 'Chickpea-flour pancake baked in a wood oven, served hot with black pepper.',
+    },
+    category: 'snack',
+    region: 'Nice',
+    location: { type: 'commune', insee: '06088' },
+  },
+  {
+    id: 'daube-provencale',
+    name: { fr: 'Daube provençale', en: 'Daube provençale' },
+    description: {
+      fr: 'Bœuf mijoté longuement au vin rouge, oranges, olives et herbes de Provence.',
+      en: 'Beef slow-braised in red wine with orange peel, olives and Provençal herbs.',
+    },
+    category: 'main',
+    region: 'Provence',
+    location: { type: 'area', name: 'Provence', centroid: [5.5, 43.8] },
+  },
+  {
+    id: 'soupe-au-pistou',
+    name: { fr: 'Soupe au pistou', en: 'Pistou soup' },
+    description: {
+      fr: 'Soupe estivale aux haricots et légumes, parfumée d’un pistou basilic-ail-huile.',
+      en: 'Summer bean and vegetable soup, finished with a basil-garlic-oil pistou.',
+    },
+    category: 'soup',
+    region: 'Provence',
+    location: { type: 'area', name: 'Provence', centroid: [5.5, 43.8] },
+  },
+  {
+    id: 'tapenade',
+    name: { fr: 'Tapenade', en: 'Tapenade' },
+    description: {
+      fr: 'Tartinade d’olives, câpres, anchois et huile d’olive — apéritif provençal.',
+      en: 'Spread of olives, capers, anchovies and olive oil — a Provençal apéritif.',
+    },
+    category: 'starter',
+    region: 'Provence',
+    location: { type: 'area', name: 'Provence', centroid: [5.5, 43.8] },
+  },
+  {
+    id: 'tropezienne',
+    name: { fr: 'Tarte tropézienne', en: 'Tropézienne' },
+    description: {
+      fr: 'Brioche au sucre fendue et garnie d’une crème onctueuse à la fleur d’oranger.',
+      en: 'Sugared brioche split and filled with an orange-blossom cream.',
+    },
+    category: 'pastry',
+    region: 'Saint-Tropez',
+    location: { type: 'commune', insee: '83119' },
+  },
+  {
+    id: 'calisson',
+    name: { fr: 'Calisson d’Aix', en: 'Calisson d’Aix' },
+    description: {
+      fr: 'Confiserie en losange à base de melon confit, d’amandes et glaçage royal.',
+      en: 'Diamond-shaped sweet of candied melon, almonds and royal icing.',
+    },
+    category: 'pastry',
+    region: 'Aix-en-Provence',
+    location: { type: 'commune', insee: '13001' },
+  },
+  {
+    id: 'nougat-de-montelimar',
+    name: { fr: 'Nougat de Montélimar', en: 'Nougat de Montélimar' },
+    description: {
+      fr: 'Nougat blanc tendre au miel de lavande, amandes de Provence et pistaches.',
+      en: 'Soft white nougat with lavender honey, Provençal almonds and pistachios.',
+    },
+    category: 'pastry',
+    region: 'Drôme',
+    location: { type: 'commune', insee: '26198' },
+  },
+
+  // ---------------- Languedoc / Occitanie ----------------
+  {
+    id: 'cassoulet',
+    name: { fr: 'Cassoulet', en: 'Cassoulet' },
+    description: {
+      fr: 'Mijoté de haricots blancs, confit de canard, saucisse et morceaux de porc.',
+      en: 'Slow-cooked white beans with duck confit, sausage and chunks of pork.',
+    },
+    category: 'main',
+    region: 'Languedoc',
+    location: { type: 'commune', insee: '11069' },
+  },
+  {
+    id: 'brandade-de-morue',
+    name: { fr: 'Brandade de morue', en: 'Salt-cod brandade' },
+    description: {
+      fr: 'Émulsion de morue dessalée, huile d’olive et lait, servie en gratin ou tiède.',
+      en: 'Whipped salt cod with olive oil and milk, served warm or as a gratin.',
+    },
+    category: 'main',
+    region: 'Nîmes',
+    location: { type: 'commune', insee: '30189' },
+  },
+  {
+    id: 'bourride',
+    name: { fr: 'Bourride sétoise', en: 'Bourride from Sète' },
+    description: {
+      fr: 'Soupe de poisson blanc liée à l’aïoli, spécialité du port de Sète.',
+      en: 'White-fish stew thickened with aïoli, a speciality of the port of Sète.',
+    },
+    category: 'soup',
+    region: 'Sète',
+    location: { type: 'commune', insee: '34301' },
+  },
+  {
+    id: 'tielle-setoise',
+    name: { fr: 'Tielle sétoise', en: 'Tielle from Sète' },
+    description: {
+      fr: 'Tourte ronde garnie de poulpe et de tomate à la tomate épicée.',
+      en: 'Round pie filled with octopus in a spiced tomato sauce.',
+    },
+    category: 'main',
+    region: 'Sète',
+    location: { type: 'commune', insee: '34301' },
+  },
+  {
+    id: 'gardiane-de-taureau',
+    name: { fr: 'Gardiane de taureau', en: 'Camargue bull stew' },
+    description: {
+      fr: 'Daube camarguaise de viande de taureau au vin rouge, olives et herbes.',
+      en: 'Camargue bull-meat stew with red wine, olives and herbs.',
+    },
+    category: 'main',
+    region: 'Camargue',
+    location: { type: 'area', name: 'Camargue', centroid: [4.5, 43.55] },
+  },
+
+  // ---------------- Auvergne / Aubrac ----------------
+  {
+    id: 'aligot',
+    name: { fr: 'Aligot', en: 'Aligot' },
+    description: {
+      fr: 'Purée de pommes de terre étirée à la tomme fraîche d’Aubrac, lisse et filante.',
+      en: 'Mashed potato whipped with fresh Aubrac tomme cheese into a smooth, stretchy ribbon.',
+    },
+    category: 'cheese-dish',
+    region: 'Aubrac',
+    location: { type: 'area', name: 'Aubrac', centroid: [3.0, 44.62] },
+  },
+  {
+    id: 'truffade',
+    name: { fr: 'Truffade', en: 'Truffade' },
+    description: {
+      fr: 'Galette de pommes de terre sautées, fondue à la tomme fraîche du Cantal.',
+      en: 'Sautéed-potato cake melted with fresh Cantal tomme cheese.',
+    },
+    category: 'cheese-dish',
+    region: 'Auvergne',
+    location: { type: 'area', name: 'Auvergne', centroid: [3.0, 45.5] },
+  },
+  {
+    id: 'potee-auvergnate',
+    name: { fr: 'Potée auvergnate', en: 'Auvergne potée' },
+    description: {
+      fr: 'Plat unique mijoté — chou vert, pommes de terre, lard, saucisses et jambonneau.',
+      en: 'One-pot stew of green cabbage, potatoes, salt pork, sausages and ham hock.',
+    },
+    category: 'main',
+    region: 'Auvergne',
+    location: { type: 'area', name: 'Auvergne', centroid: [3.0, 45.5] },
+  },
+  {
+    id: 'tripoux',
+    name: { fr: 'Tripoux', en: 'Tripoux' },
+    description: {
+      fr: 'Petits paquets de tripes farcies de pied de veau, mijotés au vin blanc.',
+      en: 'Little parcels of tripe stuffed with veal trotter, simmered in white wine.',
+    },
+    category: 'main',
+    region: 'Auvergne',
+    location: { type: 'area', name: 'Auvergne', centroid: [3.0, 45.5] },
+  },
+
+  // ---------------- Sud-Ouest / Pays Basque / Béarn ----------------
+  {
+    id: 'foie-gras',
+    name: { fr: 'Foie gras', en: 'Foie gras' },
+    description: {
+      fr: 'Foie d’oie ou de canard gras, poêlé ou en terrine, emblème du Sud-Ouest.',
+      en: 'Fattened goose or duck liver, pan-seared or as a terrine — emblem of the South-West.',
+    },
+    category: 'starter',
+    region: 'Périgord',
+    location: { type: 'area', name: 'Périgord', centroid: [0.95, 45.0] },
+  },
+  {
+    id: 'confit-de-canard',
+    name: { fr: 'Confit de canard', en: 'Duck confit' },
+    description: {
+      fr: 'Cuisses de canard salées et confites lentement dans leur graisse.',
+      en: 'Duck legs salt-cured and slowly cooked in their own fat.',
+    },
+    category: 'main',
+    region: 'Périgord',
+    location: { type: 'area', name: 'Périgord', centroid: [0.95, 45.0] },
+  },
+  {
+    id: 'magret-de-canard',
+    name: { fr: 'Magret de canard', en: 'Magret de canard' },
+    description: {
+      fr: 'Filet de canard gras poêlé côté peau, servi rosé et tranché.',
+      en: 'Fillet from a fattened duck, pan-seared skin-side and served pink and sliced.',
+    },
+    category: 'main',
+    region: 'Sud-Ouest',
+    location: { type: 'area', name: 'Sud-Ouest', centroid: [0.5, 44.5] },
+  },
+  {
+    id: 'cannele',
+    name: { fr: 'Cannelé bordelais', en: 'Cannelé from Bordeaux' },
+    description: {
+      fr: 'Petit gâteau cannelé à la croûte caramélisée, mie tendre au rhum et à la vanille.',
+      en: 'Small fluted cake with a caramelised crust and a tender rum-and-vanilla crumb.',
+    },
+    category: 'pastry',
+    region: 'Bordeaux',
+    location: { type: 'commune', insee: '33063' },
+  },
+  {
+    id: 'gateau-basque',
+    name: { fr: 'Gâteau basque', en: 'Gâteau basque' },
+    description: {
+      fr: 'Gâteau sablé garni de crème pâtissière ou de confiture de cerises noires.',
+      en: 'Buttery shortbread cake filled with pastry cream or black cherry jam.',
+    },
+    category: 'pastry',
+    region: 'Pays Basque',
+    location: { type: 'area', name: 'Pays Basque', centroid: [-1.4, 43.4] },
+  },
+  {
+    id: 'piperade',
+    name: { fr: 'Piperade', en: 'Piperade' },
+    description: {
+      fr: 'Poêlée de poivrons, tomates, oignons et piment d’Espelette, souvent aux œufs.',
+      en: 'Pan-fried peppers, tomatoes, onions and Espelette pepper, often finished with eggs.',
+    },
+    category: 'main',
+    region: 'Pays Basque',
+    location: { type: 'area', name: 'Pays Basque', centroid: [-1.4, 43.4] },
+  },
+  {
+    id: 'axoa',
+    name: { fr: 'Axoa de veau', en: 'Axoa' },
+    description: {
+      fr: 'Émincé de veau mijoté aux poivrons et au piment d’Espelette.',
+      en: 'Diced veal slow-cooked with peppers and Espelette chilli.',
+    },
+    category: 'main',
+    region: 'Pays Basque',
+    location: { type: 'area', name: 'Pays Basque', centroid: [-1.4, 43.4] },
+  },
+  {
+    id: 'ttoro',
+    name: { fr: 'Ttoro', en: 'Ttoro' },
+    description: {
+      fr: 'Soupe basque de poissons et fruits de mer, parfumée au piment doux.',
+      en: 'Basque fish and shellfish stew flavoured with mild chilli.',
+    },
+    category: 'soup',
+    region: 'Pays Basque',
+    location: { type: 'area', name: 'Pays Basque', centroid: [-1.4, 43.4] },
+  },
+  {
+    id: 'garbure',
+    name: { fr: 'Garbure', en: 'Garbure' },
+    description: {
+      fr: 'Soupe béarnaise consistante au chou, haricots tarbais et confit de canard.',
+      en: 'Hearty Béarnese soup of cabbage, Tarbais beans and duck confit.',
+    },
+    category: 'soup',
+    region: 'Béarn',
+    location: { type: 'area', name: 'Béarn', centroid: [-0.4, 43.3] },
+  },
+  {
+    id: 'pastis-landais',
+    name: { fr: 'Pastis landais', en: 'Pastis landais' },
+    description: {
+      fr: 'Brioche moelleuse parfumée à l’anis, à la fleur d’oranger et à l’armagnac.',
+      en: 'Soft brioche flavoured with anise, orange blossom and Armagnac.',
+    },
+    category: 'pastry',
+    region: 'Landes',
+    location: { type: 'department', code: '40' },
+  },
+
+  // ---------------- Bourgogne ----------------
+  {
+    id: 'boeuf-bourguignon',
+    name: { fr: 'Bœuf bourguignon', en: 'Beef bourguignon' },
+    description: {
+      fr: 'Bœuf braisé au vin rouge avec lardons, champignons et petits oignons glacés.',
+      en: 'Beef braised in red wine with lardons, mushrooms and glazed pearl onions.',
+    },
+    category: 'main',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
+  },
+  {
+    id: 'coq-au-vin',
+    name: { fr: 'Coq au vin', en: 'Coq au vin' },
+    description: {
+      fr: 'Coq braisé au vin rouge, lardons, champignons et oignons.',
+      en: 'Rooster braised in red wine with lardons, mushrooms and onions.',
+    },
+    category: 'main',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
+  },
+  {
+    id: 'oeufs-en-meurette',
+    name: { fr: 'Œufs en meurette', en: 'Œufs en meurette' },
+    description: {
+      fr: 'Œufs pochés nappés d’une sauce au vin rouge, lardons et champignons.',
+      en: 'Poached eggs in a sauce of red wine, lardons and mushrooms.',
+    },
+    category: 'starter',
+    region: 'Dijon',
+    location: { type: 'commune', insee: '21231' },
+  },
+  {
+    id: 'gougeres',
+    name: { fr: 'Gougères', en: 'Gougères' },
+    description: {
+      fr: 'Petits choux salés au comté ou au gruyère, servis à l’apéritif.',
+      en: 'Small savoury choux puffs with Comté or Gruyère, served with apéritifs.',
+    },
+    category: 'starter',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
+  },
+  {
+    id: 'jambon-persille',
+    name: { fr: 'Jambon persillé', en: 'Jambon persillé' },
+    description: {
+      fr: 'Jambon de Pâques bourguignon en gelée au vin blanc et persil haché.',
+      en: 'Burgundian Easter ham set in a white-wine and parsley jelly.',
+    },
+    category: 'charcuterie',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
+  },
+  {
+    id: 'pochouse',
+    name: { fr: 'Pôchouse', en: 'Pôchouse' },
+    description: {
+      fr: 'Matelote de poissons d’eau douce au vin blanc — brochet, anguille, perche.',
+      en: 'Freshwater fish stew in white wine — pike, eel, perch.',
+    },
+    category: 'main',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [5.1, 47.1] },
+  },
+  {
+    id: 'pain-d-epices-dijon',
+    name: { fr: 'Pain d’épices de Dijon', en: 'Dijon pain d’épices' },
+    description: {
+      fr: 'Pain dense au miel et aux épices, tradition séculaire de Dijon.',
+      en: 'Dense honey-and-spice loaf, a centuries-old Dijon tradition.',
+    },
+    category: 'pastry',
+    region: 'Dijon',
+    location: { type: 'commune', insee: '21231' },
+  },
+  {
+    id: 'pate-en-croute',
+    name: { fr: 'Pâté en croûte', en: 'Pâté en croûte' },
+    description: {
+      fr: 'Terrine de viande enrobée d’une pâte dorée, avec gelée — classique des charcutiers.',
+      en: 'Meat terrine encased in golden pastry with jelly — a charcuterie classic.',
+    },
+    category: 'charcuterie',
+    region: 'Bourgogne',
+    location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
+  },
+
+  // ---------------- Lyon ----------------
+  {
+    id: 'quenelle-de-brochet',
+    name: { fr: 'Quenelle de brochet', en: 'Pike quenelle' },
+    description: {
+      fr: 'Quenelle moelleuse de brochet pochée, nappée de sauce Nantua aux écrevisses.',
+      en: 'Light poached pike quenelle in a Nantua crayfish sauce.',
+    },
+    category: 'main',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+  {
+    id: 'salade-lyonnaise',
+    name: { fr: 'Salade lyonnaise', en: 'Salade lyonnaise' },
+    description: {
+      fr: 'Frisée, lardons grillés, croûtons et œuf poché — bistrot lyonnais.',
+      en: 'Frisée, fried lardons, croutons and a poached egg — Lyon bouchon classic.',
+    },
+    category: 'starter',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+  {
+    id: 'tablier-de-sapeur',
+    name: { fr: 'Tablier de sapeur', en: 'Tablier de sapeur' },
+    description: {
+      fr: 'Gras-double mariné, pané et grillé — abat lyonnais croustillant.',
+      en: 'Marinated breaded tripe, grilled crisp — a Lyon offal speciality.',
+    },
+    category: 'main',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+  {
+    id: 'andouillette',
+    name: { fr: 'Andouillette', en: 'Andouillette' },
+    description: {
+      fr: 'Saucisse de tripes de porc, grillée et servie à la moutarde de Dijon.',
+      en: 'Pork tripe sausage, grilled and served with Dijon mustard.',
+    },
+    category: 'charcuterie',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+  {
+    id: 'cervelle-de-canut',
+    name: { fr: 'Cervelle de canut', en: 'Cervelle de canut' },
+    description: {
+      fr: 'Fromage frais battu aux échalotes, ciboulette, ail et vin blanc.',
+      en: 'Fresh cheese whipped with shallots, chives, garlic and white wine.',
+    },
+    category: 'cheese-dish',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+  {
+    id: 'tarte-aux-pralines',
+    name: { fr: 'Tarte aux pralines', en: 'Pink praline tart' },
+    description: {
+      fr: 'Tarte sablée garnie de pralines roses fondues — un rose éclatant.',
+      en: 'Shortcrust tart filled with melted pink pralines — vivid pink filling.',
+    },
+    category: 'pastry',
+    region: 'Lyon',
+    location: { type: 'commune', insee: '69123' },
+  },
+
+  // ---------------- Savoie / Alpes ----------------
+  {
+    id: 'fondue-savoyarde',
+    name: { fr: 'Fondue savoyarde', en: 'Savoyarde fondue' },
+    description: {
+      fr: 'Fromages fondus au vin blanc — Comté, Beaufort, Emmental — pour tremper du pain.',
+      en: 'Cheeses melted with white wine — Comté, Beaufort, Emmental — for dipping bread.',
+    },
+    category: 'cheese-dish',
+    region: 'Savoie',
+    location: { type: 'department', code: '73' },
+  },
+  {
+    id: 'raclette',
+    name: { fr: 'Raclette', en: 'Raclette' },
+    description: {
+      fr: 'Fromage à raclette fondu, raclé sur pommes de terre, charcuterie et cornichons.',
+      en: 'Melted raclette cheese scraped over potatoes, cured meats and cornichons.',
+    },
+    category: 'cheese-dish',
+    region: 'Savoie',
+    location: { type: 'department', code: '73' },
+  },
+  {
+    id: 'tartiflette',
+    name: { fr: 'Tartiflette', en: 'Tartiflette' },
+    description: {
+      fr: 'Gratin de pommes de terre, lardons et oignons sous un reblochon coulant.',
+      en: 'Gratin of potatoes, lardons and onions under a melting Reblochon.',
+    },
+    category: 'cheese-dish',
+    region: 'Haute-Savoie',
+    location: { type: 'department', code: '74' },
+  },
+  {
+    id: 'diots-au-vin-blanc',
+    name: { fr: 'Diots au vin blanc', en: 'Diots in white wine' },
+    description: {
+      fr: 'Saucisses savoyardes mijotées au vin blanc et aux oignons.',
+      en: 'Savoyarde sausages simmered in white wine with onions.',
+    },
+    category: 'main',
+    region: 'Savoie',
+    location: { type: 'department', code: '73' },
+  },
+  {
+    id: 'crozets',
+    name: { fr: 'Crozets de Savoie', en: 'Crozets' },
+    description: {
+      fr: 'Petites pâtes carrées au sarrasin, souvent gratinées au beaufort.',
+      en: 'Small square buckwheat pasta, often gratinated with Beaufort cheese.',
+    },
+    category: 'side',
+    region: 'Savoie',
+    location: { type: 'department', code: '73' },
+  },
+  {
+    id: 'gratin-dauphinois',
+    name: { fr: 'Gratin dauphinois', en: 'Gratin dauphinois' },
+    description: {
+      fr: 'Pommes de terre en lamelles cuites dans la crème, le lait et l’ail, sans fromage.',
+      en: 'Sliced potatoes baked in cream, milk and garlic — no cheese, traditionally.',
+    },
+    category: 'side',
+    region: 'Dauphiné',
+    location: { type: 'area', name: 'Dauphiné', centroid: [5.7, 45.1] },
+  },
+
+  // ---------------- Alsace ----------------
+  {
+    id: 'choucroute-alsacienne',
+    name: { fr: 'Choucroute alsacienne', en: 'Alsatian choucroute' },
+    description: {
+      fr: 'Chou fermenté cuit au riesling, accompagné de saucisses, lard et pommes de terre.',
+      en: 'Fermented cabbage cooked in Riesling, with sausages, salt pork and potatoes.',
+    },
+    category: 'main',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'flammekueche',
+    name: { fr: 'Tarte flambée (flammekueche)', en: 'Tarte flambée' },
+    description: {
+      fr: 'Pâte fine garnie de crème, oignons et lardons, cuite au feu de bois.',
+      en: 'Thin dough topped with cream, onions and lardons, baked in a wood-fired oven.',
+    },
+    category: 'main',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'baeckeoffe',
+    name: { fr: 'Baeckeoffe', en: 'Baeckeoffe' },
+    description: {
+      fr: 'Potée alsacienne de trois viandes marinées au vin blanc, avec pommes de terre.',
+      en: 'Alsatian three-meat hotpot marinated in white wine, layered with potatoes.',
+    },
+    category: 'main',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'spaetzle',
+    name: { fr: 'Spätzle', en: 'Spätzle' },
+    description: {
+      fr: 'Petites pâtes alsaciennes aux œufs, souvent poêlées au beurre.',
+      en: 'Small Alsatian egg noodles, usually pan-fried in butter.',
+    },
+    category: 'side',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'bredele',
+    name: { fr: 'Bredele', en: 'Bredele' },
+    description: {
+      fr: 'Petits gâteaux alsaciens variés, préparés tout au long de l’Avent.',
+      en: 'Assorted small Alsatian cookies, prepared throughout Advent.',
+    },
+    category: 'pastry',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'kougelhopf',
+    name: { fr: 'Kougelhopf', en: 'Kougelhopf' },
+    description: {
+      fr: 'Brioche levée en moule cannelé, aux raisins secs et amandes.',
+      en: 'Yeasted brioche baked in a fluted mould, with raisins and almonds.',
+    },
+    category: 'pastry',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+  {
+    id: 'munster-gratin',
+    name: { fr: 'Pommes de terre au munster', en: 'Potatoes with Munster' },
+    description: {
+      fr: 'Pommes de terre en robe gratinées sous un munster fondant au cumin.',
+      en: 'Jacket potatoes gratinated under melting cumin-scented Munster cheese.',
+    },
+    category: 'cheese-dish',
+    region: 'Alsace',
+    location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
+  },
+
+  // ---------------- Lorraine ----------------
+  {
+    id: 'quiche-lorraine',
+    name: { fr: 'Quiche lorraine', en: 'Quiche lorraine' },
+    description: {
+      fr: 'Tarte salée à la migaine — œufs, crème, lardons fumés — sans fromage à l’origine.',
+      en: 'Savoury tart of eggs, cream and smoked lardons — traditionally without cheese.',
+    },
+    category: 'main',
+    region: 'Lorraine',
+    location: { type: 'area', name: 'Lorraine', centroid: [6.2, 48.7] },
+  },
+  {
+    id: 'madeleine',
+    name: { fr: 'Madeleine de Commercy', en: 'Madeleine' },
+    description: {
+      fr: 'Petit gâteau moelleux en coquillage, parfumé au citron ou à la fleur d’oranger.',
+      en: 'Small shell-shaped sponge cake flavoured with lemon or orange blossom.',
+    },
+    category: 'pastry',
+    region: 'Commercy',
+    location: { type: 'commune', insee: '55122' },
+  },
+  {
+    id: 'baba-au-rhum',
+    name: { fr: 'Baba au rhum', en: 'Baba au rhum' },
+    description: {
+      fr: 'Brioche imbibée de sirop au rhum, inventée à la cour de Stanislas à Lunéville.',
+      en: 'Yeast cake soaked in rum syrup, born at the court of Stanisław in Lunéville.',
+    },
+    category: 'pastry',
+    region: 'Lorraine',
+    location: { type: 'department', code: '54' },
+  },
+  {
+    id: 'mirabelle-tart',
+    name: { fr: 'Tarte aux mirabelles', en: 'Mirabelle plum tart' },
+    description: {
+      fr: 'Tarte de fin d’été aux petites prunes dorées de Lorraine.',
+      en: 'Late-summer tart with the small golden plums of Lorraine.',
+    },
+    category: 'pastry',
+    region: 'Lorraine',
+    location: { type: 'area', name: 'Lorraine', centroid: [6.2, 48.7] },
+  },
+  {
+    id: 'potee-lorraine',
+    name: { fr: 'Potée lorraine', en: 'Lorraine potée' },
+    description: {
+      fr: 'Soupe-plat de chou, poireaux, navets, lard et saucisses fumées.',
+      en: 'One-pot soup of cabbage, leeks, turnips, salt pork and smoked sausages.',
+    },
+    category: 'main',
+    region: 'Lorraine',
+    location: { type: 'area', name: 'Lorraine', centroid: [6.2, 48.7] },
+  },
+
+  // ---------------- Bretagne ----------------
+  {
+    id: 'crepe-bretonne',
+    name: { fr: 'Crêpe bretonne', en: 'Breton crêpe' },
+    description: {
+      fr: 'Crêpe sucrée fine au froment, servie au beurre, sucre, caramel ou confiture.',
+      en: 'Thin sweet wheat crêpe served with butter, sugar, caramel or jam.',
+    },
+    category: 'pastry',
+    region: 'Bretagne',
+    location: { type: 'region', code: '53' },
+  },
+  {
+    id: 'galette-de-sarrasin',
+    name: { fr: 'Galette de sarrasin', en: 'Buckwheat galette' },
+    description: {
+      fr: 'Crêpe salée au blé noir, base de la cuisine bretonne traditionnelle.',
+      en: 'Savoury buckwheat pancake, the foundation of Breton home cooking.',
+    },
+    category: 'main',
+    region: 'Bretagne',
+    location: { type: 'region', code: '53' },
+  },
+  {
+    id: 'galette-complete',
+    name: { fr: 'Galette complète', en: 'Galette complète' },
+    description: {
+      fr: 'Galette de sarrasin garnie d’œuf, jambon et emmental — la classique.',
+      en: 'Buckwheat galette filled with egg, ham and Emmental — the classic.',
+    },
+    category: 'main',
+    region: 'Bretagne',
+    location: { type: 'region', code: '53' },
+  },
+  {
+    id: 'far-breton',
+    name: { fr: 'Far breton', en: 'Far breton' },
+    description: {
+      fr: 'Flan dense aux pruneaux ou raisins, dessert paysan de Bretagne.',
+      en: 'Dense flan with prunes or raisins — a Breton farmhouse dessert.',
+    },
+    category: 'pastry',
+    region: 'Bretagne',
+    location: { type: 'region', code: '53' },
+  },
+  {
+    id: 'kouign-amann',
+    name: { fr: 'Kouign-amann', en: 'Kouign-amann' },
+    description: {
+      fr: 'Pâte feuilletée bretonne au beurre et au sucre, caramélisée à la cuisson.',
+      en: 'Breton laminated dough with butter and sugar, caramelised in baking.',
+    },
+    category: 'pastry',
+    region: 'Douarnenez',
+    location: { type: 'commune', insee: '29046' },
+  },
+  {
+    id: 'galette-saucisse',
+    name: { fr: 'Galette-saucisse', en: 'Galette-saucisse' },
+    description: {
+      fr: 'Galette de sarrasin froide enroulée autour d’une saucisse grillée — street food rennais.',
+      en: 'Cold buckwheat galette rolled around a grilled sausage — street food from Rennes.',
+    },
+    category: 'snack',
+    region: 'Rennes',
+    location: { type: 'commune', insee: '35238' },
+  },
+  {
+    id: 'kig-ha-farz',
+    name: { fr: 'Kig ha farz', en: 'Kig ha farz' },
+    description: {
+      fr: 'Pot-au-feu léonard de viandes et légumes, accompagné d’un pudding de blé noir.',
+      en: 'Léon-style boiled-meat-and-veg dish served with a buckwheat pudding.',
+    },
+    category: 'main',
+    region: 'Léon',
+    location: { type: 'area', name: 'Léon', centroid: [-4.3, 48.6] },
+  },
+  {
+    id: 'cotriade',
+    name: { fr: 'Cotriade', en: 'Cotriade' },
+    description: {
+      fr: 'Soupe de poissons des marins bretons, à base de pommes de terre et oignons.',
+      en: 'Breton sailors’ fish soup with potatoes and onions.',
+    },
+    category: 'soup',
+    region: 'Bretagne',
+    location: { type: 'region', code: '53' },
+  },
+
+  // ---------------- Normandie ----------------
+  {
+    id: 'tripes-mode-de-caen',
+    name: { fr: 'Tripes à la mode de Caen', en: 'Tripes à la mode de Caen' },
+    description: {
+      fr: 'Tripes mijotées au cidre et au calvados, longuement avec carottes et oignons.',
+      en: 'Tripe slow-cooked in cider and Calvados with carrots and onions.',
+    },
+    category: 'main',
+    region: 'Caen',
+    location: { type: 'commune', insee: '14118' },
+  },
+  {
+    id: 'andouille-de-vire',
+    name: { fr: 'Andouille de Vire', en: 'Andouille de Vire' },
+    description: {
+      fr: 'Andouille fumée à base de tripes de porc, spécialité du Bocage normand.',
+      en: 'Smoked pork-tripe sausage from the Bocage Normand.',
+    },
+    category: 'charcuterie',
+    region: 'Normandie',
+    location: { type: 'region', code: '28' },
+  },
+  {
+    id: 'teurgoule',
+    name: { fr: 'Teurgoule', en: 'Teurgoule' },
+    description: {
+      fr: 'Riz au lait normand cuit longuement avec cannelle, en croûte caramélisée.',
+      en: 'Slow-baked Norman rice pudding with cinnamon and a caramelised crust.',
+    },
+    category: 'dessert',
+    region: 'Normandie',
+    location: { type: 'region', code: '28' },
+  },
+  {
+    id: 'tarte-normande',
+    name: { fr: 'Tarte normande', en: 'Tarte normande' },
+    description: {
+      fr: 'Tarte aux pommes liée à un appareil aux œufs, crème et calvados.',
+      en: 'Apple tart bound with an egg, cream and Calvados custard.',
+    },
+    category: 'pastry',
+    region: 'Normandie',
+    location: { type: 'region', code: '28' },
+  },
+  {
+    id: 'sole-normande',
+    name: { fr: 'Sole normande', en: 'Sole normande' },
+    description: {
+      fr: 'Sole pochée au cidre, sauce crème, garnie de moules, crevettes et champignons.',
+      en: 'Sole poached in cider with a cream sauce, mussels, prawns and mushrooms.',
+    },
+    category: 'main',
+    region: 'Normandie',
+    location: { type: 'region', code: '28' },
+  },
+
+  // ---------------- Centre-Val de Loire / Pays de la Loire ----------------
+  {
+    id: 'tarte-tatin',
+    name: { fr: 'Tarte Tatin', en: 'Tarte Tatin' },
+    description: {
+      fr: 'Tarte aux pommes renversée à la pâte caramélisée, née à Lamotte-Beuvron.',
+      en: 'Upside-down apple tart with caramelised pastry, born in Lamotte-Beuvron.',
+    },
+    category: 'pastry',
+    region: 'Sologne',
+    location: { type: 'commune', insee: '41106' },
+  },
+  {
+    id: 'rillettes-du-mans',
+    name: { fr: 'Rillettes du Mans', en: 'Rillettes from Le Mans' },
+    description: {
+      fr: 'Effilochée de porc cuite et conservée dans sa graisse, à tartiner.',
+      en: 'Shredded pork cooked and preserved in its own fat, served as a spread.',
+    },
+    category: 'charcuterie',
+    region: 'Le Mans',
+    location: { type: 'commune', insee: '72181' },
+  },
+  {
+    id: 'rillons-de-touraine',
+    name: { fr: 'Rillons de Touraine', en: 'Rillons of Touraine' },
+    description: {
+      fr: 'Morceaux de poitrine de porc confits, dorés et parfumés au vin de Touraine.',
+      en: 'Chunks of pork belly confit, golden and scented with Touraine wine.',
+    },
+    category: 'charcuterie',
+    region: 'Touraine',
+    location: { type: 'area', name: 'Touraine', centroid: [0.7, 47.4] },
+  },
+
+  // ---------------- Île-de-France / Paris ----------------
+  {
+    id: 'paris-brest',
+    name: { fr: 'Paris-Brest', en: 'Paris-Brest' },
+    description: {
+      fr: 'Couronne de pâte à choux fourrée d’une crème pralinée onctueuse.',
+      en: 'Choux-pastry ring filled with a rich praline cream.',
+    },
+    category: 'pastry',
+    region: 'Île-de-France',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'saint-honore',
+    name: { fr: 'Saint-Honoré', en: 'Saint-Honoré' },
+    description: {
+      fr: 'Pâtisserie en couronne — choux caramélisés, crème chiboust, base feuilletée.',
+      en: 'Crown-shaped pastry of caramel choux, chiboust cream and a puff-pastry base.',
+    },
+    category: 'pastry',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'religieuse',
+    name: { fr: 'Religieuse', en: 'Religieuse' },
+    description: {
+      fr: 'Deux choux glacés empilés, garnis de crème pâtissière au chocolat ou café.',
+      en: 'Two glazed choux stacked together, filled with chocolate or coffee pastry cream.',
+    },
+    category: 'pastry',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'mille-feuille',
+    name: { fr: 'Mille-feuille', en: 'Mille-feuille' },
+    description: {
+      fr: 'Trois disques de feuilletage caramélisé alternés avec de la crème pâtissière.',
+      en: 'Three layers of caramelised puff pastry interleaved with pastry cream.',
+    },
+    category: 'pastry',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'eclair',
+    name: { fr: 'Éclair', en: 'Éclair' },
+    description: {
+      fr: 'Pâte à choux allongée, garnie et glacée — chocolat, café, vanille.',
+      en: 'Long choux-pastry filled and glazed — chocolate, coffee, vanilla.',
+    },
+    category: 'pastry',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'macaron',
+    name: { fr: 'Macaron parisien', en: 'Parisian macaron' },
+    description: {
+      fr: 'Coques d’amande lisses, assemblées autour d’une ganache parfumée.',
+      en: 'Smooth almond shells sandwiching a flavoured ganache.',
+    },
+    category: 'pastry',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'croque-monsieur',
+    name: { fr: 'Croque-monsieur', en: 'Croque-monsieur' },
+    description: {
+      fr: 'Sandwich gratiné jambon-fromage, grand classique des bistrots parisiens.',
+      en: 'Grilled ham-and-cheese sandwich, a Parisian bistro staple.',
+    },
+    category: 'snack',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'steak-tartare',
+    name: { fr: 'Steak tartare', en: 'Steak tartare' },
+    description: {
+      fr: 'Bœuf cru haché au couteau, assaisonné échalote, câpres, jaune d’œuf.',
+      en: 'Hand-chopped raw beef, seasoned with shallot, capers and an egg yolk.',
+    },
+    category: 'main',
+    region: 'Paris',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'pot-au-feu',
+    name: { fr: 'Pot-au-feu', en: 'Pot-au-feu' },
+    description: {
+      fr: 'Bœuf et légumes pochés longuement, servis avec leur bouillon — plat français universel.',
+      en: 'Beef and vegetables long-poached and served with their broth — a French staple.',
+    },
+    category: 'main',
+    region: 'France',
+    location: { type: 'region', code: '11' },
+  },
+  {
+    id: 'blanquette-de-veau',
+    name: { fr: 'Blanquette de veau', en: 'Blanquette de veau' },
+    description: {
+      fr: 'Ragoût de veau en sauce blanche aux champignons, oignons grelots et citron.',
+      en: 'Veal stew in a white sauce with mushrooms, pearl onions and lemon.',
+    },
+    category: 'main',
+    region: 'France',
+    location: { type: 'region', code: '11' },
+  },
+  {
+    id: 'soupe-a-l-oignon',
+    name: { fr: 'Soupe à l’oignon gratinée', en: 'Onion soup gratinée' },
+    description: {
+      fr: 'Bouillon d’oignons caramélisés, gratiné de pain et de gruyère fondu.',
+      en: 'Caramelised onion broth gratinated with bread and melted Gruyère.',
+    },
+    category: 'soup',
+    region: 'Île-de-France',
+    location: { type: 'commune', insee: '75056' },
+  },
+  {
+    id: 'hachis-parmentier',
+    name: { fr: 'Hachis parmentier', en: 'Hachis parmentier' },
+    description: {
+      fr: 'Bœuf haché recouvert de purée de pommes de terre, gratiné au four.',
+      en: 'Minced beef topped with mashed potato and baked into a gratin.',
+    },
+    category: 'main',
+    region: 'France',
+    location: { type: 'region', code: '11' },
+  },
+
+  // ---------------- Hauts-de-France / Flandres ----------------
+  {
+    id: 'carbonade-flamande',
+    name: { fr: 'Carbonade flamande', en: 'Flemish carbonnade' },
+    description: {
+      fr: 'Bœuf braisé à la bière brune avec oignons, pain d’épices et moutarde.',
+      en: 'Beef braised in dark beer with onions, gingerbread and mustard.',
+    },
+    category: 'main',
+    region: 'Flandre française',
+    location: { type: 'area', name: 'Flandres', centroid: [2.7, 50.7] },
+  },
+  {
+    id: 'potjevleesch',
+    name: { fr: 'Potjevleesch', en: 'Potjevleesch' },
+    description: {
+      fr: 'Terrine flamande de quatre viandes blanches en gelée, servie froide.',
+      en: 'Flemish terrine of four white meats set in jelly, served cold.',
+    },
+    category: 'main',
+    region: 'Flandre française',
+    location: { type: 'area', name: 'Flandres', centroid: [2.7, 50.7] },
+  },
+  {
+    id: 'welsh',
+    name: { fr: 'Welsh', en: 'Welsh' },
+    description: {
+      fr: 'Cheddar fondu à la bière, sur pain grillé, souvent surmonté d’un œuf.',
+      en: 'Cheddar melted with beer over toast, often topped with an egg.',
+    },
+    category: 'cheese-dish',
+    region: 'Hauts-de-France',
+    location: { type: 'region', code: '32' },
+  },
+  {
+    id: 'tarte-au-sucre',
+    name: { fr: 'Tarte au sucre', en: 'Sugar tart' },
+    description: {
+      fr: 'Pâte briochée caramélisée au sucre roux et à la crème, dessert chti.',
+      en: 'Brioche dough caramelised with brown sugar and cream — a Northern dessert.',
+    },
+    category: 'pastry',
+    region: 'Hauts-de-France',
+    location: { type: 'region', code: '32' },
+  },
+  {
+    id: 'merveilleux',
+    name: { fr: 'Merveilleux', en: 'Merveilleux' },
+    description: {
+      fr: 'Deux meringues prises dans une chantilly, enrobées de copeaux de chocolat.',
+      en: 'Two meringues bound by Chantilly cream and coated in chocolate shavings.',
+    },
+    category: 'pastry',
+    region: 'Hauts-de-France',
+    location: { type: 'region', code: '32' },
+  },
+  {
+    id: 'ficelle-picarde',
+    name: { fr: 'Ficelle picarde', en: 'Ficelle picarde' },
+    description: {
+      fr: 'Crêpe roulée garnie de jambon, champignons et béchamel, gratinée au four.',
+      en: 'Rolled crêpe filled with ham, mushrooms and béchamel, baked au gratin.',
+    },
+    category: 'starter',
+    region: 'Picardie',
+    location: { type: 'area', name: 'Picardie', centroid: [2.5, 49.9] },
+  },
+
+  // ---------------- Charente / Atlantique ----------------
+  {
+    id: 'mouclade',
+    name: { fr: 'Mouclade', en: 'Mouclade' },
+    description: {
+      fr: 'Moules en sauce crémée au vin blanc et au curry, spécialité charentaise.',
+      en: 'Mussels in a creamy white-wine and curry sauce — a Charente speciality.',
+    },
+    category: 'main',
+    region: 'Charente-Maritime',
+    location: { type: 'department', code: '17' },
+  },
+  {
+    id: 'eclade',
+    name: { fr: 'Éclade de moules', en: 'Pine-needle mussels' },
+    description: {
+      fr: 'Moules cuites à feu vif sous des aiguilles de pin enflammées, sur la plage.',
+      en: 'Mussels flame-cooked under burning pine needles on the beach.',
+    },
+    category: 'main',
+    region: 'Charente-Maritime',
+    location: { type: 'department', code: '17' },
+  },
+  {
+    id: 'galette-charentaise',
+    name: { fr: 'Galette charentaise', en: 'Charente galette' },
+    description: {
+      fr: 'Sablé épais au beurre charentais, parfumé à la vanille ou à l’angélique.',
+      en: 'Thick shortbread made with Charente butter, scented with vanilla or angelica.',
+    },
+    category: 'pastry',
+    region: 'Charentes',
+    location: { type: 'area', name: 'Charentes', centroid: [-0.5, 45.7] },
+  },
+
+  // ---------------- Corse ----------------
+  {
+    id: 'pulenta-corse',
+    name: { fr: 'Pulenta', en: 'Pulenta' },
+    description: {
+      fr: 'Polenta corse à la farine de châtaigne, accompagnement traditionnel.',
+      en: 'Corsican polenta made from chestnut flour, a traditional side.',
+    },
+    category: 'side',
+    region: 'Corse',
+    location: { type: 'region', code: '94' },
+  },
+  {
+    id: 'civet-de-sanglier',
+    name: { fr: 'Civet de sanglier', en: 'Wild boar civet' },
+    description: {
+      fr: 'Sanglier mariné et mijoté au vin rouge corse, baies de myrte et romarin.',
+      en: 'Wild boar marinated and stewed in Corsican red wine with myrtle and rosemary.',
+    },
+    category: 'main',
+    region: 'Corse',
+    location: { type: 'region', code: '94' },
+  },
+  {
+    id: 'sturzapreti',
+    name: { fr: 'Sturzapreti', en: 'Sturzapreti' },
+    description: {
+      fr: 'Quenelles corses de blettes et brocciu, gratinées à la sauce tomate.',
+      en: 'Corsican dumplings of chard and brocciu, baked in tomato sauce.',
+    },
+    category: 'main',
+    region: 'Corse',
+    location: { type: 'region', code: '94' },
+  },
+  {
+    id: 'migliacciu',
+    name: { fr: 'Migliacciu', en: 'Migliacciu' },
+    description: {
+      fr: 'Galette corse de farine de châtaigne au brocciu, cuite sur feuilles de châtaignier.',
+      en: 'Corsican chestnut-flour cake with brocciu, baked on chestnut leaves.',
+    },
+    category: 'pastry',
+    region: 'Corse',
+    location: { type: 'region', code: '94' },
+  },
+];

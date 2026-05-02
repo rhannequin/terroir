@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "build:data": "tsx scripts/build-aop-data.ts"
+    "build:data": "tsx scripts/build-aop-data.ts && tsx scripts/build-dishes-data.ts"
   },
   "dependencies": {
     "astro": "^6.0.5",

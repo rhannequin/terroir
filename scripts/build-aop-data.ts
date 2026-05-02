@@ -6,23 +6,15 @@
  *  - Aires géographiques des AOC/AOP (data.gouv.fr, INAO)
  *  - Commune centroids                (geo.api.gouv.fr)
  */
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCSV } from './lib/csv';
+import { loadSource, type Source } from './lib/fetch-cache';
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), '../..');
 const CACHE_DIR = path.join(ROOT, '.cache');
 const OUT_PATH = path.join(ROOT, 'public/data/aops.json');
-
-type Encoding = 'utf-8' | 'latin1';
-
-interface Source {
-  name: string;
-  url: string;
-  file: string;
-  encoding: Encoding;
-}
 
 const SOURCES = {
   communesAires: {
@@ -39,31 +31,11 @@ const SOURCES = {
   },
   communesCentroids: {
     name: 'communes-centroids',
-    url: 'https://geo.api.gouv.fr/communes?fields=code,centre,surface&format=json',
+    url: 'https://geo.api.gouv.fr/communes?fields=code,centre,codeDepartement,codeRegion,surface&format=json',
     file: 'communes-centroids.json',
     encoding: 'utf-8',
   },
 } as const satisfies Record<string, Source>;
-
-async function loadSource(src: Source): Promise<string> {
-  await mkdir(CACHE_DIR, { recursive: true });
-  const cachePath = path.join(CACHE_DIR, src.file);
-  try {
-    await stat(cachePath);
-    console.log(`[${src.name}] cache hit`);
-  } catch {
-    console.log(`[${src.name}] downloading…`);
-    const res = await fetch(src.url);
-    if (!res.ok) throw new Error(`HTTP ${res.status} for ${src.url}`);
-    const buf = Buffer.from(await res.arrayBuffer());
-    const text =
-      src.encoding === 'latin1'
-        ? buf.toString('latin1')
-        : buf.toString('utf-8');
-    await writeFile(cachePath, text, 'utf-8');
-  }
-  return readFile(cachePath, 'utf-8');
-}
 
 interface Aire {
   ida: number;
@@ -102,9 +74,9 @@ function trimOrNull(s: string): string | null {
 
 async function main(): Promise<void> {
   const [communesText, produitsText, centroidsJson] = await Promise.all([
-    loadSource(SOURCES.communesAires),
-    loadSource(SOURCES.airesProduits),
-    loadSource(SOURCES.communesCentroids),
+    loadSource(SOURCES.communesAires, CACHE_DIR),
+    loadSource(SOURCES.airesProduits, CACHE_DIR),
+    loadSource(SOURCES.communesCentroids, CACHE_DIR),
   ]);
 
   const communeByCode = new Map<string, CommuneInfo>();
@@ -205,7 +177,7 @@ async function main(): Promise<void> {
   result.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 
   await mkdir(path.dirname(OUT_PATH), { recursive: true });
-  await writeFile(OUT_PATH, JSON.stringify(result));
+  await writeFile(OUT_PATH, JSON.stringify(result, null, 2) + '\n');
 
   const sizeKB = ((await stat(OUT_PATH)).size / 1024).toFixed(1);
   console.log(

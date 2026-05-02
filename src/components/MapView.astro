@@ -30,6 +30,25 @@ const t = ui[lang];
     centroid: [number, number];
   }
 
+  interface Dish {
+    id: string;
+    name: { fr: string; en: string };
+    description: { fr: string; en: string };
+    category:
+      | 'main'
+      | 'soup'
+      | 'starter'
+      | 'side'
+      | 'charcuterie'
+      | 'cheese-dish'
+      | 'pastry'
+      | 'dessert'
+      | 'snack';
+    region: string;
+    locationType: 'commune' | 'department' | 'region' | 'area';
+    centroid: [number, number];
+  }
+
   delete (
     L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: unknown }
   )._getIconUrl;
@@ -81,14 +100,34 @@ const t = ui[lang];
     document.getElementById('map')?.appendChild(overlay);
   }
 
+  // Custom red divIcon for dishes — visually distinct from the default blue
+  // AOP marker without needing a separate PNG asset.
+  const dishIcon = L.divIcon({
+    className: 'dish-marker',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -11],
+    html: '<span class="dish-marker__dot" aria-hidden="true"></span>',
+  });
+
   try {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-    const dataUrl = `${base}/data/aops.json`;
-    const res = await fetch(dataUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const aops: Aop[] = await res.json();
+    const [aopsRes, dishesRes] = await Promise.all([
+      fetch(`${base}/data/aops.json`),
+      fetch(`${base}/data/dishes.json`),
+    ]);
+    if (!aopsRes.ok) throw new Error(`aops.json HTTP ${aopsRes.status}`);
+    if (!dishesRes.ok) throw new Error(`dishes.json HTTP ${dishesRes.status}`);
+    const [aops, dishes]: [Aop[], Dish[]] = await Promise.all([
+      aopsRes.json(),
+      dishesRes.json(),
+    ]);
 
-    const cluster = L.markerClusterGroup({
+    const aopCluster = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+    });
+    const dishCluster = L.markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 50,
     });
@@ -107,12 +146,30 @@ const t = ui[lang];
       `;
       L.marker([lat, lng], { title: aop.name, alt: aop.name })
         .bindPopup(html)
-        .addTo(cluster);
+        .addTo(aopCluster);
     }
 
-    map.addLayer(cluster);
+    for (const dish of dishes) {
+      const [lng, lat] = dish.centroid;
+      const name = dish.name[lang];
+      const description = dish.description[lang];
+      const categoryLabel = t[`dish.category.${dish.category}`];
+      const html = `
+        <div class="dish-popup">
+          <strong>${escapeHtml(name)}</strong>
+          <div class="dish-popup__meta">${escapeHtml(categoryLabel)} · ${escapeHtml(dish.region)}</div>
+          <p class="dish-popup__description">${escapeHtml(description)}</p>
+        </div>
+      `;
+      L.marker([lat, lng], { icon: dishIcon, title: name, alt: name })
+        .bindPopup(html)
+        .addTo(dishCluster);
+    }
+
+    map.addLayer(aopCluster);
+    map.addLayer(dishCluster);
   } catch (err) {
-    console.error('Failed to load AOP data', err);
+    console.error('Failed to load map data', err);
     showError(t['error.dataLoad'], t['error.retry']);
   }
 </script>
@@ -131,6 +188,31 @@ const t = ui[lang];
   .aop-popup__count {
     margin-top: 0.25rem;
     font-size: 0.875rem;
+  }
+
+  .dish-marker {
+    background: transparent;
+    border: none;
+  }
+  .dish-marker__dot {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #c0392b;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  .dish-popup__meta {
+    font-size: 0.75rem;
+    color: #595959;
+    margin-top: 0.125rem;
+  }
+  .dish-popup__description {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    max-width: 260px;
   }
 
   /* Visible focus ring on focusable Leaflet elements (markers, controls). */

@@ -50,13 +50,12 @@ To add a new page in both locales, create `src/pages/foo.astro` and `src/pages/e
 
 ## Data pipeline
 
-[`scripts/build-aop-data.ts`](scripts/build-aop-data.ts) builds [`public/data/aops.json`](public/data/aops.json) from three open-data sources (Open Licence 2.0 / Etalab):
+`npm run build:data` regenerates two JSON files in [`public/data/`](public/data/):
 
-- [Aires et produits AOC/AOP/IGP](https://www.data.gouv.fr/datasets/aires-et-produits-aoc-aop-et-igp) — INAO area↔product join
-- [Aires géographiques des AOC/AOP](https://www.data.gouv.fr/datasets/aires-geographiques-des-aoc-aop) — INAO area↔commune join
-- [`geo.api.gouv.fr/communes`](https://geo.api.gouv.fr/communes) — commune centroids by INSEE code
+- [`aops.json`](public/data/aops.json), built by [`scripts/build-aop-data.ts`](scripts/build-aop-data.ts) from open INAO data on data.gouv.fr — [Aires et produits AOC/AOP/IGP](https://www.data.gouv.fr/datasets/aires-et-produits-aoc-aop-et-igp) and [Aires géographiques des AOC/AOP](https://www.data.gouv.fr/datasets/aires-geographiques-des-aoc-aop) (Open Licence 2.0 / Etalab) — joined to commune centroids from [`geo.api.gouv.fr/communes`](https://geo.api.gouv.fr/communes). Each AOP's marker position is the surface-weighted mean of its member communes' centroids.
+- [`dishes.json`](public/data/dishes.json), built by [`scripts/build-dishes-data.ts`](scripts/build-dishes-data.ts) from the hand-curated list in [`scripts/data/dishes.ts`](scripts/data/dishes.ts). Each dish points to a commune (Bouillabaisse → Marseille), a département (Tartiflette → Haute-Savoie), a région (Crêpe bretonne → Bretagne) or a bespoke area with a hand-set centroid (Aubrac, Pays Basque…). The build resolves the location to a centroid using the same `geo.api.gouv.fr` data.
 
-Sources are downloaded into `.cache/` (gitignored) on first run. Each AOP's marker position is the average of its member commune centroids. Re-run `npm run build:data` after INAO publishes updated CSVs and commit the regenerated `public/data/aops.json`.
+Sources are cached in `.cache/` (gitignored) on first run. Re-run `npm run build:data` after editing `dishes.ts` or whenever INAO publishes updated CSVs, then commit the regenerated JSON.
 
 ## Deployment
 
