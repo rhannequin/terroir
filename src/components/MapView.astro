@@ -46,15 +46,30 @@ const t = ui[lang];
   }
 
   interface Entry {
+    id: string;
     marker: L.Marker;
     type: FilterType;
     haystack: string;
+    name: string;
+    sub: string;
+    lat: number;
+    lng: number;
   }
 
   interface FilterState {
     types: Set<FilterType>;
     search: string;
   }
+
+  interface NearbyItem {
+    id: string;
+    type: FilterType;
+    name: string;
+    sub: string;
+    distanceKm: number;
+  }
+
+  type LocateErrorCode = 'denied' | 'unavailable' | 'timeout' | 'unsupported';
 
   const lang: Lang = document.documentElement.lang.startsWith('fr')
     ? 'fr'
@@ -119,6 +134,33 @@ const t = ui[lang];
     html: '<span class="dish-marker__dot" aria-hidden="true"></span>',
   });
 
+  const userIcon = L.divIcon({
+    className: 'user-marker',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    html: '<span class="user-marker__dot" aria-hidden="true"></span>',
+  });
+
+  const NEARBY_LIMIT = 15;
+
+  function haversineKm(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number,
+  ): number {
+    const R = 6371;
+    const toRad = (x: number) => (x * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
   function classifyAop(signe: string | null): FilterType {
     const s = signe?.trim().toLowerCase() ?? '';
     if (s === 'igp' || s === 'ig') return 'igp';
@@ -176,10 +218,16 @@ const t = ui[lang];
         title: aop.name,
         alt: aop.name,
       }).bindPopup(html, { minWidth: 240, maxWidth: 280 });
+      const aopType = classifyAop(aop.signeUE);
       entries.push({
+        id: `${aopType}:${aop.ida}`,
         marker,
-        type: classifyAop(aop.signeUE),
+        type: aopType,
         haystack: normalize([aop.name, ...aop.products].join(' ')),
+        name: aop.name,
+        sub: sign,
+        lat,
+        lng,
       });
     }
 
@@ -201,15 +249,26 @@ const t = ui[lang];
         alt: name,
       }).bindPopup(html);
       entries.push({
+        id: `dish:${dish.id}`,
         marker,
         type: 'dish',
         haystack: normalize(
           [dish.name.fr, dish.name.en, dish.region].join(' '),
         ),
+        name,
+        sub: `${categoryLabel} · ${dish.region}`,
+        lat,
+        lng,
       });
     }
 
+    let currentFilterState: FilterState = {
+      types: new Set<FilterType>(['aop', 'igp', 'dish']),
+      search: '',
+    };
+
     function applyFilter(state: FilterState): void {
+      currentFilterState = state;
       const aopMatches: L.Marker[] = [];
       const dishMatches: L.Marker[] = [];
       const byType: Record<FilterType, number> = {
@@ -241,14 +300,138 @@ const t = ui[lang];
       );
     }
 
-    applyFilter({
-      types: new Set<FilterType>(['aop', 'igp', 'dish']),
-      search: '',
-    });
+    applyFilter(currentFilterState);
 
     window.addEventListener('filter:change', (e: Event) => {
       applyFilter((e as CustomEvent<FilterState>).detail);
     });
+
+    let userMarker: L.Marker | null = null;
+    let userCircle: L.Circle | null = null;
+    let userLatLng: [number, number] | null = null;
+    const entriesById = new Map(entries.map((e) => [e.id, e]));
+
+    function computeNearby(): NearbyItem[] {
+      if (!userLatLng) return [];
+      const [uLat, uLng] = userLatLng;
+      const needle = normalize(currentFilterState.search);
+      const results: NearbyItem[] = [];
+      for (const entry of entries) {
+        if (!currentFilterState.types.has(entry.type)) continue;
+        if (needle && !entry.haystack.includes(needle)) continue;
+        results.push({
+          id: entry.id,
+          type: entry.type,
+          name: entry.name,
+          sub: entry.sub,
+          distanceKm: haversineKm(uLat, uLng, entry.lat, entry.lng),
+        });
+      }
+      results.sort((a, b) => a.distanceKm - b.distanceKm);
+      return results.slice(0, NEARBY_LIMIT);
+    }
+
+    function emitNearby(): void {
+      window.dispatchEvent(
+        new CustomEvent('locate:result', {
+          detail: { items: computeNearby() },
+        }),
+      );
+    }
+
+    window.addEventListener('locate:request', () => {
+      if (!('geolocation' in navigator)) {
+        window.dispatchEvent(
+          new CustomEvent('locate:error', { detail: { code: 'unsupported' } }),
+        );
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const accuracy = Math.max(20, pos.coords.accuracy);
+          userLatLng = [lat, lng];
+
+          if (userMarker) userMarker.remove();
+          if (userCircle) userCircle.remove();
+
+          userCircle = L.circle([lat, lng], {
+            radius: accuracy,
+            color: '#2a81cb',
+            weight: 1,
+            fillColor: '#2a81cb',
+            fillOpacity: 0.12,
+            interactive: false,
+          }).addTo(map);
+          userMarker = L.marker([lat, lng], {
+            icon: userIcon,
+            title: t['locate.you'],
+            alt: t['locate.you'],
+            interactive: false,
+            keyboard: false,
+            zIndexOffset: 1000,
+          }).addTo(map);
+
+          const targetZoom = Math.max(map.getZoom(), 9);
+          map.flyTo([lat, lng], targetZoom, {
+            animate: !reducedMotion,
+            duration: reducedMotion ? 0 : 1.0,
+          });
+          emitNearby();
+        },
+        (err) => {
+          let code: LocateErrorCode = 'unavailable';
+          if (err.code === err.PERMISSION_DENIED) code = 'denied';
+          else if (err.code === err.TIMEOUT) code = 'timeout';
+          window.dispatchEvent(
+            new CustomEvent('locate:error', { detail: { code } }),
+          );
+        },
+        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
+      );
+    });
+
+    window.addEventListener('locate:clear', () => {
+      userLatLng = null;
+      if (userMarker) {
+        userMarker.remove();
+        userMarker = null;
+      }
+      if (userCircle) {
+        userCircle.remove();
+        userCircle = null;
+      }
+    });
+
+    window.addEventListener('locate:focus', (e: Event) => {
+      const id = (e as CustomEvent<{ id: string }>).detail.id;
+      const entry = entriesById.get(id);
+      if (!entry) return;
+      const cluster = entry.type === 'dish' ? dishCluster : aopCluster;
+      const reveal = (): void => {
+        cluster.zoomToShowLayer(entry.marker, () => {
+          entry.marker.openPopup();
+        });
+      };
+      const currentZoom = map.getZoom();
+      const targetZoom = Math.max(currentZoom, 11);
+      if (
+        Math.abs(map.getCenter().lat - entry.lat) > 0.05 ||
+        Math.abs(map.getCenter().lng - entry.lng) > 0.05 ||
+        currentZoom < targetZoom
+      ) {
+        map.once('moveend', reveal);
+        map.flyTo([entry.lat, entry.lng], targetZoom, {
+          animate: !reducedMotion,
+          duration: reducedMotion ? 0 : 0.8,
+        });
+      } else {
+        reveal();
+      }
+    });
+
+    window.addEventListener('locate:recompute', emitNearby);
   } catch (err) {
     console.error('Failed to load map data', err);
     showError(t['error.dataLoad'], t['error.retry']);

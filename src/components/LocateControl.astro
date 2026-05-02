@@ -1,0 +1,617 @@
+---
+import { ui, type Lang } from '../i18n/ui';
+
+const lang = (Astro.currentLocale ?? 'fr') as Lang;
+const t = ui[lang];
+---
+
+<button
+  type="button"
+  id="locate-toggle"
+  class="locate-toggle"
+  aria-expanded="false"
+  aria-controls="locate-panel"
+>
+  <svg
+    class="locate-toggle__icon"
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="3"></circle>
+    <line x1="12" y1="2" x2="12" y2="5"></line>
+    <line x1="12" y1="19" x2="12" y2="22"></line>
+    <line x1="2" y1="12" x2="5" y2="12"></line>
+    <line x1="19" y1="12" x2="22" y2="12"></line>
+  </svg>
+  <span class="locate-toggle__spinner" aria-hidden="true"></span>
+  <span class="locate-toggle__label">{t['locate.toggle']}</span>
+</button>
+
+<aside
+  id="locate-panel"
+  class="locate-panel"
+  role="region"
+  aria-labelledby="locate-panel-title"
+  inert
+>
+  <header class="locate-panel__header">
+    <h2 id="locate-panel-title">{t['locate.title']}</h2>
+    <button
+      type="button"
+      class="locate-panel__close"
+      aria-label={t['locate.close']}
+      data-locate-close
+    >
+      ×
+    </button>
+  </header>
+
+  <div class="locate-panel__body">
+    <p class="locate-panel__status" data-locate-status aria-live="polite"></p>
+    <ul class="locate-panel__list" data-locate-list aria-labelledby="locate-panel-title"></ul>
+  </div>
+
+  <div class="locate-panel__footer">
+    <button
+      type="button"
+      class="locate-panel__retry"
+      data-locate-retry
+      hidden
+    >
+      {t['locate.retry']}
+    </button>
+    <button
+      type="button"
+      class="locate-panel__clear"
+      data-locate-clear
+      hidden
+    >
+      {t['locate.clear']}
+    </button>
+  </div>
+</aside>
+
+<script>
+  import { ui, type Lang } from '../i18n/ui';
+
+  type FilterType = 'aop' | 'igp' | 'dish';
+  type ErrorCode = 'denied' | 'unavailable' | 'timeout' | 'unsupported';
+
+  interface NearbyItem {
+    id: string;
+    type: FilterType;
+    name: string;
+    sub: string;
+    distanceKm: number;
+  }
+
+  const lang: Lang = document.documentElement.lang.startsWith('fr')
+    ? 'fr'
+    : 'en';
+  const t = ui[lang];
+  const distanceKmFmt = new Intl.NumberFormat(
+    lang === 'fr' ? 'fr-FR' : 'en-GB',
+    { maximumFractionDigits: 1 },
+  );
+  const distanceMFmt = new Intl.NumberFormat(
+    lang === 'fr' ? 'fr-FR' : 'en-GB',
+  );
+  const countFmt = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB');
+
+  const toggle = document.getElementById('locate-toggle') as HTMLButtonElement;
+  const panel = document.getElementById('locate-panel') as HTMLElement;
+  const closeBtn = panel.querySelector<HTMLButtonElement>(
+    '[data-locate-close]',
+  )!;
+  const listEl = panel.querySelector<HTMLUListElement>('[data-locate-list]')!;
+  const statusEl = panel.querySelector<HTMLElement>('[data-locate-status]')!;
+  const clearBtn = panel.querySelector<HTMLButtonElement>(
+    '[data-locate-clear]',
+  )!;
+  const retryBtn = panel.querySelector<HTMLButtonElement>(
+    '[data-locate-retry]',
+  )!;
+
+  let hasLocation = false;
+
+  const escapeHtml = (s: string): string =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+  function setStatus(message: string | null): void {
+    if (!message) {
+      statusEl.hidden = true;
+      statusEl.textContent = '';
+    } else {
+      statusEl.hidden = false;
+      statusEl.textContent = message;
+    }
+  }
+
+  function setLocating(): void {
+    setStatus(t['locate.locating']);
+    listEl.innerHTML = '';
+    clearBtn.hidden = true;
+    retryBtn.hidden = true;
+    toggle.classList.add('is-locating');
+    toggle.setAttribute('aria-busy', 'true');
+  }
+
+  function clearLocatingState(): void {
+    toggle.classList.remove('is-locating');
+    toggle.removeAttribute('aria-busy');
+  }
+
+  function formatDistance(km: number): string {
+    if (km < 1) {
+      const m = Math.max(10, Math.round((km * 1000) / 10) * 10);
+      return t['locate.distance.m'].replace(
+        '{distance}',
+        distanceMFmt.format(m),
+      );
+    }
+    const value = km < 10 ? km : Math.round(km);
+    return t['locate.distance.km'].replace(
+      '{distance}',
+      distanceKmFmt.format(value),
+    );
+  }
+
+  function renderList(items: NearbyItem[]): void {
+    listEl.innerHTML = '';
+    if (items.length === 0) {
+      setStatus(t['locate.empty']);
+      return;
+    }
+    const tmpl =
+      items.length === 1
+        ? t['locate.results.one']
+        : t['locate.results.other'];
+    setStatus(tmpl.replace('{count}', countFmt.format(items.length)));
+    for (const item of items) {
+      const li = document.createElement('li');
+      li.className = 'locate-item';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'locate-item__btn';
+      button.dataset.id = item.id;
+      const sub = item.sub
+        ? `<span class="locate-item__sub">${escapeHtml(item.sub)}</span>`
+        : '';
+      const markerClass =
+        item.type === 'dish'
+          ? 'locate-item__marker locate-item__marker--dot'
+          : 'locate-item__marker locate-item__marker--pin';
+      button.innerHTML = `
+        <span class="${markerClass}" aria-hidden="true"></span>
+        <span class="locate-item__text">
+          <span class="locate-item__name">${escapeHtml(item.name)}</span>
+          ${sub}
+        </span>
+        <span class="locate-item__distance">${escapeHtml(formatDistance(item.distanceKm))}</span>
+      `;
+      button.addEventListener('click', () => {
+        window.dispatchEvent(
+          new CustomEvent('locate:focus', { detail: { id: item.id } }),
+        );
+        if (window.matchMedia('(max-width: 768px)').matches) closePanel();
+      });
+      li.appendChild(button);
+      listEl.appendChild(li);
+    }
+  }
+
+  function openPanel(): void {
+    panel.classList.add('is-open');
+    panel.removeAttribute('inert');
+    toggle.setAttribute('aria-expanded', 'true');
+    closeBtn.focus();
+    window.dispatchEvent(new CustomEvent('locate:panel-opened'));
+  }
+
+  function closePanel(): void {
+    panel.classList.remove('is-open');
+    panel.setAttribute('inert', '');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.focus();
+  }
+
+  toggle.addEventListener('click', () => {
+    if (panel.classList.contains('is-open')) {
+      closePanel();
+      return;
+    }
+    openPanel();
+    if (!hasLocation) {
+      setLocating();
+      window.dispatchEvent(new CustomEvent('locate:request'));
+    }
+  });
+
+  closeBtn.addEventListener('click', closePanel);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      closePanel();
+    }
+  });
+
+  retryBtn.addEventListener('click', () => {
+    setLocating();
+    window.dispatchEvent(new CustomEvent('locate:request'));
+  });
+
+  clearBtn.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('locate:clear'));
+    hasLocation = false;
+    listEl.innerHTML = '';
+    setStatus(null);
+    clearBtn.hidden = true;
+    toggle.classList.remove('is-located');
+    closePanel();
+  });
+
+  window.addEventListener('locate:result', (e: Event) => {
+    const items = (e as CustomEvent<{ items: NearbyItem[] }>).detail.items;
+    clearLocatingState();
+    hasLocation = true;
+    toggle.classList.add('is-located');
+    renderList(items);
+    clearBtn.hidden = false;
+    retryBtn.hidden = true;
+  });
+
+  window.addEventListener('locate:error', (e: Event) => {
+    const code = (e as CustomEvent<{ code: ErrorCode }>).detail.code;
+    clearLocatingState();
+    hasLocation = false;
+    toggle.classList.remove('is-located');
+    setStatus(t[`locate.error.${code}`]);
+    listEl.innerHTML = '';
+    clearBtn.hidden = true;
+    retryBtn.hidden = code === 'denied' || code === 'unsupported';
+  });
+
+  window.addEventListener('filter:applied', () => {
+    if (hasLocation && panel.classList.contains('is-open')) {
+      window.dispatchEvent(new CustomEvent('locate:recompute'));
+    }
+  });
+
+  window.addEventListener('filter:panel-opened', () => {
+    if (panel.classList.contains('is-open')) closePanel();
+  });
+</script>
+
+<style is:global>
+  .locate-toggle {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1.25rem);
+    left: calc(env(safe-area-inset-left, 0px) + 1.25rem);
+    z-index: 999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.625rem 1.125rem;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    color: var(--color-text);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    box-shadow: var(--shadow-elevated);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+  .locate-toggle:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .locate-toggle:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .locate-toggle.is-located {
+    color: var(--color-terracotta);
+  }
+  .locate-toggle__spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(184, 90, 48, 0.25);
+    border-top-color: var(--color-terracotta);
+    border-radius: 50%;
+    animation: locate-spin 0.8s linear infinite;
+  }
+  .locate-toggle.is-locating .locate-toggle__icon {
+    display: none;
+  }
+  .locate-toggle.is-locating .locate-toggle__spinner {
+    display: inline-block;
+  }
+  @keyframes locate-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .locate-toggle {
+      transition: none;
+    }
+    .locate-toggle__spinner {
+      animation: none;
+    }
+  }
+
+  /* Push the leaflet attribution to the right when locate-toggle is on the left */
+  .leaflet-bottom.leaflet-left {
+    left: auto;
+    right: 0.875rem;
+  }
+
+  .locate-panel {
+    position: fixed;
+    z-index: 1001;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    overscroll-behavior: contain;
+  }
+
+  @media (max-width: 768px) {
+    .locate-panel {
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
+      max-height: 80dvh;
+      border-radius: 24px;
+      transform: translateY(calc(100% + 1rem));
+    }
+    .locate-panel.is-open {
+      transform: translateY(0);
+    }
+  }
+
+  @media (min-width: 769px) {
+    .locate-panel {
+      top: 0.75rem;
+      left: 0.75rem;
+      bottom: 0.75rem;
+      width: 21rem;
+      max-width: 90vw;
+      border-radius: 20px;
+      transform: translateX(calc(-100% - 1.5rem));
+    }
+    .locate-panel.is-open {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .locate-panel {
+      transition: none;
+    }
+  }
+
+  .locate-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+  }
+  .locate-panel__header h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.375rem;
+    color: var(--color-terracotta);
+  }
+  .locate-panel__close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    transition: background 0.15s ease;
+  }
+  .locate-panel__close:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--color-text);
+  }
+  .locate-panel__close:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .locate-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -0.75rem;
+    padding: 0 0.75rem;
+  }
+  .locate-panel__status {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .locate-panel__status[hidden] {
+    display: none;
+  }
+  .locate-panel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .locate-item__btn {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 56px;
+    padding: 0.625rem 0.75rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    transition:
+      background 0.12s ease,
+      border-color 0.12s ease;
+  }
+  .locate-item__btn:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: var(--glass-border);
+  }
+  .locate-item__btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .locate-item__marker {
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.18));
+  }
+  .locate-item__marker--pin {
+    width: 14px;
+    height: 20px;
+    background: var(--color-olive);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 38'><path d='M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z'/></svg>")
+      no-repeat center / contain;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 38'><path d='M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z'/></svg>")
+      no-repeat center / contain;
+  }
+  .locate-item__marker--dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-terracotta);
+    border: 2px solid white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+  .locate-item__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .locate-item__name {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .locate-item__sub {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .locate-item__distance {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .locate-panel__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 1rem;
+    margin-top: 1rem;
+    flex-shrink: 0;
+  }
+  .locate-panel__footer:not(:has(button:not([hidden]))) {
+    display: none;
+  }
+  .locate-panel__footer button {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5rem 1.125rem;
+    background: transparent;
+    color: var(--color-terracotta);
+    border: 1px solid var(--color-terracotta);
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+  .locate-panel__footer button:hover {
+    background: var(--color-terracotta);
+    color: white;
+  }
+  .locate-panel__footer button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .locate-panel__footer button[hidden] {
+    display: none;
+  }
+
+  .user-marker {
+    background: transparent;
+    border: none;
+  }
+  .user-marker__dot {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2a81cb;
+    border: 3px solid white;
+    box-shadow:
+      0 0 0 2px rgba(42, 129, 203, 0.35),
+      0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+</style>

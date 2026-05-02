@@ -186,6 +186,7 @@ const t = ui[lang];
     panel.removeAttribute('inert');
     toggle.setAttribute('aria-expanded', 'true');
     closeBtn.focus();
+    window.dispatchEvent(new CustomEvent('filter:panel-opened'));
   }
 
   function closePanel(): void {
@@ -216,6 +217,10 @@ const t = ui[lang];
     searchInput.value = '';
     for (const cb of typeBoxes) cb.checked = true;
     emitChange();
+  });
+
+  window.addEventListener('locate:panel-opened', () => {
+    if (panel.classList.contains('is-open')) closePanel();
   });
 
   window.addEventListener('filter:applied', (e: Event) => {
