@@ -20,6 +20,8 @@ const t = ui[lang];
   import shadowAsset from 'leaflet/dist/images/marker-shadow.png';
   import { ui, type Lang } from '../i18n/ui';
 
+  type FilterType = 'aop' | 'igp' | 'dish';
+
   interface Aop {
     ida: number;
     name: string;
@@ -49,6 +51,18 @@ const t = ui[lang];
     centroid: [number, number];
   }
 
+  interface Entry {
+    marker: L.Marker;
+    type: FilterType;
+    /** Lower-cased, accent-stripped haystack used for free-text search. */
+    haystack: string;
+  }
+
+  interface FilterState {
+    types: Set<FilterType>;
+    search: string;
+  }
+
   delete (
     L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: unknown }
   )._getIconUrl;
@@ -67,11 +81,15 @@ const t = ui[lang];
     '(prefers-reduced-motion: reduce)',
   ).matches;
 
+  // Move attribution to bottom-left so the floating filter button has the
+  // bottom-right corner to itself.
   const map = L.map('map', {
     zoomAnimation: !reducedMotion,
     fadeAnimation: !reducedMotion,
     markerZoomAnimation: !reducedMotion,
+    attributionControl: false,
   }).setView([46.6, 2.5], 6);
+  L.control.attribution({ position: 'bottomleft' }).addTo(map);
 
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -85,6 +103,9 @@ const t = ui[lang];
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+
+  const normalize = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
   function showError(message: string, retryLabel: string): void {
     const overlay = document.createElement('div');
@@ -100,8 +121,6 @@ const t = ui[lang];
     document.getElementById('map')?.appendChild(overlay);
   }
 
-  // Custom red divIcon for dishes — visually distinct from the default blue
-  // AOP marker without needing a separate PNG asset.
   const dishIcon = L.divIcon({
     className: 'dish-marker',
     iconSize: [22, 22],
@@ -109,6 +128,12 @@ const t = ui[lang];
     popupAnchor: [0, -11],
     html: '<span class="dish-marker__dot" aria-hidden="true"></span>',
   });
+
+  function classifyAop(signe: string | null): FilterType {
+    const s = signe?.trim().toLowerCase() ?? '';
+    if (s === 'igp' || s === 'ig') return 'igp';
+    return 'aop';
+  }
 
   try {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -131,22 +156,33 @@ const t = ui[lang];
       chunkedLoading: true,
       maxClusterRadius: 50,
     });
+    map.addLayer(aopCluster);
+    map.addLayer(dishCluster);
+
+    const entries: Entry[] = [];
 
     for (const aop of aops) {
       const [lng, lat] = aop.centroid;
       const count = aop.products.length;
-      const label = count === 1 ? t['aop.product.one'] : t['aop.product.other'];
+      const productLabel =
+        count === 1 ? t['aop.product.one'] : t['aop.product.other'];
       const sign = aop.signeUE?.trim() ?? '';
       const html = `
         <div class="aop-popup">
           <strong>${escapeHtml(aop.name)}</strong>
           ${sign ? `<div class="aop-popup__sign">${escapeHtml(sign)}</div>` : ''}
-          <div class="aop-popup__count">${count} ${label}</div>
+          <div class="aop-popup__count">${count} ${productLabel}</div>
         </div>
       `;
-      L.marker([lat, lng], { title: aop.name, alt: aop.name })
-        .bindPopup(html)
-        .addTo(aopCluster);
+      const marker = L.marker([lat, lng], {
+        title: aop.name,
+        alt: aop.name,
+      }).bindPopup(html);
+      entries.push({
+        marker,
+        type: classifyAop(aop.signeUE),
+        haystack: normalize([aop.name, ...aop.products].join(' ')),
+      });
     }
 
     for (const dish of dishes) {
@@ -161,13 +197,55 @@ const t = ui[lang];
           <p class="dish-popup__description">${escapeHtml(description)}</p>
         </div>
       `;
-      L.marker([lat, lng], { icon: dishIcon, title: name, alt: name })
-        .bindPopup(html)
-        .addTo(dishCluster);
+      const marker = L.marker([lat, lng], {
+        icon: dishIcon,
+        title: name,
+        alt: name,
+      }).bindPopup(html);
+      entries.push({
+        marker,
+        type: 'dish',
+        haystack: normalize(
+          [dish.name.fr, dish.name.en, dish.region].join(' '),
+        ),
+      });
     }
 
-    map.addLayer(aopCluster);
-    map.addLayer(dishCluster);
+    function applyFilter(state: FilterState): void {
+      // markercluster is fastest when we feed it a batch via addLayers().
+      const aopMatches: L.Marker[] = [];
+      const dishMatches: L.Marker[] = [];
+      const needle = normalize(state.search);
+      for (const entry of entries) {
+        if (!state.types.has(entry.type)) continue;
+        if (needle && !entry.haystack.includes(needle)) continue;
+        if (entry.type === 'dish') dishMatches.push(entry.marker);
+        else aopMatches.push(entry.marker);
+      }
+      aopCluster.clearLayers();
+      dishCluster.clearLayers();
+      aopCluster.addLayers(aopMatches);
+      dishCluster.addLayers(dishMatches);
+
+      window.dispatchEvent(
+        new CustomEvent('filter:applied', {
+          detail: {
+            count: aopMatches.length + dishMatches.length,
+            total: entries.length,
+          },
+        }),
+      );
+    }
+
+    // Initial render: everything visible.
+    applyFilter({
+      types: new Set<FilterType>(['aop', 'igp', 'dish']),
+      search: '',
+    });
+
+    window.addEventListener('filter:change', (e: Event) => {
+      applyFilter((e as CustomEvent<FilterState>).detail);
+    });
   } catch (err) {
     console.error('Failed to load map data', err);
     showError(t['error.dataLoad'], t['error.retry']);

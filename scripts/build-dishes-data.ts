@@ -15,7 +15,7 @@ const OUT_PATH = path.join(ROOT, 'public/data/dishes.json');
 
 const COMMUNES_SOURCE: Source = {
   name: 'communes-centroids',
-  url: 'https://geo.api.gouv.fr/communes?fields=code,centre,codeDepartement,codeRegion,surface&format=json',
+  url: 'https://geo.api.gouv.fr/communes?fields=code,nom,centre,codeDepartement,codeRegion,surface&format=json',
   file: 'communes-centroids.json',
   encoding: 'utf-8',
 };

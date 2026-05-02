@@ -2,9 +2,10 @@
  * Builds public/data/aops.json from INAO open data + commune centroids.
  *
  * Sources (Open Licence 2.0 / Etalab):
- *  - Aires et produits AOC/AOP/IGP   (data.gouv.fr, INAO)
- *  - Aires géographiques des AOC/AOP (data.gouv.fr, INAO)
- *  - Commune centroids                (geo.api.gouv.fr)
+ *  - Aires et produits AOC/AOP/IGP    (data.gouv.fr, INAO) — products per area + signe
+ *  - Aires géographiques des AOC/AOP  (data.gouv.fr, INAO) — communes per AOP/AOC area
+ *  - Aire géographique des IGP        (data.gouv.fr, INAO) — communes per IGP/IG area
+ *  - Commune centroids                 (geo.api.gouv.fr)
  */
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -18,9 +19,15 @@ const OUT_PATH = path.join(ROOT, 'public/data/aops.json');
 
 const SOURCES = {
   communesAires: {
-    name: 'communes-aires',
+    name: 'communes-aires-aop',
     url: 'https://static.data.gouv.fr/resources/aires-geographiques-des-aoc-aop/20251009-122320/2025-10-09-comagri-communes-aires-ao.csv',
     file: 'communes-aires.csv',
+    encoding: 'latin1',
+  },
+  communesAiresIg: {
+    name: 'communes-aires-ig',
+    url: 'https://static.data.gouv.fr/resources/aire-geographique-des-igp-et-des-ig/20251009-122625/2025-10-09-comagri-communes-aires-ig.csv',
+    file: 'communes-aires-ig.csv',
     encoding: 'latin1',
   },
   airesProduits: {
@@ -31,7 +38,7 @@ const SOURCES = {
   },
   communesCentroids: {
     name: 'communes-centroids',
-    url: 'https://geo.api.gouv.fr/communes?fields=code,centre,codeDepartement,codeRegion,surface&format=json',
+    url: 'https://geo.api.gouv.fr/communes?fields=code,nom,centre,codeDepartement,codeRegion,surface&format=json',
     file: 'communes-centroids.json',
     encoding: 'utf-8',
   },
@@ -57,12 +64,14 @@ interface AopOutput {
 
 interface CommuneFeature {
   code: string;
+  nom?: string;
   centre: { coordinates: [number, number] };
   /** Area in hectares; absent for some non-metropolitan/synthetic codes. */
   surface?: number;
 }
 
 interface CommuneInfo {
+  name: string | null;
   centroid: [number, number];
   weight: number;
 }
@@ -72,16 +81,56 @@ function trimOrNull(s: string): string | null {
   return t.length > 0 ? t : null;
 }
 
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[-'’]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * If the AOP name contains the full name of one of its member communes as a
+ * complete word, return that commune's centroid. When several match (e.g. an
+ * AOP that names two communes), pick the longest commune name — the more
+ * specific match. Returns null if no commune name appears in the AOP name.
+ */
+function findPinpointCentroid(
+  aopName: string,
+  memberCommunes: Set<string>,
+  communeByCode: Map<string, CommuneInfo>,
+): [number, number] | null {
+  const aopNorm = ' ' + normalizeForMatch(aopName) + ' ';
+  let bestCentroid: [number, number] | null = null;
+  let bestLen = 0;
+  for (const code of memberCommunes) {
+    const info = communeByCode.get(code);
+    if (!info?.name) continue;
+    const nameNorm = normalizeForMatch(info.name);
+    if (nameNorm.length < 4) continue;
+    if (aopNorm.includes(' ' + nameNorm + ' ') && nameNorm.length > bestLen) {
+      bestCentroid = info.centroid;
+      bestLen = nameNorm.length;
+    }
+  }
+  return bestCentroid;
+}
+
 async function main(): Promise<void> {
-  const [communesText, produitsText, centroidsJson] = await Promise.all([
-    loadSource(SOURCES.communesAires, CACHE_DIR),
-    loadSource(SOURCES.airesProduits, CACHE_DIR),
-    loadSource(SOURCES.communesCentroids, CACHE_DIR),
-  ]);
+  const [communesText, communesIgText, produitsText, centroidsJson] =
+    await Promise.all([
+      loadSource(SOURCES.communesAires, CACHE_DIR),
+      loadSource(SOURCES.communesAiresIg, CACHE_DIR),
+      loadSource(SOURCES.airesProduits, CACHE_DIR),
+      loadSource(SOURCES.communesCentroids, CACHE_DIR),
+    ]);
 
   const communeByCode = new Map<string, CommuneInfo>();
   for (const c of JSON.parse(centroidsJson) as CommuneFeature[]) {
     communeByCode.set(c.code, {
+      name: c.nom?.trim() ?? null,
       centroid: c.centre.coordinates,
       weight: c.surface && c.surface > 0 ? c.surface : 1,
     });
@@ -116,33 +165,45 @@ async function main(): Promise<void> {
     if (aire) aire.products = [...set].sort((a, b) => a.localeCompare(b, 'fr'));
   }
 
-  // communes-aires.csv: CI;Département;Commune;Art;Aire géographique;IDA
-  const communesByIda = new Map<number, string[]>();
+  // Two complementary commune-area files: AOP/AOC areas in one, IGP/IG areas
+  // in the other. Different column orders — normalise via field accessors.
+  const communesByIda = new Map<number, Set<string>>();
+  function addCommune(ida: number, ci: string): void {
+    if (!ci || !Number.isFinite(ida)) return;
+    let set = communesByIda.get(ida);
+    if (!set) {
+      set = new Set();
+      communesByIda.set(ida, set);
+    }
+    set.add(ci);
+  }
+
+  // communes-aires.csv (AOP/AOC): CI;Département;Commune;Art;Aire géographique;IDA
   for (const row of parseCSV(communesText).slice(1)) {
     if (row.length < 6) continue;
-    const ci = row[0].trim();
-    const ida = Number(row[5]);
-    if (!ci || !Number.isFinite(ida)) continue;
-    let arr = communesByIda.get(ida);
-    if (!arr) {
-      arr = [];
-      communesByIda.set(ida, arr);
-    }
-    arr.push(ci);
+    addCommune(Number(row[5]), row[0].trim());
+  }
+
+  // communes-aires-ig.csv (IGP/IG): Signe UE;IDA;Date MAJ;Aire;CI;Dép;Commune;Art;Actual
+  for (const row of parseCSV(communesIgText).slice(1)) {
+    if (row.length < 5) continue;
+    addCommune(Number(row[1]), row[4].trim());
   }
 
   const result: AopOutput[] = [];
   let aireMissing = 0;
   let communeMissing = 0;
   let centroidless = 0;
+  let pinpointed = 0;
   for (const [ida, communes] of communesByIda) {
     const aire = aireById.get(ida);
     if (!aire) {
       aireMissing++;
       continue;
     }
-    // Surface-weighted centroid: a tiny urban commune shouldn't pull the
-    // marker as much as a vast rural one in the same AOP.
+
+    // Surface-weighted fallback centroid: a tiny urban commune shouldn't pull
+    // the marker as much as a vast rural one in the same AOP.
     let sumLng = 0;
     let sumLat = 0;
     let sumWeight = 0;
@@ -163,14 +224,25 @@ async function main(): Promise<void> {
       centroidless++;
       continue;
     }
+
+    // Prefer the eponymous commune when one exists in the AOP — Rivesaltes
+    // AOP should pin to the commune Rivesaltes, not to the surface-weighted
+    // centroid of the wider appellation.
+    const pinpoint = findPinpointCentroid(aire.name, communes, communeByCode);
+    if (pinpoint) pinpointed++;
+    const centroid: [number, number] = pinpoint ?? [
+      sumLng / sumWeight,
+      sumLat / sumWeight,
+    ];
+
     result.push({
       ida,
       name: aire.name,
       signeUE: aire.signeUE,
       signeFR: aire.signeFR,
       products: aire.products,
-      communeCount: communes.length,
-      centroid: [sumLng / sumWeight, sumLat / sumWeight],
+      communeCount: communes.size,
+      centroid,
     });
   }
 
@@ -182,6 +254,9 @@ async function main(): Promise<void> {
   const sizeKB = ((await stat(OUT_PATH)).size / 1024).toFixed(1);
   console.log(
     `\nWrote ${path.relative(ROOT, OUT_PATH)} (${result.length} AOPs, ${sizeKB} KB)`,
+  );
+  console.log(
+    `  · ${pinpointed} pinned to an eponymous commune; ${result.length - pinpointed} fell back to surface-weighted centroid`,
   );
   if (aireMissing > 0)
     console.log(
