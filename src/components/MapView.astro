@@ -160,18 +160,29 @@ const t = ui[lang];
       const productLabel =
         count === 1 ? t['aop.product.one'] : t['aop.product.other'];
       const sign = aop.signeUE?.trim() ?? '';
+      // count === 1 ⇒ the single product repeats the AOP name; skip the
+      // disclosure to avoid a meaningless one-item expand.
+      const productsBlock =
+        count > 1
+          ? `<details class="aop-popup__products">
+              <summary><span class="aop-popup__count">${count} ${escapeHtml(productLabel)}</span></summary>
+              <ul>${aop.products.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
+            </details>`
+          : `<div class="aop-popup__count">${count} ${escapeHtml(productLabel)}</div>`;
       const html = `
         <div class="aop-popup">
           <strong>${escapeHtml(aop.name)}</strong>
           ${sign ? `<div class="aop-popup__sign">${escapeHtml(sign)}</div>` : ''}
-          <div class="aop-popup__count">${count} ${productLabel}</div>
+          ${productsBlock}
         </div>
       `;
       const marker = L.marker([lat, lng], {
         icon: aopIcon,
         title: aop.name,
         alt: aop.name,
-      }).bindPopup(html);
+        // Give product names room so "Rivesaltes ambré hors d'âge" stays on
+        // one or two lines instead of wrapping into a narrow column.
+      }).bindPopup(html, { minWidth: 240, maxWidth: 280 });
       entries.push({
         marker,
         type: classifyAop(aop.signeUE),
@@ -266,12 +277,22 @@ const t = ui[lang];
 
   /* Inset Leaflet's corner controls so they clear the rounded card edges
      and the floating brand/nav cards. */
-  .leaflet-top { top: 0.875rem; }
-  .leaflet-bottom { bottom: 0.875rem; }
-  .leaflet-left { left: 0.875rem; }
-  .leaflet-right { right: 0.875rem; }
+  .leaflet-top {
+    top: 0.875rem;
+  }
+  .leaflet-bottom {
+    bottom: 0.875rem;
+  }
+  .leaflet-left {
+    left: 0.875rem;
+  }
+  .leaflet-right {
+    right: 0.875rem;
+  }
   /* Push zoom controls down so they clear the brand card overlay. */
-  .leaflet-top.leaflet-left { top: 4.25rem; }
+  .leaflet-top.leaflet-left {
+    top: 4.25rem;
+  }
 
   .leaflet-control-zoom {
     border: 1px solid var(--glass-border) !important;
@@ -304,6 +325,64 @@ const t = ui[lang];
   .aop-popup__count {
     margin-top: 0.25rem;
     font-size: 0.875rem;
+  }
+  .aop-popup__products {
+    margin-top: 0.25rem;
+  }
+  .aop-popup__products > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.25rem;
+    margin: -0.125rem -0.25rem;
+    border-radius: 4px;
+    color: var(--color-text);
+  }
+  .aop-popup__products > summary::-webkit-details-marker {
+    display: none;
+  }
+  .aop-popup__products > summary::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid var(--color-text-muted);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    transition: transform 0.15s ease;
+  }
+  .aop-popup__products[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .aop-popup__products > summary:hover {
+    background: rgba(112, 122, 50, 0.08);
+  }
+  .aop-popup__products > summary:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  .aop-popup__products .aop-popup__count {
+    margin: 0;
+  }
+  .aop-popup__products ul {
+    margin: 0.5rem 0 0;
+    padding: 0.5rem 0 0;
+    list-style: none;
+    max-height: 14rem;
+    overflow-y: auto;
+    border-top: 1px solid var(--glass-border);
+  }
+  .aop-popup__products li {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    padding: 0.125rem 0;
+    color: var(--color-text);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aop-popup__products > summary::before {
+      transition: none;
+    }
   }
 
   .aop-marker {
