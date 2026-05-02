@@ -1,0 +1,267 @@
+---
+import { ui, type Lang } from '../i18n/ui';
+
+const lang = (Astro.currentLocale ?? 'fr') as Lang;
+const t = ui[lang];
+---
+
+<button
+  type="button"
+  id="intro-toggle"
+  class="intro-toggle"
+  aria-label={t['intro.toggle']}
+  aria-haspopup="dialog"
+  aria-controls="intro-dialog"
+>
+  ?
+</button>
+
+<dialog
+  id="intro-dialog"
+  class="intro-dialog"
+  aria-labelledby="intro-title"
+>
+  <form method="dialog" class="intro-content">
+    <header class="intro-header">
+      <h2 id="intro-title">{t['intro.title']}</h2>
+      <button
+        type="submit"
+        class="intro-close"
+        aria-label={t['intro.close']}
+        value="close"
+      >
+        ×
+      </button>
+    </header>
+
+    <p class="intro-lead">{t['intro.lead']}</p>
+
+    <ul class="intro-legend">
+      <li>
+        <svg
+          class="intro-marker intro-marker--pin"
+          viewBox="0 0 24 36"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 0 C5 0 0 5 0 12 C0 22 12 36 12 36 C12 36 24 22 24 12 C24 5 19 0 12 0 Z"
+            fill="#2A81CB"
+          ></path>
+          <circle cx="12" cy="12" r="4" fill="white"></circle>
+        </svg>
+        <div>
+          <strong>{t['intro.aop.title']}</strong>
+          <p>{t['intro.aop.description']}</p>
+        </div>
+      </li>
+      <li>
+        <svg
+          class="intro-marker intro-marker--dot"
+          viewBox="0 0 22 22"
+          aria-hidden="true"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="9"
+            fill="#c0392b"
+            stroke="white"
+            stroke-width="2"></circle>
+        </svg>
+        <div>
+          <strong>{t['intro.dish.title']}</strong>
+          <p>{t['intro.dish.description']}</p>
+        </div>
+      </li>
+    </ul>
+
+    <p class="intro-usage">{t['intro.usage']}</p>
+
+    <button type="submit" class="intro-dismiss" value="dismiss">
+      {t['intro.dismiss']}
+    </button>
+  </form>
+</dialog>
+
+<script>
+  const STORAGE_KEY = 'terroir.intro.dismissed';
+
+  const dialog = document.getElementById('intro-dialog') as HTMLDialogElement;
+  const toggle = document.getElementById('intro-toggle') as HTMLButtonElement;
+
+  function rememberDismissal(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+    } catch {
+      // localStorage may be unavailable (private browsing, quota, etc.)
+    }
+  }
+
+  function hasBeenDismissed(): boolean {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  toggle.addEventListener('click', () => dialog.showModal());
+
+  // Any close path (× button, dismiss button, ESC, backdrop click) remembers.
+  dialog.addEventListener('close', rememberDismissal);
+
+  // Backdrop click: clicks outside the form land on the dialog element itself.
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  if (!hasBeenDismissed()) dialog.showModal();
+</script>
+
+<style is:global>
+  .intro-toggle {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+    right: 1rem;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #d0d0d0;
+    background: white;
+    color: #b85a30;
+    font: inherit;
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .intro-toggle:hover {
+    background: #faf3e7;
+  }
+  .intro-toggle:focus-visible {
+    outline: 2px solid #b85a30;
+    outline-offset: 2px;
+  }
+
+  .intro-dialog {
+    border: none;
+    padding: 0;
+    border-radius: 12px;
+    background: white;
+    color: #1a1a1a;
+    max-width: 28rem;
+    width: calc(100% - 2rem);
+    max-height: 90dvh;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+  .intro-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .intro-content {
+    margin: 0;
+    padding: 1.25rem 1.5rem 1.5rem;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .intro-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .intro-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  .intro-close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 6px;
+    color: inherit;
+  }
+  .intro-close:hover {
+    background: #f4f4f4;
+  }
+  .intro-close:focus-visible {
+    outline: 2px solid #b85a30;
+    outline-offset: 2px;
+  }
+
+  .intro-lead {
+    margin: 0 0 1rem;
+    line-height: 1.5;
+  }
+
+  .intro-legend {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .intro-legend li {
+    display: flex;
+    gap: 0.875rem;
+    align-items: flex-start;
+  }
+  .intro-legend strong {
+    display: block;
+    margin-bottom: 0.125rem;
+  }
+  .intro-legend p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #595959;
+    line-height: 1.4;
+  }
+  .intro-marker {
+    flex-shrink: 0;
+  }
+  .intro-marker--pin {
+    width: 24px;
+    height: 36px;
+    margin-top: 0.125rem;
+  }
+  .intro-marker--dot {
+    width: 22px;
+    height: 22px;
+    margin-top: 0.375rem;
+  }
+
+  .intro-usage {
+    font-size: 0.875rem;
+    color: #595959;
+    margin: 1rem 0 1.25rem;
+    line-height: 1.5;
+  }
+
+  .intro-dismiss {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    background: #b85a30;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .intro-dismiss:hover {
+    background: #a04d28;
+  }
+  .intro-dismiss:focus-visible {
+    outline: 2px solid #b85a30;
+    outline-offset: 2px;
+  }
+</style>

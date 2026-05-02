@@ -1,5 +1,6 @@
 ---
 import FilterPanel from '../../components/FilterPanel.astro';
+import IntroPanel from '../../components/IntroPanel.astro';
 import MapView from '../../components/MapView.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { ui } from '../../i18n/ui';
@@ -8,4 +9,5 @@ import { ui } from '../../i18n/ui';
 <BaseLayout title={ui.en['site.title']}>
   <MapView />
   <FilterPanel />
+  <IntroPanel />
 </BaseLayout>

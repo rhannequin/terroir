@@ -43,6 +43,20 @@ export const ui = {
     'filter.reset': 'Tout réinitialiser',
     'filter.results.one': '{count} résultat',
     'filter.results.other': '{count} résultats',
+    'intro.toggle': 'À propos',
+    'intro.title': 'À propos de Terroir',
+    'intro.close': 'Fermer',
+    'intro.lead':
+      'Une carte interactive des AOP, IGP et plats traditionnels français, situés dans la région dont ils proviennent.',
+    'intro.aop.title': 'AOP / IGP — désignations protégées',
+    'intro.aop.description':
+      "Aliments protégés par la loi en raison de leur lien avec un terroir précis. L'AOP exige toutes les étapes de production dans la zone ; l'IGP au moins une.",
+    'intro.dish.title': 'Plats traditionnels',
+    'intro.dish.description':
+      "Spécialités régionales placées sur leur lieu d'origine (commune, département ou région).",
+    'intro.usage':
+      'Cliquez sur un marqueur pour les détails. Utilisez le bouton de filtres pour affiner par type ou rechercher par nom.',
+    'intro.dismiss': "C'est compris",
   },
   en: {
     'site.title': 'Terroir',
@@ -76,6 +90,20 @@ export const ui = {
     'filter.reset': 'Reset all',
     'filter.results.one': '{count} result',
     'filter.results.other': '{count} results',
+    'intro.toggle': 'About',
+    'intro.title': 'About Terroir',
+    'intro.close': 'Close',
+    'intro.lead':
+      'An interactive map of French AOPs, IGPs and traditional dishes, placed in the region they come from.',
+    'intro.aop.title': 'AOP / IGP — protected designations',
+    'intro.aop.description':
+      'Foods protected by law for their link to a specific area. AOP requires all production steps in the area; IGP requires at least one.',
+    'intro.dish.title': 'Traditional dishes',
+    'intro.dish.description':
+      'Regional specialities placed at their origin (commune, department, or region).',
+    'intro.usage':
+      'Tap a marker for details. Use the filter button to narrow by type or search by name.',
+    'intro.dismiss': 'Got it',
   },
 } as const;
 
