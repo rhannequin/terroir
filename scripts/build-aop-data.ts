@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCSV } from './lib/csv';
 import { loadSource, type Source } from './lib/fetch-cache';
+import { findPinpointCentroid } from './lib/pinpoint';
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), '../..');
 const CACHE_DIR = path.join(ROOT, '.cache');
@@ -70,37 +71,6 @@ interface CommuneInfo {
 function trimOrNull(s: string): string | null {
   const t = s.trim();
   return t.length > 0 ? t : null;
-}
-
-function normalizeForMatch(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[-'’]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function findPinpointCentroid(
-  aopName: string,
-  memberCommunes: Set<string>,
-  communeByCode: Map<string, CommuneInfo>,
-): [number, number] | null {
-  const aopNorm = ' ' + normalizeForMatch(aopName) + ' ';
-  let bestCentroid: [number, number] | null = null;
-  let bestLen = 0;
-  for (const code of memberCommunes) {
-    const info = communeByCode.get(code);
-    if (!info?.name) continue;
-    const nameNorm = normalizeForMatch(info.name);
-    if (nameNorm.length < 4) continue;
-    if (aopNorm.includes(' ' + nameNorm + ' ') && nameNorm.length > bestLen) {
-      bestCentroid = info.centroid;
-      bestLen = nameNorm.length;
-    }
-  }
-  return bestCentroid;
 }
 
 async function main(): Promise<void> {

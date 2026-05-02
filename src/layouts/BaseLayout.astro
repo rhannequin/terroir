@@ -1,6 +1,6 @@
 ---
-import '@fontsource/playfair-display/400.css';
-import '@fontsource/playfair-display/700.css';
+import '@fontsource/playfair-display/latin-400.css';
+import '@fontsource/playfair-display/latin-700.css';
 
 import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
 import { htmlLang, languages, ui, type Lang } from '../i18n/ui';
@@ -32,6 +32,23 @@ const faviconUrl = `${baseNoSlash}/favicon.svg`;
 const appleTouchIconUrl = `${baseNoSlash}/apple-touch-icon.png`;
 const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_GB';
 const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
+
+const csp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
+const noscriptMessage =
+  lang === 'fr'
+    ? 'Cette carte interactive a besoin de JavaScript pour fonctionner.'
+    : 'This interactive map needs JavaScript to work.';
 ---
 
 <!doctype html>
@@ -39,6 +56,7 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#b85a30" />
@@ -48,6 +66,8 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
     <link rel="alternate" hreflang="fr" href={frHref} />
     <link rel="alternate" hreflang="en-GB" href={enHref} />
     <link rel="alternate" hreflang="x-default" href={frHref} />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Terroir" />
     <meta property="og:title" content={title} />
@@ -66,10 +86,7 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
     <meta name="twitter:image:alt" content={ogImageAlt} />
   </head>
   <body>
-    <div class="app">
-      <slot />
-    </div>
-    <div class="brand-card">
+    <header class="brand-card">
       <svg class="brand-card__mark" viewBox="0 0 64 64" aria-hidden="true">
         <path
           d="M32 4 L56 18 V46 L32 60 L8 46 V18 Z"
@@ -82,12 +99,18 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
           fill="#707a32"></path>
       </svg>
       <h1>{title}</h1>
-    </div>
+    </header>
     <nav class="nav-card" aria-label={languages[altLang]}>
       <a href={altHref} hreflang={htmlLang[altLang]} lang={htmlLang[altLang]}>
         {languages[altLang]}
       </a>
     </nav>
+    <noscript>
+      <p class="noscript-message">{noscriptMessage}</p>
+    </noscript>
+    <div class="app">
+      <slot />
+    </div>
     <style is:global>
       :root {
         --color-bg: #ffffff;
@@ -203,6 +226,21 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
       .nav-card a:focus-visible {
         outline: 2px solid var(--color-focus);
         outline-offset: 2px;
+      }
+
+      .noscript-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2000;
+        margin: 0;
+        max-width: min(90vw, 28rem);
+        padding: 1rem 1.25rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow-elevated);
+        text-align: center;
       }
     </style>
   </body>

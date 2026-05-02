@@ -1,5 +1,6 @@
 ---
 import { ui, type Lang } from '../i18n/ui';
+import { PIN_PATH, PIN_VIEWBOX, DOT_VIEWBOX } from '../lib/markers';
 
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const t = ui[lang];
@@ -55,14 +56,11 @@ const t = ui[lang];
       <input type="checkbox" data-type="aop" checked />
       <svg
         class="filter-marker filter-marker--pin"
-        viewBox="0 0 26 38"
+        viewBox={PIN_VIEWBOX}
         aria-hidden="true"
       >
-        <path
-          d="M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z"
-          fill="#707a32"
-          stroke="white"
-          stroke-width="1.5"></path>
+        <path d={PIN_PATH} fill="#707a32" stroke="white" stroke-width="1.5"
+        ></path>
         <circle cx="13" cy="13" r="4.5" fill="white"></circle>
       </svg>
       <span class="filter-checkbox__name">{t['filter.type.aop']}</span>
@@ -72,14 +70,11 @@ const t = ui[lang];
       <input type="checkbox" data-type="igp" checked />
       <svg
         class="filter-marker filter-marker--pin"
-        viewBox="0 0 26 38"
+        viewBox={PIN_VIEWBOX}
         aria-hidden="true"
       >
-        <path
-          d="M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z"
-          fill="#707a32"
-          stroke="white"
-          stroke-width="1.5"></path>
+        <path d={PIN_PATH} fill="#707a32" stroke="white" stroke-width="1.5"
+        ></path>
         <circle cx="13" cy="13" r="4.5" fill="white"></circle>
       </svg>
       <span class="filter-checkbox__name">{t['filter.type.igp']}</span>
@@ -89,7 +84,7 @@ const t = ui[lang];
       <input type="checkbox" data-type="dish" checked />
       <svg
         class="filter-marker filter-marker--dot"
-        viewBox="0 0 22 22"
+        viewBox={DOT_VIEWBOX}
         aria-hidden="true"
       >
         <circle
@@ -122,23 +117,11 @@ const t = ui[lang];
 </aside>
 
 <script>
-  import { ui, type Lang } from '../i18n/ui';
+  import { getClientI18n, pluralKey } from '../lib/i18n-client';
+  import { trapFocus } from '../lib/focus-trap';
+  import type { FilterApplied, FilterState, FilterType } from '../lib/types';
 
-  type FilterType = 'aop' | 'igp' | 'dish';
-  interface FilterState {
-    types: Set<FilterType>;
-    search: string;
-  }
-  interface FilterApplied {
-    count: number;
-    total: number;
-    byType: Record<FilterType, number>;
-  }
-
-  const lang: Lang = document.documentElement.lang.startsWith('fr')
-    ? 'fr'
-    : 'en';
-  const t = ui[lang];
+  const { t, numberFmt, pluralRules } = getClientI18n();
 
   const toggle = document.getElementById('filter-toggle') as HTMLButtonElement;
   const panel = document.getElementById('filter-panel') as HTMLElement;
@@ -156,9 +139,6 @@ const t = ui[lang];
     '.filter-toggle__count',
   ) as HTMLElement;
   const typeCountEls = panel.querySelectorAll<HTMLElement>('[data-count-for]');
-  const numberFormatter = new Intl.NumberFormat(
-    lang === 'fr' ? 'fr-FR' : 'en-GB',
-  );
 
   const ALL_TYPES: FilterType[] = ['aop', 'igp', 'dish'];
 
@@ -202,9 +182,12 @@ const t = ui[lang];
   });
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+    if (!panel.classList.contains('is-open')) return;
+    if (e.key === 'Escape') {
       closePanel();
+      return;
     }
+    trapFocus(panel, e);
   });
 
   let searchDebounce: ReturnType<typeof setTimeout> | undefined;
@@ -225,21 +208,17 @@ const t = ui[lang];
 
   window.addEventListener('filter:applied', (e: Event) => {
     const { count, total, byType } = (e as CustomEvent<FilterApplied>).detail;
-    const tmpl =
-      count === 1 ? t['filter.results.one'] : t['filter.results.other'];
-    resultsEl.textContent = tmpl.replace(
-      '{count}',
-      numberFormatter.format(count),
-    );
+    const tmpl = t[`filter.results.${pluralKey(pluralRules, count)}`];
+    resultsEl.textContent = tmpl.replace('{count}', numberFmt.format(count));
 
     for (const el of typeCountEls) {
       const type = el.dataset.countFor as FilterType;
-      el.textContent = numberFormatter.format(byType[type] ?? 0);
+      el.textContent = numberFmt.format(byType[type] ?? 0);
     }
 
     const state = readState();
     if (isFiltering(state) && count !== total) {
-      countBadge.textContent = numberFormatter.format(count);
+      countBadge.textContent = numberFmt.format(count);
       countBadge.hidden = false;
     } else {
       countBadge.hidden = true;

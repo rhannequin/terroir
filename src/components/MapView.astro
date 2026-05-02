@@ -8,13 +8,25 @@ const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const t = ui[lang];
 ---
 
-<main id="map" aria-label={t['map.label']}></main>
+<main id="map" aria-label={t['map.label']}>
+  <div class="map-loading" data-map-loading aria-hidden="true">
+    <span class="map-loading__spinner"></span>
+  </div>
+</main>
 <script>
   import L from 'leaflet';
   import 'leaflet.markercluster';
-  import { ui, type Lang } from '../i18n/ui';
-
-  type FilterType = 'aop' | 'igp' | 'dish';
+  import { getClientI18n } from '../lib/i18n-client';
+  import { escapeHtml, normalize } from '../lib/text';
+  import { haversineKm } from '../lib/distance';
+  import { classifyAop } from '../lib/aop';
+  import { PIN_PATH, PIN_VIEWBOX } from '../lib/markers';
+  import type {
+    FilterState,
+    FilterType,
+    LocateErrorCode,
+    NearbyItem,
+  } from '../lib/types';
 
   interface Aop {
     ida: number;
@@ -56,35 +68,26 @@ const t = ui[lang];
     lng: number;
   }
 
-  interface FilterState {
-    types: Set<FilterType>;
-    search: string;
-  }
-
-  interface NearbyItem {
-    id: string;
-    type: FilterType;
-    name: string;
-    sub: string;
-    distanceKm: number;
-  }
-
-  type LocateErrorCode = 'denied' | 'unavailable' | 'timeout' | 'unsupported';
-
-  const lang: Lang = document.documentElement.lang.startsWith('fr')
-    ? 'fr'
-    : 'en';
-  const t = ui[lang];
+  const { lang, t } = getClientI18n();
 
   const reducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
   ).matches;
+
+  const FRANCE_BOUNDS: L.LatLngBoundsLiteral = [
+    [40, -7],
+    [52, 12],
+  ];
 
   const map = L.map('map', {
     zoomAnimation: !reducedMotion,
     fadeAnimation: !reducedMotion,
     markerZoomAnimation: !reducedMotion,
     attributionControl: false,
+    minZoom: 5,
+    maxBounds: FRANCE_BOUNDS,
+    maxBoundsViscosity: 0.8,
+    worldCopyJump: false,
   }).setView([46.6, 2.5], 6);
   L.control.attribution({ position: 'bottomleft' }).addTo(map);
 
@@ -94,17 +97,13 @@ const t = ui[lang];
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
 
-  const escapeHtml = (s: string) =>
-    s
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-
-  const normalize = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const loadingEl = document.querySelector<HTMLElement>('[data-map-loading]');
+  function hideLoading(): void {
+    if (loadingEl) loadingEl.hidden = true;
+  }
 
   function showError(message: string, retryLabel: string): void {
+    hideLoading();
     const overlay = document.createElement('div');
     overlay.className = 'map-error';
     overlay.setAttribute('role', 'alert');
@@ -123,7 +122,7 @@ const t = ui[lang];
     iconSize: [26, 38],
     iconAnchor: [13, 36],
     popupAnchor: [0, -34],
-    html: `<svg viewBox="0 0 26 38" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z" fill="#707a32" stroke="white" stroke-width="1.5"/><circle cx="13" cy="13" r="4.5" fill="white"/></svg>`,
+    html: `<svg viewBox="${PIN_VIEWBOX}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="${PIN_PATH}" fill="#707a32" stroke="white" stroke-width="1.5"/><circle cx="13" cy="13" r="4.5" fill="white"/></svg>`,
   });
 
   const dishIcon = L.divIcon({
@@ -142,42 +141,23 @@ const t = ui[lang];
   });
 
   const NEARBY_LIMIT = 15;
+  const FETCH_TIMEOUT_MS = 15000;
+  const ZOOM_TO_TARGET = 11;
+  const FLY_THRESHOLD_M = 5000;
 
-  function haversineKm(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number,
-  ): number {
-    const R = 6371;
-    const toRad = (x: number) => (x * Math.PI) / 180;
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLng / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(a));
-  }
-
-  function classifyAop(signe: string | null): FilterType {
-    const s = signe?.trim().toLowerCase() ?? '';
-    if (s === 'igp' || s === 'ig') return 'igp';
-    return 'aop';
+  async function fetchJson<T>(url: string): Promise<T> {
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`${url} HTTP ${res.status}`);
+    return res.json() as Promise<T>;
   }
 
   try {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-    const [aopsRes, dishesRes] = await Promise.all([
-      fetch(`${base}/data/aops.json`),
-      fetch(`${base}/data/dishes.json`),
-    ]);
-    if (!aopsRes.ok) throw new Error(`aops.json HTTP ${aopsRes.status}`);
-    if (!dishesRes.ok) throw new Error(`dishes.json HTTP ${dishesRes.status}`);
-    const [aops, dishes]: [Aop[], Dish[]] = await Promise.all([
-      aopsRes.json(),
-      dishesRes.json(),
+    const [aops, dishes] = await Promise.all([
+      fetchJson<Aop[]>(`${base}/data/aops.json`),
+      fetchJson<Dish[]>(`${base}/data/dishes.json`),
     ]);
 
     const aopCluster = L.markerClusterGroup({
@@ -418,12 +398,12 @@ const t = ui[lang];
         });
       };
       const currentZoom = map.getZoom();
-      const targetZoom = Math.max(currentZoom, 11);
-      if (
-        Math.abs(map.getCenter().lat - entry.lat) > 0.05 ||
-        Math.abs(map.getCenter().lng - entry.lng) > 0.05 ||
-        currentZoom < targetZoom
-      ) {
+      const targetZoom = Math.max(currentZoom, ZOOM_TO_TARGET);
+      const distanceMeters = map.distance(map.getCenter(), [
+        entry.lat,
+        entry.lng,
+      ]);
+      if (distanceMeters > FLY_THRESHOLD_M || currentZoom < targetZoom) {
         map.once('moveend', reveal);
         map.flyTo([entry.lat, entry.lng], targetZoom, {
           animate: !reducedMotion,
@@ -435,6 +415,8 @@ const t = ui[lang];
     });
 
     window.addEventListener('locate:recompute', emitNearby);
+
+    hideLoading();
   } catch (err) {
     console.error('Failed to load map data', err);
     showError(t['error.dataLoad'], t['error.retry']);
@@ -711,6 +693,40 @@ const t = ui[lang];
       height: 44px;
       line-height: 44px;
       font-size: 22px;
+    }
+  }
+
+  .map-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    background: rgba(207, 225, 240, 0.6);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  .map-loading[hidden] {
+    display: none;
+  }
+  .map-loading__spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(184, 90, 48, 0.25);
+    border-top-color: var(--color-terracotta);
+    border-radius: 50%;
+    animation: map-loading-spin 0.8s linear infinite;
+  }
+  @keyframes map-loading-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-loading__spinner {
+      animation: none;
     }
   }
 

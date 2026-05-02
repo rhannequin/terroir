@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://rhannequin.github.io',
@@ -10,4 +11,12 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: 'fr',
+        locales: { fr: 'fr', en: 'en-GB' },
+      },
+    }),
+  ],
 });

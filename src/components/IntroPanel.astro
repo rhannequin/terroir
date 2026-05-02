@@ -1,5 +1,6 @@
 ---
 import { ui, type Lang } from '../i18n/ui';
+import { PIN_PATH, PIN_VIEWBOX, DOT_VIEWBOX } from '../lib/markers';
 
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const t = ui[lang];
@@ -36,14 +37,11 @@ const t = ui[lang];
       <li>
         <svg
           class="intro-marker intro-marker--pin"
-          viewBox="0 0 26 38"
+          viewBox={PIN_VIEWBOX}
           aria-hidden="true"
         >
-          <path
-            d="M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z"
-            fill="#707a32"
-            stroke="white"
-            stroke-width="1.5"></path>
+          <path d={PIN_PATH} fill="#707a32" stroke="white" stroke-width="1.5"
+          ></path>
           <circle cx="13" cy="13" r="4.5" fill="white"></circle>
         </svg>
         <div>
@@ -54,7 +52,7 @@ const t = ui[lang];
       <li>
         <svg
           class="intro-marker intro-marker--dot"
-          viewBox="0 0 22 22"
+          viewBox={DOT_VIEWBOX}
           aria-hidden="true"
         >
           <circle

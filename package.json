@@ -16,6 +16,7 @@
     "build:data": "tsx scripts/build-aop-data.ts && tsx scripts/build-dishes-data.ts"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@fontsource/playfair-display": "^5.2.8",
     "astro": "^6.0.5",
     "leaflet": "^1.9.4",
