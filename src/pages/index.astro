@@ -1,13 +1,9 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MapView from '../components/MapView.astro';
+import { ui } from '../i18n/ui';
 ---
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Terroir</title>
-  </head>
-  <body>
-    <h1>Terroir</h1>
-  </body>
-</html>
+
+<BaseLayout title={ui.fr['site.title']}>
+  <MapView />
+</BaseLayout>
