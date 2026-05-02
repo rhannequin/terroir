@@ -82,7 +82,8 @@ const t = ui[lang];
   }
 
   try {
-    const dataUrl = `${import.meta.env.BASE_URL}data/aops.json`;
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const dataUrl = `${base}/data/aops.json`;
     const res = await fetch(dataUrl);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const aops: Aop[] = await res.json();
