@@ -1,18 +1,192 @@
-<div id="map"></div>
+---
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import { ui, type Lang } from '../i18n/ui';
+
+const lang = (Astro.currentLocale ?? 'fr') as Lang;
+const t = ui[lang];
+---
+
+<main id="map" aria-label={t['map.label']}></main>
 <script>
   import L from 'leaflet';
+  import 'leaflet.markercluster';
+  // Astro's image system rewrites `.png` imports to ImageMetadata objects
+  // ({ src, width, height }) — emit the assets, but feed Leaflet the .src
+  // strings so it doesn't stringify the object to "[object Object]".
+  import iconAsset from 'leaflet/dist/images/marker-icon.png';
+  import iconRetinaAsset from 'leaflet/dist/images/marker-icon-2x.png';
+  import shadowAsset from 'leaflet/dist/images/marker-shadow.png';
+  import { ui, type Lang } from '../i18n/ui';
 
-  const map = L.map('map').setView([46.6, 2.5], 6);
+  interface Aop {
+    ida: number;
+    name: string;
+    signeUE: string | null;
+    signeFR: string | null;
+    products: string[];
+    communeCount: number;
+    centroid: [number, number];
+  }
+
+  delete (
+    L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: unknown }
+  )._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconUrl: iconAsset.src,
+    iconRetinaUrl: iconRetinaAsset.src,
+    shadowUrl: shadowAsset.src,
+  });
+
+  const lang: Lang = document.documentElement.lang.startsWith('fr')
+    ? 'fr'
+    : 'en';
+  const t = ui[lang];
+
+  const reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+
+  const map = L.map('map', {
+    zoomAnimation: !reducedMotion,
+    fadeAnimation: !reducedMotion,
+    markerZoomAnimation: !reducedMotion,
+  }).setView([46.6, 2.5], 6);
+
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
+
+  const escapeHtml = (s: string) =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+  function showError(message: string, retryLabel: string): void {
+    const overlay = document.createElement('div');
+    overlay.className = 'map-error';
+    overlay.setAttribute('role', 'alert');
+    overlay.innerHTML = `
+      <p>${escapeHtml(message)}</p>
+      <button type="button">${escapeHtml(retryLabel)}</button>
+    `;
+    overlay.querySelector('button')?.addEventListener('click', () => {
+      location.reload();
+    });
+    document.getElementById('map')?.appendChild(overlay);
+  }
+
+  try {
+    const dataUrl = `${import.meta.env.BASE_URL}data/aops.json`;
+    const res = await fetch(dataUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const aops: Aop[] = await res.json();
+
+    const cluster = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+    });
+
+    for (const aop of aops) {
+      const [lng, lat] = aop.centroid;
+      const count = aop.products.length;
+      const label = count === 1 ? t['aop.product.one'] : t['aop.product.other'];
+      const sign = aop.signeUE?.trim() ?? '';
+      const html = `
+        <div class="aop-popup">
+          <strong>${escapeHtml(aop.name)}</strong>
+          ${sign ? `<div class="aop-popup__sign">${escapeHtml(sign)}</div>` : ''}
+          <div class="aop-popup__count">${count} ${label}</div>
+        </div>
+      `;
+      L.marker([lat, lng], { title: aop.name, alt: aop.name })
+        .bindPopup(html)
+        .addTo(cluster);
+    }
+
+    map.addLayer(cluster);
+  } catch (err) {
+    console.error('Failed to load AOP data', err);
+    showError(t['error.dataLoad'], t['error.retry']);
+  }
 </script>
 <style is:global>
   #map {
     flex: 1;
     min-height: 0;
     width: 100%;
+    position: relative;
+  }
+  .aop-popup__sign {
+    font-size: 0.75rem;
+    color: #595959;
+    margin-top: 0.125rem;
+  }
+  .aop-popup__count {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  /* Visible focus ring on focusable Leaflet elements (markers, controls). */
+  .leaflet-marker-icon:focus-visible,
+  .leaflet-marker-icon:focus,
+  .leaflet-interactive:focus-visible,
+  .leaflet-control-zoom a:focus-visible {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+  }
+
+  /* Touch targets: Leaflet's default zoom buttons are ~30px, bump to 44px on
+     coarse pointers (phones, tablets). */
+  @media (pointer: coarse) {
+    .leaflet-touch .leaflet-bar a {
+      width: 44px;
+      height: 44px;
+      line-height: 44px;
+      font-size: 22px;
+    }
+  }
+
+  .map-error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: white;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    max-width: min(90vw, 24rem);
+    text-align: center;
+  }
+  .map-error p {
+    margin: 0 0 0.75rem;
+  }
+  .map-error button {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #005fcc;
+    background: #005fcc;
+    color: white;
+    border-radius: 6px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .map-error button:focus-visible {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaflet-fade-anim .leaflet-tile,
+    .leaflet-zoom-anim .leaflet-zoom-animated {
+      transition: none !important;
+    }
   }
 </style>
