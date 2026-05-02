@@ -1,7 +1,4 @@
-/**
- * Builds public/data/dishes.json from the curated list in scripts/data/dishes.ts
- * + commune/department/region centroids derived from geo.api.gouv.fr.
- */
+// Builds public/data/dishes.json from scripts/data/dishes.ts + geo.api.gouv.fr.
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,7 +23,6 @@ interface DishOutput {
   description: { fr: string; en: string };
   category: Dish['category'];
   region: string;
-  /** Resolution used to compute the centroid; useful for filters and debugging. */
   locationType: Dish['location']['type'];
   centroid: [number, number]; // [lng, lat]
 }

@@ -88,7 +88,7 @@ const t = ui[lang];
     try {
       localStorage.setItem(STORAGE_KEY, '1');
     } catch {
-      // localStorage may be unavailable (private browsing, quota, etc.)
+      /* ignore */
     }
   }
 
@@ -102,10 +102,8 @@ const t = ui[lang];
 
   toggle.addEventListener('click', () => dialog.showModal());
 
-  // Any close path (× button, dismiss button, ESC, backdrop click) remembers.
   dialog.addEventListener('close', rememberDismissal);
 
-  // Backdrop click: clicks outside the form land on the dialog element itself.
   dialog.addEventListener('click', (e) => {
     if (e.target === dialog) dialog.close();
   });

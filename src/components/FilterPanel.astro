@@ -185,7 +185,6 @@ const t = ui[lang];
     panel.classList.add('is-open');
     panel.removeAttribute('inert');
     toggle.setAttribute('aria-expanded', 'true');
-    // Move focus into the panel for keyboard users.
     closeBtn.focus();
   }
 
@@ -219,7 +218,6 @@ const t = ui[lang];
     emitChange();
   });
 
-  // MapView reports back how many markers matched after each filter pass.
   window.addEventListener('filter:applied', (e: Event) => {
     const { count, total, byType } = (e as CustomEvent<FilterApplied>).detail;
     const tmpl =
@@ -311,7 +309,6 @@ const t = ui[lang];
     overscroll-behavior: contain;
   }
 
-  /* Mobile / portrait: bottom sheet */
   @media (max-width: 768px) {
     .filter-panel {
       left: 0.5rem;
@@ -327,7 +324,6 @@ const t = ui[lang];
     }
   }
 
-  /* Tablet & up: side drawer */
   @media (min-width: 769px) {
     .filter-panel {
       top: 0.75rem;

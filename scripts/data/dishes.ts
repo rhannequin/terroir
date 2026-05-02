@@ -16,22 +16,11 @@ export interface Dish {
   name: { fr: string; en: string };
   description: { fr: string; en: string };
   category: DishCategory;
-  region: string; // human-readable, French label (display only)
+  region: string;
   location: DishLocation;
 }
 
-/**
- * Hand-curated French dishes. For each one, the location is picked at the
- * smallest meaningful scale: a specific commune when the dish is tied to a
- * city (Bouillabaisse → Marseille), a département for a départemental dish
- * (Tartiflette → Haute-Savoie), a région for a broader culinary tradition
- * (Crêpe bretonne → Bretagne), or a bespoke `area` with a hand-set centroid
- * when the territory doesn't match an admin boundary (Aubrac, Pays Basque,
- * Périgord). The centroid in `public/data/dishes.json` is resolved at build
- * time by `scripts/build-dishes-data.ts`.
- */
 export const dishes: Dish[] = [
-  // ---------------- Provence / Côte d'Azur ----------------
   {
     id: 'bouillabaisse',
     name: { fr: 'Bouillabaisse', en: 'Bouillabaisse' },
@@ -165,7 +154,6 @@ export const dishes: Dish[] = [
     location: { type: 'commune', insee: '26198' },
   },
 
-  // ---------------- Languedoc / Occitanie ----------------
   {
     id: 'cassoulet',
     name: { fr: 'Cassoulet', en: 'Cassoulet' },
@@ -222,7 +210,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Camargue', centroid: [4.5, 43.55] },
   },
 
-  // ---------------- Auvergne / Aubrac ----------------
   {
     id: 'aligot',
     name: { fr: 'Aligot', en: 'Aligot' },
@@ -268,7 +255,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Auvergne', centroid: [3.0, 45.5] },
   },
 
-  // ---------------- Sud-Ouest / Pays Basque / Béarn ----------------
   {
     id: 'foie-gras',
     name: { fr: 'Foie gras', en: 'Foie gras' },
@@ -380,7 +366,6 @@ export const dishes: Dish[] = [
     location: { type: 'department', code: '40' },
   },
 
-  // ---------------- Bourgogne ----------------
   {
     id: 'boeuf-bourguignon',
     name: { fr: 'Bœuf bourguignon', en: 'Beef bourguignon' },
@@ -470,7 +455,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Bourgogne', centroid: [4.6, 47.2] },
   },
 
-  // ---------------- Lyon ----------------
   {
     id: 'quenelle-de-brochet',
     name: { fr: 'Quenelle de brochet', en: 'Pike quenelle' },
@@ -538,7 +522,6 @@ export const dishes: Dish[] = [
     location: { type: 'commune', insee: '69123' },
   },
 
-  // ---------------- Savoie / Alpes ----------------
   {
     id: 'fondue-savoyarde',
     name: { fr: 'Fondue savoyarde', en: 'Savoyarde fondue' },
@@ -606,7 +589,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Dauphiné', centroid: [5.7, 45.1] },
   },
 
-  // ---------------- Alsace ----------------
   {
     id: 'choucroute-alsacienne',
     name: { fr: 'Choucroute alsacienne', en: 'Alsatian choucroute' },
@@ -685,7 +667,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
   },
 
-  // ---------------- Lorraine ----------------
   {
     id: 'quiche-lorraine',
     name: { fr: 'Quiche lorraine', en: 'Quiche lorraine' },
@@ -742,7 +723,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Lorraine', centroid: [6.2, 48.7] },
   },
 
-  // ---------------- Bretagne ----------------
   {
     id: 'crepe-bretonne',
     name: { fr: 'Crêpe bretonne', en: 'Breton crêpe' },
@@ -832,7 +812,6 @@ export const dishes: Dish[] = [
     location: { type: 'region', code: '53' },
   },
 
-  // ---------------- Normandie ----------------
   {
     id: 'tripes-mode-de-caen',
     name: { fr: 'Tripes à la mode de Caen', en: 'Tripes à la mode de Caen' },
@@ -889,7 +868,6 @@ export const dishes: Dish[] = [
     location: { type: 'region', code: '28' },
   },
 
-  // ---------------- Centre-Val de Loire / Pays de la Loire ----------------
   {
     id: 'tarte-tatin',
     name: { fr: 'Tarte Tatin', en: 'Tarte Tatin' },
@@ -924,7 +902,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Touraine', centroid: [0.7, 47.4] },
   },
 
-  // ---------------- Île-de-France / Paris ----------------
   {
     id: 'paris-brest',
     name: { fr: 'Paris-Brest', en: 'Paris-Brest' },
@@ -1058,7 +1035,6 @@ export const dishes: Dish[] = [
     location: { type: 'region', code: '11' },
   },
 
-  // ---------------- Hauts-de-France / Flandres ----------------
   {
     id: 'carbonade-flamande',
     name: { fr: 'Carbonade flamande', en: 'Flemish carbonnade' },
@@ -1126,7 +1102,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Picardie', centroid: [2.5, 49.9] },
   },
 
-  // ---------------- Charente / Atlantique ----------------
   {
     id: 'mouclade',
     name: { fr: 'Mouclade', en: 'Mouclade' },
@@ -1161,7 +1136,6 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Charentes', centroid: [-0.5, 45.7] },
   },
 
-  // ---------------- Corse ----------------
   {
     id: 'pulenta-corse',
     name: { fr: 'Pulenta', en: 'Pulenta' },

@@ -13,9 +13,6 @@ const { title } = Astro.props;
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const altLang: Lang = lang === 'fr' ? 'en' : 'fr';
 
-// Compute the path within the default locale so the language switcher and
-// hreflang links preserve the current page (works for `/`, `/en/`, future
-// `/dishes/`, `/en/dishes/`, etc.).
 const baseNoSlash = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pathInBase = Astro.url.pathname.startsWith(baseNoSlash)
   ? Astro.url.pathname.slice(baseNoSlash.length) || '/'

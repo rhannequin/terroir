@@ -8,11 +8,6 @@ export interface Source {
   encoding: 'utf-8' | 'latin1';
 }
 
-/**
- * Downloads `src.url` once into `cacheDir` and returns its UTF-8 text. Subsequent
- * runs read from the cache; remove the file (or `rm -rf` the dir) to force a
- * refresh after the upstream URL changes.
- */
 export async function loadSource(
   src: Source,
   cacheDir: string,

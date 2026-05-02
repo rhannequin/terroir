@@ -24,7 +24,7 @@ beforeAll(async () => {
 });
 
 describe('public/data/dishes.json', () => {
-  it('contains a curated number of dishes', () => {
+  it('contains a reasonable number of dishes', () => {
     expect(dishes.length).toBeGreaterThan(50);
     expect(dishes.length).toBeLessThan(500);
   });
@@ -69,7 +69,7 @@ describe('public/data/dishes.json', () => {
     }
   });
 
-  it('has the vast majority of dishes located inside metropolitan France', () => {
+  it('has most dishes located inside metropolitan France', () => {
     const inMetro = dishes.filter(
       ({ centroid: [lng, lat] }) =>
         lng >= -5.5 && lng <= 10 && lat >= 41 && lat <= 51.5,

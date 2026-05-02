@@ -63,8 +63,7 @@ describe('public/data/aops.json', () => {
     }
   });
 
-  it('has the vast majority of centroids inside metropolitan France', () => {
-    // Generous bbox covers Metropolitan France + Corsica; DOM-TOM fall outside.
+  it('has most centroids inside metropolitan France', () => {
     const inMetro = aops.filter(
       ({ centroid: [lng, lat] }) =>
         lng >= -5.5 && lng <= 10 && lat >= 41 && lat <= 51.5,

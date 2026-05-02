@@ -48,7 +48,6 @@ const t = ui[lang];
   interface Entry {
     marker: L.Marker;
     type: FilterType;
-    /** Lower-cased, accent-stripped haystack used for free-text search. */
     haystack: string;
   }
 
@@ -66,8 +65,6 @@ const t = ui[lang];
     '(prefers-reduced-motion: reduce)',
   ).matches;
 
-  // Move attribution to bottom-left so the floating filter button has the
-  // bottom-right corner to itself.
   const map = L.map('map', {
     zoomAnimation: !reducedMotion,
     fadeAnimation: !reducedMotion,
@@ -160,8 +157,6 @@ const t = ui[lang];
       const productLabel =
         count === 1 ? t['aop.product.one'] : t['aop.product.other'];
       const sign = aop.signeUE?.trim() ?? '';
-      // count === 1 ⇒ the single product repeats the AOP name; skip the
-      // disclosure to avoid a meaningless one-item expand.
       const productsBlock =
         count > 1
           ? `<details class="aop-popup__products">
@@ -180,8 +175,6 @@ const t = ui[lang];
         icon: aopIcon,
         title: aop.name,
         alt: aop.name,
-        // Give product names room so "Rivesaltes ambré hors d'âge" stays on
-        // one or two lines instead of wrapping into a narrow column.
       }).bindPopup(html, { minWidth: 240, maxWidth: 280 });
       entries.push({
         marker,
@@ -217,7 +210,6 @@ const t = ui[lang];
     }
 
     function applyFilter(state: FilterState): void {
-      // markercluster is fastest when we feed it a batch via addLayers().
       const aopMatches: L.Marker[] = [];
       const dishMatches: L.Marker[] = [];
       const byType: Record<FilterType, number> = {
@@ -249,7 +241,6 @@ const t = ui[lang];
       );
     }
 
-    // Initial render: everything visible.
     applyFilter({
       types: new Set<FilterType>(['aop', 'igp', 'dish']),
       search: '',
@@ -275,8 +266,6 @@ const t = ui[lang];
     background: #cfe1f0;
   }
 
-  /* Inset Leaflet's corner controls so they clear the rounded card edges
-     and the floating brand/nav cards. */
   .leaflet-top {
     top: 0.875rem;
   }
@@ -289,7 +278,6 @@ const t = ui[lang];
   .leaflet-right {
     right: 0.875rem;
   }
-  /* Push zoom controls down so they clear the brand card overlay. */
   .leaflet-top.leaflet-left {
     top: 4.25rem;
   }
@@ -434,8 +422,6 @@ const t = ui[lang];
     }
   }
 
-  /* Cluster markers — restyled in brand palette. Halo (outer) tints the
-     bg behind the count circle, core (inner div) holds the count. */
   .marker-cluster {
     background-clip: padding-box;
   }
@@ -485,7 +471,6 @@ const t = ui[lang];
     max-width: 260px;
   }
 
-  /* Polished popups — glass treatment matching the rest of the chrome. */
   .leaflet-popup-content-wrapper {
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -521,7 +506,6 @@ const t = ui[lang];
     color: var(--color-text);
   }
 
-  /* Visible focus ring on focusable Leaflet elements (markers, controls). */
   .leaflet-marker-icon:focus-visible,
   .leaflet-marker-icon:focus,
   .leaflet-interactive:focus-visible,
@@ -530,8 +514,6 @@ const t = ui[lang];
     outline-offset: 2px;
   }
 
-  /* Touch targets: Leaflet's default zoom buttons are ~30px, bump to 44px on
-     coarse pointers (phones, tablets). */
   @media (pointer: coarse) {
     .leaflet-touch .leaflet-bar a {
       width: 44px;

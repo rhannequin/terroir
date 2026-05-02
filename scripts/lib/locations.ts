@@ -1,16 +1,3 @@
-/**
- * Location types and centroid resolver shared by the AOP and dishes builders.
- *
- * Dishes can be tied to a specific commune (Bouillabaisse → Marseille), a whole
- * département (Tartiflette → Haute-Savoie), a région (Crêpe bretonne → Bretagne),
- * or a bespoke area that doesn't match any administrative boundary (Aubrac,
- * Pays Basque, Périgord). Pick the resolution that fits the dish.
- *
- * geo.api.gouv.fr only exposes `centre` on the /communes endpoint, so
- * département and région centroids are computed by surface-weighted averaging
- * of their member communes.
- */
-
 export type DishLocation =
   | { type: 'commune'; insee: string }
   | { type: 'department'; code: string }
@@ -44,7 +31,6 @@ interface CommuneFeature {
   centre?: { coordinates: [number, number] };
   codeDepartement?: string;
   codeRegion?: string;
-  /** Area in hectares; absent for some non-metropolitan/synthetic codes. */
   surface?: number;
 }
 
@@ -78,11 +64,6 @@ function finalise(
   return out;
 }
 
-/**
- * Builds commune, department and region centroid maps from the
- * geo.api.gouv.fr /communes payload. The URL must request `centre`,
- * `codeDepartement`, `codeRegion` (and ideally `surface`) fields.
- */
 export function buildCentroidMaps(rawJson: string): CentroidMaps {
   const features = JSON.parse(rawJson) as CommuneFeature[];
   const communes = new Map<string, [number, number]>();

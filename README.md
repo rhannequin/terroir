@@ -6,14 +6,14 @@ Live at https://rhannequin.github.io/terroir/.
 
 ## Tech stack
 
-- [Astro](https://astro.build/) — static site generator with built-in i18n routing
-- [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/) — interactive map
+- [Astro](https://astro.build/) for static generation and i18n routing
+- [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/) for the map
 - TypeScript, ESLint, Prettier, Vitest
-- Deployed to GitHub Pages via GitHub Actions
+- GitHub Pages via GitHub Actions
 
 ## Prerequisites
 
-- Node.js — version pinned in [`.tool-versions`](.tool-versions). Use [asdf](https://asdf-vm.com/) or [mise](https://mise.jdx.dev/) to install the matching version automatically.
+Node.js version pinned in [`.tool-versions`](.tool-versions). Use [asdf](https://asdf-vm.com/) or [mise](https://mise.jdx.dev/) to pick it up automatically.
 
 ## Commands
 
@@ -50,12 +50,12 @@ To add a new page in both locales, create `src/pages/foo.astro` and `src/pages/e
 
 ## Data pipeline
 
-`npm run build:data` regenerates two JSON files in [`public/data/`](public/data/):
+`npm run build:data` rebuilds two JSON files in [`public/data/`](public/data/):
 
-- [`aops.json`](public/data/aops.json), built by [`scripts/build-aop-data.ts`](scripts/build-aop-data.ts) from open INAO data on data.gouv.fr — [Aires et produits AOC/AOP/IGP](https://www.data.gouv.fr/datasets/aires-et-produits-aoc-aop-et-igp) (areas + products + sign), [Aires géographiques des AOC/AOP](https://www.data.gouv.fr/datasets/aires-geographiques-des-aoc-aop) (communes per AOP/AOC area) and [Aire géographique des IGP](https://www.data.gouv.fr/datasets/aire-geographique-des-igp) (communes per IGP/IG area) — all under Open Licence 2.0 / Etalab — joined to commune centroids from [`geo.api.gouv.fr/communes`](https://geo.api.gouv.fr/communes). Each marker position is the surface-weighted mean of its member communes' centroids.
-- [`dishes.json`](public/data/dishes.json), built by [`scripts/build-dishes-data.ts`](scripts/build-dishes-data.ts) from the hand-curated list in [`scripts/data/dishes.ts`](scripts/data/dishes.ts). Each dish points to a commune (Bouillabaisse → Marseille), a département (Tartiflette → Haute-Savoie), a région (Crêpe bretonne → Bretagne) or a bespoke area with a hand-set centroid (Aubrac, Pays Basque…). The build resolves the location to a centroid using the same `geo.api.gouv.fr` data.
+- [`aops.json`](public/data/aops.json), built by [`scripts/build-aop-data.ts`](scripts/build-aop-data.ts) from open INAO data on data.gouv.fr ([Aires et produits AOC/AOP/IGP](https://www.data.gouv.fr/datasets/aires-et-produits-aoc-aop-et-igp), [Aires géographiques des AOC/AOP](https://www.data.gouv.fr/datasets/aires-geographiques-des-aoc-aop), [Aire géographique des IGP](https://www.data.gouv.fr/datasets/aire-geographique-des-igp), all under Open Licence 2.0 / Etalab), joined to commune centroids from [`geo.api.gouv.fr/communes`](https://geo.api.gouv.fr/communes). Each marker position is the surface-weighted mean of its member communes' centroids.
+- [`dishes.json`](public/data/dishes.json), built by [`scripts/build-dishes-data.ts`](scripts/build-dishes-data.ts) from the list in [`scripts/data/dishes.ts`](scripts/data/dishes.ts). Each dish points to a commune, a département, a région, or a custom area with a centroid set by hand. The build resolves the location to a centroid using the same `geo.api.gouv.fr` data.
 
-Sources are cached in `.cache/` (gitignored) on first run. Re-run `npm run build:data` after editing `dishes.ts` or whenever INAO publishes updated CSVs, then commit the regenerated JSON.
+Sources are cached in `.cache/` (gitignored) on first run. Re-run `npm run build:data` after editing `dishes.ts` or when the INAO CSVs are updated, then commit the regenerated JSON.
 
 ## Deployment
 
