@@ -199,13 +199,16 @@ const t = ui[lang];
       const productLabel =
         count === 1 ? t['aop.product.one'] : t['aop.product.other'];
       const sign = aop.signeUE?.trim() ?? '';
+      const singleProduct = count === 1 ? aop.products[0] : null;
       const productsBlock =
         count > 1
           ? `<details class="aop-popup__products">
               <summary><span class="aop-popup__count">${count} ${escapeHtml(productLabel)}</span></summary>
               <ul>${aop.products.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
             </details>`
-          : `<div class="aop-popup__count">${count} ${escapeHtml(productLabel)}</div>`;
+          : singleProduct && singleProduct !== aop.name
+            ? `<div class="aop-popup__single">${escapeHtml(singleProduct)}</div>`
+            : '';
       const html = `
         <div class="aop-popup">
           <strong>${escapeHtml(aop.name)}</strong>
@@ -548,6 +551,11 @@ const t = ui[lang];
     font-size: 0.8125rem;
     line-height: 1.4;
     padding: 0.125rem 0;
+    color: var(--color-text);
+  }
+  .aop-popup__single {
+    font-size: 0.8125rem;
+    line-height: 1.4;
     color: var(--color-text);
   }
   @media (prefers-reduced-motion: reduce) {
