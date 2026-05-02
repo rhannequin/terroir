@@ -16,6 +16,7 @@
     "build:data": "tsx scripts/build-aop-data.ts && tsx scripts/build-dishes-data.ts"
   },
   "dependencies": {
+    "@fontsource/playfair-display": "^5.2.8",
     "astro": "^6.0.5",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3"

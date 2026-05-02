@@ -1,4 +1,7 @@
 ---
+import '@fontsource/playfair-display/400.css';
+import '@fontsource/playfair-display/700.css';
+
 import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
 import { htmlLang, languages, ui, type Lang } from '../i18n/ui';
 
@@ -66,16 +69,60 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
     <meta name="twitter:image:alt" content={ogImageAlt} />
   </head>
   <body>
-    <header>
+    <div class="app">
+      <slot />
+    </div>
+    <div class="brand-card">
+      <svg class="brand-card__mark" viewBox="0 0 64 64" aria-hidden="true">
+        <path
+          d="M32 4 L56 18 V46 L32 60 L8 46 V18 Z"
+          fill="#ffffff"
+          stroke="#b85a30"
+          stroke-width="3"
+          stroke-linejoin="round"></path>
+        <path
+          d="M12 16 L52 16 L52 26 L50 26 L50 22 L34 22 L34 47 L44 47 L44 51 L20 51 L20 47 L30 47 L30 22 L14 22 L14 26 L12 26 Z"
+          fill="#707a32"></path>
+      </svg>
       <h1>{title}</h1>
-      <nav>
-        <a href={altHref} hreflang={htmlLang[altLang]} lang={htmlLang[altLang]}>
-          {languages[altLang]}
-        </a>
-      </nav>
-    </header>
-    <slot />
+    </div>
+    <nav class="nav-card" aria-label={languages[altLang]}>
+      <a href={altHref} hreflang={htmlLang[altLang]} lang={htmlLang[altLang]}>
+        {languages[altLang]}
+      </a>
+    </nav>
     <style is:global>
+      :root {
+        --color-bg: #ffffff;
+        --color-cream: #faf3e7;
+        --color-cream-tint: #f6ecd9;
+        --color-text: #1a1a1a;
+        --color-text-muted: #595959;
+        --color-border: #e0e0e0;
+        --color-terracotta: #b85a30;
+        --color-terracotta-hover: #a04d28;
+        --color-olive: #707a32;
+        --color-olive-hover: #5e6a2a;
+        --color-focus: var(--color-terracotta);
+
+        --glass-bg: rgba(255, 255, 255, 0.72);
+        --glass-border: rgba(255, 255, 255, 0.55);
+        --glass-blur: blur(20px) saturate(1.6);
+
+        --shadow-soft:
+          0 1px 2px rgba(20, 12, 8, 0.04),
+          0 4px 12px rgba(20, 12, 8, 0.06);
+        --shadow-elevated:
+          0 1px 2px rgba(20, 12, 8, 0.05),
+          0 8px 24px rgba(20, 12, 8, 0.10),
+          0 24px 48px rgba(20, 12, 8, 0.08);
+
+        --font-display:
+          'Playfair Display', Georgia, 'Times New Roman', serif;
+        --font-body:
+          system-ui, -apple-system, sans-serif;
+      }
+
       *,
       *::before,
       *::after {
@@ -87,45 +134,82 @@ const ogLocaleAlt = lang === 'fr' ? 'en_GB' : 'fr_FR';
         padding: 0;
       }
       body {
-        display: flex;
-        flex-direction: column;
         height: 100dvh;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
+        background: var(--color-cream);
+        font-family: var(--font-body);
+        color: var(--color-text);
         overflow: hidden;
       }
-      header {
+      .app {
+        height: 100%;
+        padding: 0.75rem;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.25rem 0.75rem;
-        border-bottom: 1px solid #e0e0e0;
-        flex-shrink: 0;
+        flex-direction: column;
       }
-      header h1 {
-        margin: 0;
-        font-size: clamp(1rem, 4vw, 1.25rem);
-      }
-      header nav a {
+
+      .brand-card {
+        position: fixed;
+        top: 1.25rem;
+        left: 1.25rem;
+        z-index: 1000;
         display: inline-flex;
         align-items: center;
-        min-height: 44px;
-        padding: 0.5rem 0.75rem;
-        color: inherit;
+        gap: 0.625rem;
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: var(--glass-blur);
+        backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.4rem 1rem 0.4rem 0.5rem;
+        box-shadow: var(--shadow-soft);
+      }
+      .brand-card__mark {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+      }
+      .brand-card h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(1.125rem, 3.5vw, 1.375rem);
+        color: var(--color-terracotta);
+        letter-spacing: 0.005em;
+        line-height: 1.1;
+      }
+
+      .nav-card {
+        position: fixed;
+        top: 1.25rem;
+        right: 1.25rem;
+        z-index: 1000;
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: var(--glass-blur);
+        backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.25rem 0.5rem;
+        box-shadow: var(--shadow-soft);
+      }
+      .nav-card a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0.25rem 0.625rem;
+        color: var(--color-text);
         text-decoration: none;
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: background 0.15s ease;
       }
-      header nav a:hover,
-      header nav a:focus-visible {
-        text-decoration: underline;
+      .nav-card a:hover {
+        background: rgba(0, 0, 0, 0.05);
       }
-      header nav a:focus-visible {
-        outline: 2px solid #005fcc;
+      .nav-card a:focus-visible {
+        outline: 2px solid var(--color-focus);
         outline-offset: 2px;
-        border-radius: 2px;
       }
     </style>
   </body>

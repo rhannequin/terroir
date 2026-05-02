@@ -64,7 +64,7 @@ const t = ui[lang];
             cx="11"
             cy="11"
             r="9"
-            fill="#c0392b"
+            fill="#b85a30"
             stroke="white"
             stroke-width="2"></circle>
         </svg>
@@ -121,47 +121,64 @@ const t = ui[lang];
 <style is:global>
   .intro-toggle {
     position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
-    right: 1rem;
-    z-index: 999;
+    top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+    right: 1.25rem;
+    z-index: 1000;
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 1px solid #d0d0d0;
-    background: white;
-    color: #b85a30;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    color: var(--color-terracotta);
     font: inherit;
     font-size: 1.125rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform 0.15s ease,
+      background 0.15s ease,
+      box-shadow 0.15s ease;
   }
   .intro-toggle:hover {
-    background: #faf3e7;
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-elevated);
   }
   .intro-toggle:focus-visible {
-    outline: 2px solid #b85a30;
-    outline-offset: 2px;
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro-toggle {
+      transition: none;
+    }
   }
 
   .intro-dialog {
-    border: none;
+    border: 1px solid var(--glass-border);
     padding: 0;
-    border-radius: 12px;
-    background: white;
-    color: #1a1a1a;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    color: var(--color-text);
     max-width: 28rem;
     width: calc(100% - 2rem);
     max-height: 90dvh;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-elevated);
   }
   .intro-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(20, 12, 8, 0.4);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
 
   .intro-content {
     margin: 0;
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.5rem 1.75rem 1.75rem;
     max-height: 90dvh;
     overflow-y: auto;
   }
@@ -171,11 +188,14 @@ const t = ui[lang];
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
   .intro-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-terracotta);
   }
   .intro-close {
     width: 44px;
@@ -185,33 +205,35 @@ const t = ui[lang];
     font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
-    border-radius: 6px;
-    color: inherit;
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    transition: background 0.15s ease;
   }
   .intro-close:hover {
-    background: #f4f4f4;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--color-text);
   }
   .intro-close:focus-visible {
-    outline: 2px solid #b85a30;
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
   .intro-lead {
-    margin: 0 0 1rem;
-    line-height: 1.5;
+    margin: 0 0 1.25rem;
+    line-height: 1.55;
   }
 
   .intro-legend {
     list-style: none;
     padding: 0;
-    margin: 1rem 0;
+    margin: 1.25rem 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.125rem;
   }
   .intro-legend li {
     display: flex;
-    gap: 0.875rem;
+    gap: 1rem;
     align-items: flex-start;
   }
   .intro-legend strong {
@@ -221,15 +243,16 @@ const t = ui[lang];
   .intro-legend p {
     margin: 0;
     font-size: 0.875rem;
-    color: #595959;
-    line-height: 1.4;
+    color: var(--color-text-muted);
+    line-height: 1.5;
   }
   .intro-marker {
     flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
   }
   .intro-marker--pin {
-    width: 24px;
-    height: 36px;
+    width: 26px;
+    height: 38px;
     margin-top: 0.125rem;
   }
   .intro-marker--dot {
@@ -240,28 +263,42 @@ const t = ui[lang];
 
   .intro-usage {
     font-size: 0.875rem;
-    color: #595959;
-    margin: 1rem 0 1.25rem;
-    line-height: 1.5;
+    color: var(--color-text-muted);
+    margin: 1.25rem 0 1.5rem;
+    line-height: 1.55;
   }
 
   .intro-dismiss {
     width: 100%;
-    min-height: 44px;
-    padding: 0.5rem 1rem;
-    background: #b85a30;
+    min-height: 48px;
+    padding: 0.625rem 1.125rem;
+    background: var(--color-terracotta);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     font: inherit;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 1px 2px rgba(160, 77, 40, 0.4);
+    transition:
+      background 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
   }
   .intro-dismiss:hover {
-    background: #a04d28;
+    background: var(--color-terracotta-hover);
+    box-shadow:
+      0 1px 2px rgba(160, 77, 40, 0.4),
+      0 8px 20px rgba(160, 77, 40, 0.25);
+    transform: translateY(-1px);
   }
   .intro-dismiss:focus-visible {
-    outline: 2px solid #b85a30;
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro-dismiss {
+      transition: none;
+    }
   }
 </style>

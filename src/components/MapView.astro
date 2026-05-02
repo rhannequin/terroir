@@ -12,12 +12,6 @@ const t = ui[lang];
 <script>
   import L from 'leaflet';
   import 'leaflet.markercluster';
-  // Astro's image system rewrites `.png` imports to ImageMetadata objects
-  // ({ src, width, height }) — emit the assets, but feed Leaflet the .src
-  // strings so it doesn't stringify the object to "[object Object]".
-  import iconAsset from 'leaflet/dist/images/marker-icon.png';
-  import iconRetinaAsset from 'leaflet/dist/images/marker-icon-2x.png';
-  import shadowAsset from 'leaflet/dist/images/marker-shadow.png';
   import { ui, type Lang } from '../i18n/ui';
 
   type FilterType = 'aop' | 'igp' | 'dish';
@@ -62,15 +56,6 @@ const t = ui[lang];
     types: Set<FilterType>;
     search: string;
   }
-
-  delete (
-    L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: unknown }
-  )._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconUrl: iconAsset.src,
-    iconRetinaUrl: iconRetinaAsset.src,
-    shadowUrl: shadowAsset.src,
-  });
 
   const lang: Lang = document.documentElement.lang.startsWith('fr')
     ? 'fr'
@@ -120,6 +105,14 @@ const t = ui[lang];
     });
     document.getElementById('map')?.appendChild(overlay);
   }
+
+  const aopIcon = L.divIcon({
+    className: 'aop-marker',
+    iconSize: [26, 38],
+    iconAnchor: [13, 36],
+    popupAnchor: [0, -34],
+    html: `<svg viewBox="0 0 26 38" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13 1 C7 1 1 6 1 13 C1 23 13 37 13 37 C13 37 25 23 25 13 C25 6 19 1 13 1 Z" fill="#707a32" stroke="white" stroke-width="1.5"/><circle cx="13" cy="13" r="4.5" fill="white"/></svg>`,
+  });
 
   const dishIcon = L.divIcon({
     className: 'dish-marker',
@@ -175,6 +168,7 @@ const t = ui[lang];
         </div>
       `;
       const marker = L.marker([lat, lng], {
+        icon: aopIcon,
         title: aop.name,
         alt: aop.name,
       }).bindPopup(html);
@@ -215,10 +209,16 @@ const t = ui[lang];
       // markercluster is fastest when we feed it a batch via addLayers().
       const aopMatches: L.Marker[] = [];
       const dishMatches: L.Marker[] = [];
+      const byType: Record<FilterType, number> = {
+        aop: 0,
+        igp: 0,
+        dish: 0,
+      };
       const needle = normalize(state.search);
       for (const entry of entries) {
         if (!state.types.has(entry.type)) continue;
         if (needle && !entry.haystack.includes(needle)) continue;
+        byType[entry.type]++;
         if (entry.type === 'dish') dishMatches.push(entry.marker);
         else aopMatches.push(entry.marker);
       }
@@ -232,6 +232,7 @@ const t = ui[lang];
           detail: {
             count: aopMatches.length + dishMatches.length,
             total: entries.length,
+            byType,
           },
         }),
       );
@@ -257,15 +258,68 @@ const t = ui[lang];
     min-height: 0;
     width: 100%;
     position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-elevated);
+    background: #cfe1f0;
+  }
+
+  /* Inset Leaflet's corner controls so they clear the rounded card edges
+     and the floating brand/nav cards. */
+  .leaflet-top { top: 0.875rem; }
+  .leaflet-bottom { bottom: 0.875rem; }
+  .leaflet-left { left: 0.875rem; }
+  .leaflet-right { right: 0.875rem; }
+  /* Push zoom controls down so they clear the brand card overlay. */
+  .leaflet-top.leaflet-left { top: 4.25rem; }
+
+  .leaflet-control-zoom {
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft) !important;
+  }
+  .leaflet-control-zoom a {
+    background: var(--glass-bg) !important;
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    color: var(--color-text) !important;
+    border-bottom-color: var(--glass-border) !important;
+  }
+  .leaflet-control-zoom a:hover {
+    background: rgba(255, 255, 255, 0.92) !important;
+  }
+  .leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 6px;
+    padding: 0 0.5rem !important;
   }
   .aop-popup__sign {
     font-size: 0.75rem;
-    color: #595959;
+    color: var(--color-text-muted);
     margin-top: 0.125rem;
   }
   .aop-popup__count {
     margin-top: 0.25rem;
     font-size: 0.875rem;
+  }
+
+  .aop-marker {
+    background: transparent;
+    border: none;
+  }
+  .aop-marker svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28));
+    transition: transform 0.15s ease;
+    transform-origin: 50% 100%;
+  }
+  .aop-marker:hover svg {
+    transform: scale(1.18);
   }
 
   .dish-marker {
@@ -277,13 +331,72 @@ const t = ui[lang];
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #c0392b;
+    background: var(--color-terracotta);
     border: 2px solid white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease;
+  }
+  .dish-marker:hover .dish-marker__dot {
+    transform: scale(1.18);
+  }
+
+  .marker-cluster {
+    transition: transform 0.15s ease;
+  }
+  .marker-cluster:hover {
+    transform: scale(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aop-marker svg,
+    .dish-marker__dot,
+    .marker-cluster {
+      transition: none;
+    }
+  }
+
+  /* Cluster markers — restyled in brand palette. Halo (outer) tints the
+     bg behind the count circle, core (inner div) holds the count. */
+  .marker-cluster {
+    background-clip: padding-box;
+  }
+  .marker-cluster div {
+    width: 32px;
+    height: 32px;
+    margin-left: 4px;
+    margin-top: 4px;
+    border-radius: 50%;
+    color: white;
+    font: inherit;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  }
+  .marker-cluster span {
+    line-height: 32px;
+  }
+  .marker-cluster-small {
+    background: rgba(112, 122, 50, 0.28);
+  }
+  .marker-cluster-small div {
+    background: rgba(112, 122, 50, 0.95);
+  }
+  .marker-cluster-medium {
+    background: rgba(192, 121, 60, 0.3);
+  }
+  .marker-cluster-medium div {
+    background: rgba(192, 121, 60, 0.95);
+  }
+  .marker-cluster-large {
+    background: rgba(160, 77, 40, 0.32);
+  }
+  .marker-cluster-large div {
+    background: rgba(160, 77, 40, 0.97);
   }
   .dish-popup__meta {
     font-size: 0.75rem;
-    color: #595959;
+    color: var(--color-text-muted);
     margin-top: 0.125rem;
   }
   .dish-popup__description {
@@ -293,12 +406,48 @@ const t = ui[lang];
     max-width: 260px;
   }
 
+  /* Polished popups — glass treatment matching the rest of the chrome. */
+  .leaflet-popup-content-wrapper {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-elevated);
+    padding: 0;
+  }
+  .leaflet-popup-content {
+    margin: 0.875rem 1rem;
+    font-family: var(--font-body);
+    line-height: 1.4;
+  }
+  .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: none;
+  }
+  .leaflet-popup-close-button {
+    color: var(--color-text-muted) !important;
+    padding: 6px 8px !important;
+  }
+  .leaflet-popup-close-button:hover {
+    color: var(--color-text) !important;
+  }
+  .aop-popup strong,
+  .dish-popup strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+
   /* Visible focus ring on focusable Leaflet elements (markers, controls). */
   .leaflet-marker-icon:focus-visible,
   .leaflet-marker-icon:focus,
   .leaflet-interactive:focus-visible,
   .leaflet-control-zoom a:focus-visible {
-    outline: 2px solid #005fcc;
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
@@ -332,15 +481,15 @@ const t = ui[lang];
   .map-error button {
     min-height: 44px;
     padding: 0.5rem 1rem;
-    border: 1px solid #005fcc;
-    background: #005fcc;
+    border: 1px solid var(--color-terracotta);
+    background: var(--color-terracotta);
     color: white;
     border-radius: 6px;
     font: inherit;
     cursor: pointer;
   }
   .map-error button:focus-visible {
-    outline: 2px solid #005fcc;
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
