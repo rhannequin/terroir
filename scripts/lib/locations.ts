@@ -2,7 +2,10 @@ export type DishLocation =
   | { type: 'commune'; insee: string }
   | { type: 'department'; code: string }
   | { type: 'region'; code: string }
-  | { type: 'area'; name: string; centroid: [number, number] };
+  | { type: 'area'; name: string; centroid: [number, number] }
+  | { type: 'national' };
+
+const FRANCE_CENTROID: [number, number] = [2.4554, 46.6033];
 
 export interface CentroidMaps {
   communes: Map<string, [number, number]>;
@@ -23,6 +26,8 @@ export function resolveLocation(
       return maps.regions.get(loc.code) ?? null;
     case 'area':
       return loc.centroid;
+    case 'national':
+      return FRANCE_CENTROID;
   }
 }
 

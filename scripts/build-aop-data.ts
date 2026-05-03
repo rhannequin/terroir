@@ -16,19 +16,19 @@ const SOURCES = {
     name: 'communes-aires-aop',
     url: 'https://static.data.gouv.fr/resources/aires-geographiques-des-aoc-aop/20251009-122320/2025-10-09-comagri-communes-aires-ao.csv',
     file: 'communes-aires.csv',
-    encoding: 'latin1',
+    encoding: 'windows-1252',
   },
   communesAiresIg: {
     name: 'communes-aires-ig',
     url: 'https://static.data.gouv.fr/resources/aire-geographique-des-igp-et-des-ig/20251009-122625/2025-10-09-comagri-communes-aires-ig.csv',
     file: 'communes-aires-ig.csv',
-    encoding: 'latin1',
+    encoding: 'windows-1252',
   },
   airesProduits: {
     name: 'aires-produits',
     url: 'https://static.data.gouv.fr/resources/aires-et-produits-aoc-aop-et-igp/20251009-122906/2025-03-10-comagri-aires-produits.csv',
     file: 'aires-produits.csv',
-    encoding: 'latin1',
+    encoding: 'windows-1252',
   },
   communesCentroids: {
     name: 'communes-centroids',

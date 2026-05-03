@@ -119,10 +119,10 @@
     },
     "category": "main",
     "region": "France",
-    "locationType": "region",
+    "locationType": "national",
     "centroid": [
-      2.504317851448418,
-      48.70826433603931
+      2.4554,
+      46.6033
     ]
   },
   {
@@ -767,10 +767,10 @@
     },
     "category": "main",
     "region": "France",
-    "locationType": "region",
+    "locationType": "national",
     "centroid": [
-      2.504317851448418,
-      48.70826433603931
+      2.4554,
+      46.6033
     ]
   },
   {
@@ -1152,7 +1152,7 @@
     ]
   },
   {
-    "id": "munster-gratin",
+    "id": "pommes-de-terre-au-munster",
     "name": {
       "fr": "Pommes de terre au munster",
       "en": "Potatoes with Munster"
@@ -1181,10 +1181,10 @@
     },
     "category": "main",
     "region": "France",
-    "locationType": "region",
+    "locationType": "national",
     "centroid": [
-      2.504317851448418,
-      48.70826433603931
+      2.4554,
+      46.6033
     ]
   },
   {
@@ -1620,7 +1620,7 @@
     ]
   },
   {
-    "id": "mirabelle-tart",
+    "id": "tarte-aux-mirabelles",
     "name": {
       "fr": "Tarte aux mirabelles",
       "en": "Mirabelle plum tart"

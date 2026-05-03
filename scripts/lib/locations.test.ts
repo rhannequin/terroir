@@ -37,6 +37,12 @@ describe('resolveLocation', () => {
     expect(resolveLocation(loc, maps)).toEqual([2.85, 44.62]);
   });
 
+  it('returns the geographic centre of France for national dishes', () => {
+    expect(resolveLocation({ type: 'national' }, maps)).toEqual([
+      2.4554, 46.6033,
+    ]);
+  });
+
   it('returns null for unknown codes', () => {
     expect(
       resolveLocation({ type: 'commune', insee: '00000' }, maps),

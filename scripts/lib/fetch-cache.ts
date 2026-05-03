@@ -5,7 +5,7 @@ export interface Source {
   name: string;
   url: string;
   file: string;
-  encoding: 'utf-8' | 'latin1';
+  encoding: 'utf-8' | 'windows-1252';
 }
 
 export async function loadSource(
@@ -22,10 +22,7 @@ export async function loadSource(
     const res = await fetch(src.url);
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${src.url}`);
     const buf = Buffer.from(await res.arrayBuffer());
-    const text =
-      src.encoding === 'latin1'
-        ? buf.toString('latin1')
-        : buf.toString('utf-8');
+    const text = new TextDecoder(src.encoding, { fatal: false }).decode(buf);
     await writeFile(cachePath, text, 'utf-8');
   }
   return readFile(cachePath, 'utf-8');

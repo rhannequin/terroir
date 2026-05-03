@@ -43,7 +43,7 @@ describe('public/data/dishes.json', () => {
       );
       expect(typeof d.category, `${d.id}: category`).toBe('string');
       expect(typeof d.region, `${d.id}: region`).toBe('string');
-      expect(['commune', 'department', 'region', 'area']).toContain(
+      expect(['commune', 'department', 'region', 'area', 'national']).toContain(
         d.locationType,
       );
       expect(Array.isArray(d.centroid), `${d.id}: centroid array`).toBe(true);

@@ -656,7 +656,7 @@ export const dishes: Dish[] = [
     location: { type: 'area', name: 'Alsace', centroid: [7.5, 48.4] },
   },
   {
-    id: 'munster-gratin',
+    id: 'pommes-de-terre-au-munster',
     name: { fr: 'Pommes de terre au munster', en: 'Potatoes with Munster' },
     description: {
       fr: 'Pommes de terre en robe gratinées sous un munster fondant au cumin.',
@@ -701,7 +701,7 @@ export const dishes: Dish[] = [
     location: { type: 'department', code: '54' },
   },
   {
-    id: 'mirabelle-tart',
+    id: 'tarte-aux-mirabelles',
     name: { fr: 'Tarte aux mirabelles', en: 'Mirabelle plum tart' },
     description: {
       fr: 'Tarte de fin d’été aux petites prunes dorées de Lorraine.',
@@ -999,7 +999,7 @@ export const dishes: Dish[] = [
     },
     category: 'main',
     region: 'France',
-    location: { type: 'region', code: '11' },
+    location: { type: 'national' },
   },
   {
     id: 'blanquette-de-veau',
@@ -1010,7 +1010,7 @@ export const dishes: Dish[] = [
     },
     category: 'main',
     region: 'France',
-    location: { type: 'region', code: '11' },
+    location: { type: 'national' },
   },
   {
     id: 'soupe-a-l-oignon',
@@ -1032,7 +1032,7 @@ export const dishes: Dish[] = [
     },
     category: 'main',
     region: 'France',
-    location: { type: 'region', code: '11' },
+    location: { type: 'national' },
   },
 
   {

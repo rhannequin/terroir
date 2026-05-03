@@ -1,6 +1,7 @@
 export const PRODUCT_CATEGORIES = [
   'wine',
   'spirit',
+  'cider',
   'cheese',
   'meat',
   'charcuterie',
@@ -23,6 +24,7 @@ export function categorizeProduct(
 
   if (DAIRY.has(cat)) return 'cheese';
   if (cat === 'miel') return 'honey';
+  if (cat === 'cidre' || cat === 'poiré') return 'cider';
   if (cls.startsWith('vin')) return 'wine';
   if (cls.startsWith('eaux-de-vie')) return 'spirit';
   if (cls.startsWith('autres boissons alcoolis')) return 'spirit';

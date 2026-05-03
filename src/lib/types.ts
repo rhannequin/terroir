@@ -3,6 +3,7 @@ export type FilterType = 'aop' | 'igp' | 'dish';
 export const PRODUCT_CATEGORIES = [
   'wine',
   'spirit',
+  'cider',
   'cheese',
   'meat',
   'charcuterie',
