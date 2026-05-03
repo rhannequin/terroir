@@ -51,6 +51,23 @@
     ]
   },
   {
+    "id": "andouillette-de-troyes",
+    "name": {
+      "fr": "Andouillette de Troyes",
+      "en": "Andouillette de Troyes"
+    },
+    "description": {
+      "fr": "Andouillette « à la ficelle » : lanières de chaudin de porc assemblées à la main, grillée et servie à la moutarde.",
+      "en": "Hand-tied andouillette of pork chitterling cut into strips, grilled and served with mustard."
+    },
+    "category": "charcuterie",
+    "region": "Troyes",
+    "centroid": [
+      4.0761,
+      48.2924
+    ]
+  },
+  {
     "id": "axoa",
     "name": {
       "fr": "Axoa de veau",
@@ -102,6 +119,23 @@
     ]
   },
   {
+    "id": "biscuit-rose-de-reims",
+    "name": {
+      "fr": "Biscuit rose de Reims",
+      "en": "Pink biscuit of Reims"
+    },
+    "description": {
+      "fr": "Biscuit léger et sec teinté de rose, saupoudré de sucre glace, créé à Reims au XVIIᵉ siècle et traditionnellement trempé dans le champagne.",
+      "en": "Light dry pink-tinted biscuit dusted with icing sugar, created in Reims in the 17th century and traditionally dipped in champagne."
+    },
+    "category": "pastry",
+    "region": "Reims",
+    "centroid": [
+      4.0551,
+      49.2535
+    ]
+  },
+  {
     "id": "blanquette-de-veau",
     "name": {
       "fr": "Blanquette de veau",
@@ -133,6 +167,57 @@
     "centroid": [
       4.6,
       47.2
+    ]
+  },
+  {
+    "id": "boite-chaude-mont-dor",
+    "name": {
+      "fr": "Boîte chaude au Mont d’Or",
+      "en": "Baked Mont d’Or"
+    },
+    "description": {
+      "fr": "Mont d’Or AOP cuit dans sa boîte d’épicéa avec ail et vin blanc, servi à la cuillère sur des pommes de terre.",
+      "en": "PDO Mont d’Or baked in its spruce box with garlic and white wine, spooned over potatoes."
+    },
+    "category": "cheese-dish",
+    "region": "Haut-Doubs",
+    "centroid": [
+      6.35,
+      46.85
+    ]
+  },
+  {
+    "id": "boudin-blanc-de-rethel",
+    "name": {
+      "fr": "Boudin blanc de Rethel",
+      "en": "Boudin blanc de Rethel"
+    },
+    "description": {
+      "fr": "Boudin blanc IGP de pur porc, sans amidon ni œufs, fabriqué dans les Ardennes.",
+      "en": "PGI pure-pork white boudin from the Ardennes, made without starch or eggs."
+    },
+    "category": "charcuterie",
+    "region": "Ardennes",
+    "centroid": [
+      4.3814,
+      49.5147
+    ]
+  },
+  {
+    "id": "boudin-noir",
+    "name": {
+      "fr": "Boudin noir",
+      "en": "Boudin noir"
+    },
+    "description": {
+      "fr": "Boudin de sang de porc et oignons, poêlé et servi avec des pommes ou de la purée.",
+      "en": "Pork-blood and onion sausage, pan-fried and served with apples or mashed potato."
+    },
+    "category": "charcuterie",
+    "region": "France",
+    "centroid": [
+      2.4554,
+      46.6033
     ]
   },
   {
@@ -204,6 +289,23 @@
     ]
   },
   {
+    "id": "brioche-vendeenne",
+    "name": {
+      "fr": "Brioche vendéenne",
+      "en": "Vendée brioche"
+    },
+    "description": {
+      "fr": "Brioche tressée IGP au beurre, parfumée à la fleur d’oranger ou à l’eau-de-vie.",
+      "en": "PGI plaited butter brioche, scented with orange-blossom water or eau-de-vie."
+    },
+    "category": "pastry",
+    "region": "Vendée",
+    "centroid": [
+      -1.2981,
+      46.6743
+    ]
+  },
+  {
     "id": "calisson",
     "name": {
       "fr": "Calisson d’Aix",
@@ -218,6 +320,23 @@
     "centroid": [
       5.3879,
       43.536
+    ]
+  },
+  {
+    "id": "cancoillotte",
+    "name": {
+      "fr": "Cancoillotte",
+      "en": "Cancoillotte"
+    },
+    "description": {
+      "fr": "Fromage fondu coulant de Franche-Comté à base de metton, servi chaud sur pommes de terre ou pain.",
+      "en": "Runny melted Franche-Comté cheese made from metton, served warm over potatoes or bread."
+    },
+    "category": "cheese-dish",
+    "region": "Franche-Comté",
+    "centroid": [
+      6,
+      47.1
     ]
   },
   {
@@ -320,6 +439,23 @@
     "centroid": [
       9.1057,
       42.1486
+    ]
+  },
+  {
+    "id": "clafoutis",
+    "name": {
+      "fr": "Clafoutis aux cerises",
+      "en": "Cherry clafoutis"
+    },
+    "description": {
+      "fr": "Flan limousin aux cerises noires non dénoyautées, cuit dans un appareil à pâte sucrée.",
+      "en": "Limousin baked custard of unpitted black cherries set in a sweet batter."
+    },
+    "category": "dessert",
+    "region": "Limousin",
+    "centroid": [
+      1.5,
+      45.7
     ]
   },
   {
@@ -510,6 +646,40 @@
     ]
   },
   {
+    "id": "farci-poitevin",
+    "name": {
+      "fr": "Farci poitevin",
+      "en": "Farci poitevin"
+    },
+    "description": {
+      "fr": "Pain de légumes verts (chou, oseille, blettes, épinards) lié aux œufs et au lard, cuit enveloppé de feuilles de chou.",
+      "en": "Loaf of green vegetables (cabbage, sorrel, chard, spinach) bound with eggs and bacon, cooked wrapped in cabbage leaves."
+    },
+    "category": "main",
+    "region": "Poitou",
+    "centroid": [
+      0.3,
+      46.4
+    ]
+  },
+  {
+    "id": "fiadone",
+    "name": {
+      "fr": "Fiadone",
+      "en": "Fiadone"
+    },
+    "description": {
+      "fr": "Flan corse au brocciu frais, parfumé au zeste de citron et à l’eau-de-vie.",
+      "en": "Corsican baked cheesecake of fresh brocciu, scented with lemon zest and eau-de-vie."
+    },
+    "category": "dessert",
+    "region": "Corse",
+    "centroid": [
+      9.1057,
+      42.1486
+    ]
+  },
+  {
     "id": "ficelle-picarde",
     "name": {
       "fr": "Ficelle picarde",
@@ -524,6 +694,40 @@
     "centroid": [
       2.5,
       49.9
+    ]
+  },
+  {
+    "id": "figatellu",
+    "name": {
+      "fr": "Figatellu",
+      "en": "Figatellu"
+    },
+    "description": {
+      "fr": "Saucisse corse de foie de porc séchée ou fumée, grillée à la cheminée et servie avec de la pulenta.",
+      "en": "Corsican pork-liver sausage, dried or smoked, grilled over an open fire and served with pulenta."
+    },
+    "category": "charcuterie",
+    "region": "Corse",
+    "centroid": [
+      9.1057,
+      42.1486
+    ]
+  },
+  {
+    "id": "flamiche-au-maroilles",
+    "name": {
+      "fr": "Flamiche au maroilles",
+      "en": "Maroilles flamiche"
+    },
+    "description": {
+      "fr": "Tarte chaude de l’Avesnois à la pâte levée, garnie de maroilles AOP fondu lié à la crème.",
+      "en": "Warm Avesnois yeasted-dough tart topped with melted PDO Maroilles bound with cream."
+    },
+    "category": "cheese-dish",
+    "region": "Avesnois",
+    "centroid": [
+      3.7664,
+      50.1302
     ]
   },
   {
@@ -697,6 +901,23 @@
     ]
   },
   {
+    "id": "grand-aioli",
+    "name": {
+      "fr": "Grand aïoli",
+      "en": "Grand aïoli"
+    },
+    "description": {
+      "fr": "Plat-emblème provençal : morue dessalée pochée, légumes vapeur et œufs durs autour d’une mayonnaise à l’ail.",
+      "en": "Iconic Provençal feast of poached salt cod, steamed vegetables and hard-boiled eggs served around a garlic mayonnaise."
+    },
+    "category": "main",
+    "region": "Provence",
+    "centroid": [
+      5.5,
+      43.8
+    ]
+  },
+  {
     "id": "gratin-dauphinois",
     "name": {
       "fr": "Gratin dauphinois",
@@ -711,6 +932,23 @@
     "centroid": [
       5.7,
       45.1
+    ]
+  },
+  {
+    "id": "gratinee-lyonnaise",
+    "name": {
+      "fr": "Gratinée lyonnaise",
+      "en": "Gratinée lyonnaise"
+    },
+    "description": {
+      "fr": "Soupe à l’oignon enrichie d’une liaison œuf et porto, gratinée au gruyère.",
+      "en": "Onion soup enriched with an egg-and-port liaison and gratinated with Gruyère."
+    },
+    "category": "soup",
+    "region": "Lyon",
+    "centroid": [
+      4.8351,
+      45.758
     ]
   },
   {
@@ -850,6 +1088,23 @@
     ]
   },
   {
+    "id": "marmite-dieppoise",
+    "name": {
+      "fr": "Marmite dieppoise",
+      "en": "Marmite dieppoise"
+    },
+    "description": {
+      "fr": "Soupe-plat de poissons, moules et crevettes au cidre et à la crème, créée à Dieppe.",
+      "en": "Hearty stew of fish, mussels and prawns in cider and cream, created in Dieppe."
+    },
+    "category": "main",
+    "region": "Dieppe",
+    "centroid": [
+      1.0838,
+      49.9199
+    ]
+  },
+  {
     "id": "merveilleux",
     "name": {
       "fr": "Merveilleux",
@@ -898,6 +1153,23 @@
     "centroid": [
       2.347,
       48.8589
+    ]
+  },
+  {
+    "id": "mogettes-de-vendee",
+    "name": {
+      "fr": "Mogettes de Vendée",
+      "en": "Vendée mogettes"
+    },
+    "description": {
+      "fr": "Haricots blancs IGP de Vendée mijotés au bouillon, traditionnellement servis sur tartine beurrée avec du jambon.",
+      "en": "Stewed PGI Vendée white beans, traditionally served on buttered bread with ham."
+    },
+    "category": "side",
+    "region": "Vendée",
+    "centroid": [
+      -1.2981,
+      46.6743
     ]
   },
   {
@@ -1020,6 +1292,23 @@
     ]
   },
   {
+    "id": "pate-aux-pommes-de-terre",
+    "name": {
+      "fr": "Pâté aux pommes de terre",
+      "en": "Potato pie"
+    },
+    "description": {
+      "fr": "Tourte limousine de pommes de terre en lamelles, ail et persil à la crème, en pâte feuilletée dorée.",
+      "en": "Limousin pie of sliced potatoes, garlic and parsley with cream, baked in golden puff pastry."
+    },
+    "category": "main",
+    "region": "Limousin",
+    "centroid": [
+      1.5,
+      45.7
+    ]
+  },
+  {
     "id": "pate-en-croute",
     "name": {
       "fr": "Pâté en croûte",
@@ -1034,6 +1323,57 @@
     "centroid": [
       4.6,
       47.2
+    ]
+  },
+  {
+    "id": "petits-farcis",
+    "name": {
+      "fr": "Petits farcis niçois",
+      "en": "Niçois stuffed vegetables"
+    },
+    "description": {
+      "fr": "Légumes d’été — tomates, courgettes, oignons, poivrons — évidés, farcis à la viande et cuits au four.",
+      "en": "Summer vegetables — tomatoes, courgettes, onions, peppers — hollowed out, filled with a meat stuffing and baked."
+    },
+    "category": "main",
+    "region": "Nice",
+    "centroid": [
+      7.2528,
+      43.7032
+    ]
+  },
+  {
+    "id": "pieds-sainte-menehould",
+    "name": {
+      "fr": "Pieds de cochon à la Sainte-Menehould",
+      "en": "Pig’s trotters Sainte-Menehould"
+    },
+    "description": {
+      "fr": "Pieds de porc longuement pochés jusqu’à fondre, panés à la chapelure et grillés. Spécialité née au XVIIIᵉ siècle à Sainte-Menehould.",
+      "en": "Pig’s trotters poached until meltingly tender, breaded and grilled. An 18th-century speciality born in Sainte-Menehould."
+    },
+    "category": "main",
+    "region": "Champagne",
+    "centroid": [
+      4.9351,
+      49.0844
+    ]
+  },
+  {
+    "id": "pieds-paquets",
+    "name": {
+      "fr": "Pieds paquets marseillais",
+      "en": "Pieds paquets"
+    },
+    "description": {
+      "fr": "Pieds de mouton et paquets de tripes farcis au lard, ail et persil, mijotés au vin blanc et à la tomate.",
+      "en": "Sheep’s trotters and parcels of tripe stuffed with bacon, garlic and parsley, simmered in white wine and tomato."
+    },
+    "category": "main",
+    "region": "Marseille",
+    "centroid": [
+      5.3806,
+      43.2803
     ]
   },
   {
@@ -1105,6 +1445,23 @@
     ]
   },
   {
+    "id": "pommes-sarladaises",
+    "name": {
+      "fr": "Pommes sarladaises",
+      "en": "Pommes sarladaises"
+    },
+    "description": {
+      "fr": "Pommes de terre rissolées dans la graisse de canard avec ail et persil, accompagnement périgourdin.",
+      "en": "Potatoes pan-fried in duck fat with garlic and parsley, a Périgord side dish."
+    },
+    "category": "side",
+    "region": "Périgord",
+    "centroid": [
+      0.95,
+      45
+    ]
+  },
+  {
     "id": "pot-au-feu",
     "name": {
       "fr": "Pot-au-feu",
@@ -1170,6 +1527,40 @@
     "centroid": [
       2.7,
       50.7
+    ]
+  },
+  {
+    "id": "poule-au-pot",
+    "name": {
+      "fr": "Poule au pot",
+      "en": "Poule au pot"
+    },
+    "description": {
+      "fr": "Poule farcie pochée avec ses légumes, plat béarnais associé à Henri IV.",
+      "en": "Stuffed hen poached with its vegetables and broth — a Béarnese dish linked to Henri IV."
+    },
+    "category": "main",
+    "region": "Béarn",
+    "centroid": [
+      -0.4,
+      43.3
+    ]
+  },
+  {
+    "id": "poulet-au-vin-jaune",
+    "name": {
+      "fr": "Poulet au vin jaune et morilles",
+      "en": "Chicken with vin jaune and morels"
+    },
+    "description": {
+      "fr": "Volaille braisée à la crème, au vin jaune AOP du Jura et aux morilles séchées.",
+      "en": "Chicken braised with cream, PDO Jura vin jaune and dried morels."
+    },
+    "category": "main",
+    "region": "Jura",
+    "centroid": [
+      5.7,
+      46.7
     ]
   },
   {
@@ -1357,6 +1748,57 @@
     "centroid": [
       7.2528,
       43.7032
+    ]
+  },
+  {
+    "id": "saucisse-de-morteau",
+    "name": {
+      "fr": "Saucisse de Morteau",
+      "en": "Morteau sausage"
+    },
+    "description": {
+      "fr": "Grosse saucisse fumée IGP du Haut-Doubs, reconnaissable à sa cheville de bois, fumée au tuyé.",
+      "en": "Large PGI smoked sausage from the Haut-Doubs, identifiable by its wooden peg, smoked in a tuyé."
+    },
+    "category": "charcuterie",
+    "region": "Morteau",
+    "centroid": [
+      6.5891,
+      47.0643
+    ]
+  },
+  {
+    "id": "saucisse-de-toulouse",
+    "name": {
+      "fr": "Saucisse de Toulouse",
+      "en": "Toulouse sausage"
+    },
+    "description": {
+      "fr": "Grosse saucisse fraîche de pur porc en boyau naturel, grillée ou intégrée au cassoulet.",
+      "en": "Plump fresh pure-pork sausage in a natural casing, grilled or used in cassoulet."
+    },
+    "category": "charcuterie",
+    "region": "Toulouse",
+    "centroid": [
+      1.4328,
+      43.6007
+    ]
+  },
+  {
+    "id": "saucisson-brioche",
+    "name": {
+      "fr": "Saucisson brioché",
+      "en": "Saucisson brioché"
+    },
+    "description": {
+      "fr": "Saucisson lyonnais poché puis cuit en brioche, servi tiède en tranches épaisses.",
+      "en": "Lyonnaise sausage poached then baked inside a brioche, served warm in thick slices."
+    },
+    "category": "charcuterie",
+    "region": "Lyon",
+    "centroid": [
+      4.8351,
+      45.758
     ]
   },
   {
@@ -1680,6 +2122,74 @@
     "centroid": [
       3.6441,
       43.3844
+    ]
+  },
+  {
+    "id": "tourin",
+    "name": {
+      "fr": "Tourin à l’ail",
+      "en": "Tourin (garlic soup)"
+    },
+    "description": {
+      "fr": "Soupe à l’ail liée à l’œuf et au vinaigre, traditionnellement « chabrolée » d’un trait de vin rouge.",
+      "en": "Garlic soup thickened with egg and vinegar, traditionally finished with a splash of red wine in the bowl."
+    },
+    "category": "soup",
+    "region": "Sud-Ouest",
+    "centroid": [
+      0.5,
+      44.5
+    ]
+  },
+  {
+    "id": "tourte-de-blettes",
+    "name": {
+      "fr": "Tourte de blettes",
+      "en": "Swiss chard tourte"
+    },
+    "description": {
+      "fr": "Tourte niçoise sucrée aux blettes, pignons, raisins secs et pommes, sous une fine pâte saupoudrée de sucre glace.",
+      "en": "Sweet Niçois pie of Swiss chard, pine nuts, raisins and apple, in a thin pastry dusted with icing sugar."
+    },
+    "category": "pastry",
+    "region": "Nice",
+    "centroid": [
+      7.2528,
+      43.7032
+    ]
+  },
+  {
+    "id": "tourteau-fromager",
+    "name": {
+      "fr": "Tourteau fromager",
+      "en": "Tourteau fromager"
+    },
+    "description": {
+      "fr": "Gâteau poitevin au fromage de chèvre frais, à la croûte volontairement noircie et bombée.",
+      "en": "Poitou cake made with fresh goat cheese, with a deliberately blackened domed crust."
+    },
+    "category": "pastry",
+    "region": "Poitou",
+    "centroid": [
+      0.3,
+      46.4
+    ]
+  },
+  {
+    "id": "tourtiere-landaise",
+    "name": {
+      "fr": "Tourtière landaise",
+      "en": "Tourtière landaise"
+    },
+    "description": {
+      "fr": "Tourte de pâte étirée à la main en feuilles fines, garnie de pommes ou de pruneaux et parfumée à l’armagnac.",
+      "en": "Pie of paper-thin hand-stretched pastry filled with apple or prunes and scented with Armagnac."
+    },
+    "category": "pastry",
+    "region": "Landes",
+    "centroid": [
+      -0.7839,
+      43.9653
     ]
   },
   {
