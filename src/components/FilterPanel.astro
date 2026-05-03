@@ -74,7 +74,7 @@ const t = ui[lang];
         <circle cx="13" cy="13" r="4.5" fill="white"></circle>
       </svg>
       <span class="filter-checkbox__name">{t['filter.type.aop']}</span>
-      <span class="filter-checkbox__count" data-count-for="aop">—</span>
+      <span class="filter-checkbox__count" data-count-for="aop"></span>
     </label>
     <label class="filter-checkbox">
       <input type="checkbox" data-type="igp" checked />
@@ -88,7 +88,7 @@ const t = ui[lang];
         <circle cx="13" cy="13" r="4.5" fill="white"></circle>
       </svg>
       <span class="filter-checkbox__name">{t['filter.type.igp']}</span>
-      <span class="filter-checkbox__count" data-count-for="igp">—</span>
+      <span class="filter-checkbox__count" data-count-for="igp"></span>
     </label>
     <label class="filter-checkbox">
       <input type="checkbox" data-type="dish" checked />
@@ -106,7 +106,7 @@ const t = ui[lang];
           stroke-width="2"></circle>
       </svg>
       <span class="filter-checkbox__name">{t['filter.type.dish']}</span>
-      <span class="filter-checkbox__count" data-count-for="dish">—</span>
+      <span class="filter-checkbox__count" data-count-for="dish"></span>
     </label>
   </fieldset>
 
@@ -129,9 +129,7 @@ const t = ui[lang];
           <span class="filter-checkbox__name">
             {t[`filter.category.${cat}`]}
           </span>
-          <span class="filter-checkbox__count" data-cat-count={cat}>
-            —
-          </span>
+          <span class="filter-checkbox__count" data-cat-count={cat} />
         </label>
       ))
     }

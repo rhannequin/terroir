@@ -28,7 +28,7 @@ export const dishes: Dish[] = [
     id: 'ratatouille',
     name: { fr: 'Ratatouille', en: 'Ratatouille' },
     description: {
-      fr: 'Ragoût de légumes du soleil — aubergines, courgettes, poivrons, tomates, oignons.',
+      fr: 'Ragoût de légumes du soleil : aubergines, courgettes, poivrons, tomates, oignons.',
       en: 'Stew of summer vegetables: aubergines, courgettes, peppers, tomatoes, onions.',
     },
     category: 'main',
@@ -61,7 +61,7 @@ export const dishes: Dish[] = [
     id: 'pan-bagnat',
     name: { fr: 'Pan-bagnat', en: 'Pan-bagnat' },
     description: {
-      fr: 'Sandwich niçois — pain rond garni des éléments d’une salade niçoise.',
+      fr: 'Sandwich niçois : pain rond garni des éléments d’une salade niçoise.',
       en: 'Niçoise sandwich: a round bread roll filled with the components of a salade niçoise.',
     },
     category: 'snack',
@@ -105,8 +105,8 @@ export const dishes: Dish[] = [
     id: 'tapenade',
     name: { fr: 'Tapenade', en: 'Tapenade' },
     description: {
-      fr: 'Tartinade d’olives, câpres, anchois et huile d’olive — apéritif provençal.',
-      en: 'Spread of olives, capers, anchovies and olive oil — a Provençal apéritif.',
+      fr: 'Tartinade d’olives, câpres, anchois et huile d’olive, servie à l’apéritif en Provence.',
+      en: 'Spread of olives, capers, anchovies and olive oil, served as a Provençal apéritif.',
     },
     category: 'starter',
     region: 'Provence',
@@ -228,7 +228,7 @@ export const dishes: Dish[] = [
     id: 'potee-auvergnate',
     name: { fr: 'Potée auvergnate', en: 'Auvergne potée' },
     description: {
-      fr: 'Plat unique mijoté — chou vert, pommes de terre, lard, saucisses et jambonneau.',
+      fr: 'Plat unique mijoté avec chou vert, pommes de terre, lard, saucisses et jambonneau.',
       en: 'One-pot stew of green cabbage, potatoes, salt pork, sausages and ham hock.',
     },
     category: 'main',
@@ -252,7 +252,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Foie gras', en: 'Foie gras' },
     description: {
       fr: 'Foie d’oie ou de canard gras, poêlé ou en terrine, emblème du Sud-Ouest.',
-      en: 'Fattened goose or duck liver, pan-seared or as a terrine — emblem of the South-West.',
+      en: 'Fattened goose or duck liver, pan-seared or as a terrine. An emblem of the South-West.',
     },
     category: 'starter',
     region: 'Périgord',
@@ -417,8 +417,8 @@ export const dishes: Dish[] = [
     id: 'pochouse',
     name: { fr: 'Pôchouse', en: 'Pôchouse' },
     description: {
-      fr: 'Matelote de poissons d’eau douce au vin blanc — brochet, anguille, perche.',
-      en: 'Freshwater fish stew in white wine — pike, eel, perch.',
+      fr: 'Matelote de poissons d’eau douce au vin blanc : brochet, anguille, perche.',
+      en: 'Freshwater fish stew in white wine: pike, eel and perch.',
     },
     category: 'main',
     region: 'Bourgogne',
@@ -439,8 +439,8 @@ export const dishes: Dish[] = [
     id: 'pate-en-croute',
     name: { fr: 'Pâté en croûte', en: 'Pâté en croûte' },
     description: {
-      fr: 'Terrine de viande enrobée d’une pâte dorée, avec gelée — classique des charcutiers.',
-      en: 'Meat terrine encased in golden pastry with jelly — a charcuterie classic.',
+      fr: 'Terrine de viande enrobée d’une pâte dorée, avec gelée. Un classique des charcutiers.',
+      en: 'Meat terrine encased in golden pastry with jelly. A charcuterie classic.',
     },
     category: 'charcuterie',
     region: 'Bourgogne',
@@ -462,8 +462,8 @@ export const dishes: Dish[] = [
     id: 'salade-lyonnaise',
     name: { fr: 'Salade lyonnaise', en: 'Salade lyonnaise' },
     description: {
-      fr: 'Frisée, lardons grillés, croûtons et œuf poché — bistrot lyonnais.',
-      en: 'Frisée, fried lardons, croutons and a poached egg — Lyon bouchon classic.',
+      fr: 'Frisée, lardons grillés, croûtons et œuf poché. Un classique des bistrots lyonnais.',
+      en: 'Frisée, fried lardons, croutons and a poached egg. A Lyon bouchon classic.',
     },
     category: 'starter',
     region: 'Lyon',
@@ -473,8 +473,8 @@ export const dishes: Dish[] = [
     id: 'tablier-de-sapeur',
     name: { fr: 'Tablier de sapeur', en: 'Tablier de sapeur' },
     description: {
-      fr: 'Gras-double mariné, pané et grillé — abat lyonnais croustillant.',
-      en: 'Marinated breaded tripe, grilled crisp — a Lyon offal speciality.',
+      fr: 'Gras-double mariné, pané et grillé. Un abat lyonnais croustillant.',
+      en: 'Marinated breaded tripe, grilled crisp. A Lyon offal speciality.',
     },
     category: 'main',
     region: 'Lyon',
@@ -506,8 +506,8 @@ export const dishes: Dish[] = [
     id: 'tarte-aux-pralines',
     name: { fr: 'Tarte aux pralines', en: 'Pink praline tart' },
     description: {
-      fr: 'Tarte sablée garnie de pralines roses fondues — un rose éclatant.',
-      en: 'Shortcrust tart filled with melted pink pralines — vivid pink filling.',
+      fr: 'Tarte sablée garnie de pralines roses fondues, d’un rose éclatant.',
+      en: 'Shortcrust tart filled with melted pink pralines, vivid pink throughout.',
     },
     category: 'pastry',
     region: 'Lyon',
@@ -518,8 +518,8 @@ export const dishes: Dish[] = [
     id: 'fondue-savoyarde',
     name: { fr: 'Fondue savoyarde', en: 'Savoyarde fondue' },
     description: {
-      fr: 'Fromages fondus au vin blanc — Comté, Beaufort, Emmental — pour tremper du pain.',
-      en: 'Cheeses melted with white wine — Comté, Beaufort, Emmental — for dipping bread.',
+      fr: 'Fromages fondus au vin blanc (Comté, Beaufort, Emmental), pour tremper du pain.',
+      en: 'Cheeses melted with white wine (Comté, Beaufort, Emmental), for dipping bread.',
     },
     category: 'cheese-dish',
     region: 'Savoie',
@@ -574,7 +574,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Gratin dauphinois', en: 'Gratin dauphinois' },
     description: {
       fr: 'Pommes de terre en lamelles cuites dans la crème, le lait et l’ail, sans fromage.',
-      en: 'Sliced potatoes baked in cream, milk and garlic — no cheese, traditionally.',
+      en: 'Sliced potatoes baked in cream, milk and garlic. Traditionally no cheese.',
     },
     category: 'side',
     region: 'Dauphiné',
@@ -663,8 +663,8 @@ export const dishes: Dish[] = [
     id: 'quiche-lorraine',
     name: { fr: 'Quiche lorraine', en: 'Quiche lorraine' },
     description: {
-      fr: 'Tarte salée à la migaine — œufs, crème, lardons fumés — sans fromage à l’origine.',
-      en: 'Savoury tart of eggs, cream and smoked lardons — traditionally without cheese.',
+      fr: 'Tarte salée à la migaine (œufs, crème, lardons fumés), sans fromage à l’origine.',
+      en: 'Savoury tart of eggs, cream and smoked lardons, traditionally without cheese.',
     },
     category: 'main',
     region: 'Lorraine',
@@ -741,8 +741,8 @@ export const dishes: Dish[] = [
     id: 'galette-complete',
     name: { fr: 'Galette complète', en: 'Galette complète' },
     description: {
-      fr: 'Galette de sarrasin garnie d’œuf, jambon et emmental — la classique.',
-      en: 'Buckwheat galette filled with egg, ham and Emmental — the classic.',
+      fr: 'Galette de sarrasin garnie d’œuf, jambon et emmental. La recette classique.',
+      en: 'Buckwheat galette filled with egg, ham and Emmental. The classic recipe.',
     },
     category: 'main',
     region: 'Bretagne',
@@ -753,7 +753,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Far breton', en: 'Far breton' },
     description: {
       fr: 'Flan dense aux pruneaux ou raisins, dessert paysan de Bretagne.',
-      en: 'Dense flan with prunes or raisins — a Breton farmhouse dessert.',
+      en: 'Dense flan with prunes or raisins, a Breton farmhouse dessert.',
     },
     category: 'pastry',
     region: 'Bretagne',
@@ -774,8 +774,8 @@ export const dishes: Dish[] = [
     id: 'galette-saucisse',
     name: { fr: 'Galette-saucisse', en: 'Galette-saucisse' },
     description: {
-      fr: 'Galette de sarrasin froide enroulée autour d’une saucisse grillée — street food rennais.',
-      en: 'Cold buckwheat galette rolled around a grilled sausage — street food from Rennes.',
+      fr: 'Galette de sarrasin froide enroulée autour d’une saucisse grillée, street food rennais.',
+      en: 'Cold buckwheat galette rolled around a grilled sausage, street food from Rennes.',
     },
     category: 'snack',
     region: 'Rennes',
@@ -909,7 +909,7 @@ export const dishes: Dish[] = [
     id: 'saint-honore',
     name: { fr: 'Saint-Honoré', en: 'Saint-Honoré' },
     description: {
-      fr: 'Pâtisserie en couronne — choux caramélisés, crème chiboust, base feuilletée.',
+      fr: 'Pâtisserie en couronne : choux caramélisés, crème chiboust, base feuilletée.',
       en: 'Crown-shaped pastry of caramel choux, chiboust cream and a puff-pastry base.',
     },
     category: 'pastry',
@@ -942,8 +942,8 @@ export const dishes: Dish[] = [
     id: 'eclair',
     name: { fr: 'Éclair', en: 'Éclair' },
     description: {
-      fr: 'Pâte à choux allongée, garnie et glacée — chocolat, café, vanille.',
-      en: 'Long choux-pastry filled and glazed — chocolate, coffee, vanilla.',
+      fr: 'Pâte à choux allongée, garnie et glacée : chocolat, café, vanille.',
+      en: 'Long choux-pastry filled and glazed: chocolate, coffee, vanilla.',
     },
     category: 'pastry',
     region: 'Paris',
@@ -986,8 +986,8 @@ export const dishes: Dish[] = [
     id: 'pot-au-feu',
     name: { fr: 'Pot-au-feu', en: 'Pot-au-feu' },
     description: {
-      fr: 'Bœuf et légumes pochés longuement, servis avec leur bouillon — plat français universel.',
-      en: 'Beef and vegetables long-poached and served with their broth — a French staple.',
+      fr: 'Bœuf et légumes pochés longuement, servis avec leur bouillon. Un plat français universel.',
+      en: 'Beef and vegetables long-poached and served with their broth. A French staple.',
     },
     category: 'main',
     region: 'France',
@@ -1065,7 +1065,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Tarte au sucre', en: 'Sugar tart' },
     description: {
       fr: 'Pâte briochée caramélisée au sucre roux et à la crème, dessert chti.',
-      en: 'Brioche dough caramelised with brown sugar and cream — a Northern dessert.',
+      en: 'Brioche dough caramelised with brown sugar and cream, a Northern dessert.',
     },
     category: 'pastry',
     region: 'Hauts-de-France',
@@ -1099,7 +1099,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Mouclade', en: 'Mouclade' },
     description: {
       fr: 'Moules en sauce crémée au vin blanc et au curry, spécialité charentaise.',
-      en: 'Mussels in a creamy white-wine and curry sauce — a Charente speciality.',
+      en: 'Mussels in a creamy white-wine and curry sauce, a Charente speciality.',
     },
     category: 'main',
     region: 'Charente-Maritime',

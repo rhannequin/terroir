@@ -18,6 +18,6 @@
   </g>
 
   <text x="80" y="305" font-family="Georgia, 'Times New Roman', serif" font-size="140" font-weight="700" fill="#b85a30">Terroir</text>
-  <text x="84" y="355" font-family="Georgia, serif" font-size="28" font-style="italic" fill="#7a4a30">Carte interactive — AOP, IGP, plats r&#233;gionaux</text>
+  <text x="84" y="355" font-family="Georgia, serif" font-size="28" font-style="italic" fill="#7a4a30">Carte interactive : AOP, IGP, plats r&#233;gionaux</text>
   <rect x="84" y="378" width="80" height="3" fill="#707a32"/>
 </svg>

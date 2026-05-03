@@ -14,12 +14,12 @@ export const ui = {
   fr: {
     'site.title': 'Terroir',
     'site.tagTitle':
-      'Terroir — Carte interactive des AOP françaises et plats traditionnels',
+      'Terroir | Carte interactive des AOP françaises et plats traditionnels',
     'site.description':
       'Carte interactive des AOP françaises et des plats traditionnels par région.',
     'skip.toMap': 'Aller à la carte',
     'og.image.alt':
-      'Logo Terroir — un T vert olive dans un hexagone à bordure terre cuite.',
+      'Logo Terroir : un T vert olive dans un hexagone à bordure terre cuite.',
     'aop.product.one': 'produit',
     'aop.product.other': 'produits',
     'map.label': 'Carte interactive des AOP et plats français',
@@ -65,7 +65,7 @@ export const ui = {
     'intro.close': 'Fermer',
     'intro.lead':
       'Une carte interactive des AOP, IGP et plats traditionnels français, situés dans la région dont ils proviennent.',
-    'intro.aop.title': 'AOP / IGP — désignations protégées',
+    'intro.aop.title': 'AOP / IGP : désignations protégées',
     'intro.aop.description':
       "Aliments protégés par la loi en raison de leur lien avec un terroir précis. L'AOP exige toutes les étapes de production dans la zone ; l'IGP au moins une.",
     'intro.dish.title': 'Plats traditionnels',
@@ -94,12 +94,12 @@ export const ui = {
   en: {
     'site.title': 'Terroir',
     'site.tagTitle':
-      'Terroir — Interactive map of French AOPs and traditional dishes',
+      'Terroir | Interactive map of French AOPs and traditional dishes',
     'site.description':
       'Interactive map of French AOPs and traditional regional dishes.',
     'skip.toMap': 'Skip to map',
     'og.image.alt':
-      'Terroir logo — an olive T inside a terracotta-bordered hexagon.',
+      'Terroir logo: an olive T inside a terracotta-bordered hexagon.',
     'aop.product.one': 'product',
     'aop.product.other': 'products',
     'map.label': 'Interactive map of French AOPs and dishes',
@@ -145,7 +145,7 @@ export const ui = {
     'intro.close': 'Close',
     'intro.lead':
       'An interactive map of French AOPs, IGPs and traditional dishes, placed in the region they come from.',
-    'intro.aop.title': 'AOP / IGP — protected designations',
+    'intro.aop.title': 'AOP / IGP: protected designations',
     'intro.aop.description':
       'Foods protected by law for their link to a specific area. AOP requires all production steps in the area; IGP requires at least one.',
     'intro.dish.title': 'Traditional dishes',

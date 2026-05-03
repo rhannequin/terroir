@@ -57,7 +57,6 @@ describe('resolveLocation', () => {
 describe('buildCentroidMaps', () => {
   it('aggregates communes into commune, department and region centroid maps', () => {
     const json = JSON.stringify([
-      // Two communes in dept 01 / region 84
       {
         code: '01001',
         centre: { coordinates: [5.0, 46.0] },
@@ -72,7 +71,6 @@ describe('buildCentroidMaps', () => {
         codeRegion: '84',
         surface: 100,
       },
-      // One in dept 13 / region 93
       {
         code: '13055',
         centre: { coordinates: [5.4, 43.3] },
