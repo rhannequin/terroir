@@ -52,7 +52,17 @@ const t = ui[lang];
   </header>
 
   <fieldset class="filter-panel__group">
-    <legend>{t['filter.type.legend']}</legend>
+    <legend>
+      <span>{t['filter.type.legend']}</span>
+      <button
+        type="button"
+        class="filter-panel__group-clear"
+        data-clear-group="type"
+        aria-label={t['filter.group.clear.aria']}
+      >
+        {t['filter.group.clear']}
+      </button>
+    </legend>
     <label class="filter-checkbox">
       <input type="checkbox" data-type="aop" checked />
       <svg
@@ -102,7 +112,17 @@ const t = ui[lang];
   </fieldset>
 
   <fieldset class="filter-panel__group">
-    <legend>{t['filter.category.legend']}</legend>
+    <legend>
+      <span>{t['filter.category.legend']}</span>
+      <button
+        type="button"
+        class="filter-panel__group-clear"
+        data-clear-group="category"
+        aria-label={t['filter.group.clear.aria']}
+      >
+        {t['filter.group.clear']}
+      </button>
+    </legend>
     {
       PRODUCT_CATEGORIES.map((cat) => (
         <label class="filter-checkbox filter-checkbox--plain">
@@ -161,6 +181,8 @@ const t = ui[lang];
   const categoryBoxes = panel.querySelectorAll<HTMLInputElement>(
     'input[data-category]',
   );
+  const groupClearBtns =
+    panel.querySelectorAll<HTMLButtonElement>('[data-clear-group]');
   const resultsEl = document.getElementById('filter-results') as HTMLElement;
   const countBadge = toggle.querySelector(
     '.filter-toggle__count',
@@ -196,6 +218,15 @@ const t = ui[lang];
     window.dispatchEvent(
       new CustomEvent<FilterState>('filter:change', { detail: state }),
     );
+    syncGroupClearState();
+  }
+
+  function syncGroupClearState(): void {
+    for (const btn of groupClearBtns) {
+      const boxes =
+        btn.dataset.clearGroup === 'type' ? typeBoxes : categoryBoxes;
+      btn.disabled = ![...boxes].some((cb) => cb.checked);
+    }
   }
 
   function openPanel(): void {
@@ -240,6 +271,15 @@ const t = ui[lang];
     for (const cb of categoryBoxes) cb.checked = true;
     emitChange();
   });
+  for (const btn of groupClearBtns) {
+    btn.addEventListener('click', () => {
+      const boxes =
+        btn.dataset.clearGroup === 'type' ? typeBoxes : categoryBoxes;
+      for (const cb of boxes) cb.checked = false;
+      emitChange();
+    });
+  }
+  syncGroupClearState();
 
   window.addEventListener('locate:panel-opened', () => {
     if (panel.classList.contains('is-open')) closePanel();
@@ -429,6 +469,40 @@ const t = ui[lang];
     color: var(--color-text-muted);
     margin-bottom: 0.5rem;
     padding: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .filter-panel__group-clear {
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-terracotta);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    margin: -0.25rem -0.5rem;
+    border-radius: 6px;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+  .filter-panel__group-clear:hover:not(:disabled) {
+    background: rgba(184, 90, 48, 0.08);
+  }
+  .filter-panel__group-clear:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .filter-panel__group-clear:disabled {
+    opacity: 0.4;
+    cursor: default;
   }
   .filter-checkbox {
     display: grid;
