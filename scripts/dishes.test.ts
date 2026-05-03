@@ -9,7 +9,6 @@ interface Dish {
   description: { fr: string; en: string };
   category: string;
   region: string;
-  locationType: string;
   centroid: [number, number];
 }
 
@@ -43,9 +42,6 @@ describe('public/data/dishes.json', () => {
       );
       expect(typeof d.category, `${d.id}: category`).toBe('string');
       expect(typeof d.region, `${d.id}: region`).toBe('string');
-      expect(['commune', 'department', 'region', 'area', 'national']).toContain(
-        d.locationType,
-      );
       expect(Array.isArray(d.centroid), `${d.id}: centroid array`).toBe(true);
       expect(d.centroid, `${d.id}: centroid length`).toHaveLength(2);
     }

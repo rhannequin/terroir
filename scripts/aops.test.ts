@@ -8,10 +8,9 @@ interface Aop {
   ida: number;
   name: string;
   signeUE: string | null;
-  signeFR: string | null;
   products: string[];
   category: ProductCategory;
-  communeCount: number;
+  region: string;
   centroid: [number, number];
 }
 
@@ -39,9 +38,7 @@ describe('public/data/aops.json', () => {
       expect(typeof a.name, `entry ${a.ida}: name`).toBe('string');
       expect(a.name.length, `entry ${a.ida}: empty name`).toBeGreaterThan(0);
       expect(Array.isArray(a.products), `entry ${a.ida}: products`).toBe(true);
-      expect(typeof a.communeCount, `entry ${a.ida}: communeCount`).toBe(
-        'number',
-      );
+      expect(typeof a.region, `entry ${a.ida}: region`).toBe('string');
       expect(Array.isArray(a.centroid), `entry ${a.ida}: centroid array`).toBe(
         true,
       );

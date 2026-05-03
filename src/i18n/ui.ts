@@ -13,8 +13,11 @@ export const htmlLang = {
 export const ui = {
   fr: {
     'site.title': 'Terroir',
+    'site.tagTitle':
+      'Terroir — Carte interactive des AOP françaises et plats traditionnels',
     'site.description':
       'Carte interactive des AOP françaises et des plats traditionnels par région.',
+    'skip.toMap': 'Aller à la carte',
     'og.image.alt':
       'Logo Terroir — un T vert olive dans un hexagone à bordure terre cuite.',
     'aop.product.one': 'produit',
@@ -90,8 +93,11 @@ export const ui = {
   },
   en: {
     'site.title': 'Terroir',
+    'site.tagTitle':
+      'Terroir — Interactive map of French AOPs and traditional dishes',
     'site.description':
       'Interactive map of French AOPs and traditional regional dishes.',
+    'skip.toMap': 'Skip to map',
     'og.image.alt':
       'Terroir logo — an olive T inside a terracotta-bordered hexagon.',
     'aop.product.one': 'product',

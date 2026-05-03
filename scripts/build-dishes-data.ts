@@ -2,7 +2,8 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dishes, type Dish } from './data/dishes';
+import type { DishRecord } from '../src/lib/types';
+import { dishes } from './data/dishes';
 import { loadSource, type Source } from './lib/fetch-cache';
 import { buildCentroidMaps, resolveLocation } from './lib/locations';
 
@@ -17,21 +18,15 @@ const COMMUNES_SOURCE: Source = {
   encoding: 'utf-8',
 };
 
-interface DishOutput {
-  id: string;
-  name: { fr: string; en: string };
-  description: { fr: string; en: string };
-  category: Dish['category'];
-  region: string;
-  locationType: Dish['location']['type'];
-  centroid: [number, number]; // [lng, lat]
+function round4(n: number): number {
+  return Math.round(n * 1e4) / 1e4;
 }
 
 async function main(): Promise<void> {
   const communesJson = await loadSource(COMMUNES_SOURCE, CACHE_DIR);
   const maps = buildCentroidMaps(communesJson);
 
-  const result: DishOutput[] = [];
+  const result: DishRecord[] = [];
   const unresolved: string[] = [];
   const seenIds = new Set<string>();
 
@@ -53,8 +48,7 @@ async function main(): Promise<void> {
       description: dish.description,
       category: dish.category,
       region: dish.region,
-      locationType: dish.location.type,
-      centroid,
+      centroid: [round4(centroid[0]), round4(centroid[1])],
     });
   }
 

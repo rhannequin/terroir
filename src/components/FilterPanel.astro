@@ -32,10 +32,9 @@ const t = ui[lang];
   <span class="filter-toggle__count" hidden></span>
 </button>
 
-<aside
+<section
   id="filter-panel"
   class="filter-panel"
-  role="region"
   aria-labelledby="filter-panel-title"
   inert
 >
@@ -152,7 +151,7 @@ const t = ui[lang];
     <span id="filter-results" aria-live="polite"></span>
     <button type="button" id="filter-reset">{t['filter.reset']}</button>
   </div>
-</aside>
+</section>
 
 <script>
   import { getClientI18n, pluralKey } from '../lib/i18n-client';
@@ -294,11 +293,15 @@ const t = ui[lang];
 
     for (const el of typeCountEls) {
       const type = el.dataset.countFor as FilterType;
-      el.textContent = numberFmt.format(byType[type] ?? 0);
+      const n = byType[type] ?? 0;
+      el.textContent = numberFmt.format(n);
+      el.closest('.filter-checkbox')?.classList.toggle('is-empty', n === 0);
     }
     for (const el of categoryCountEls) {
       const cat = el.dataset.catCount as ProductCategory;
-      el.textContent = numberFmt.format(byCategory[cat] ?? 0);
+      const n = byCategory[cat] ?? 0;
+      el.textContent = numberFmt.format(n);
+      el.closest('.filter-checkbox')?.classList.toggle('is-empty', n === 0);
     }
 
     const state = readState();
@@ -364,7 +367,7 @@ const t = ui[lang];
 
   .filter-panel {
     position: fixed;
-    z-index: 1000;
+    z-index: 1001;
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
@@ -378,7 +381,7 @@ const t = ui[lang];
     overscroll-behavior: contain;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1023px) {
     .filter-toggle {
       bottom: calc(env(safe-area-inset-bottom, 0px) + 2.75rem);
     }
@@ -396,7 +399,7 @@ const t = ui[lang];
     }
   }
 
-  @media (min-width: 769px) {
+  @media (min-width: 1024px) {
     .filter-panel {
       top: 0.75rem;
       right: 0.75rem;
@@ -518,6 +521,13 @@ const t = ui[lang];
     grid-template-columns: auto 1fr auto;
     min-height: 36px;
   }
+  .filter-checkbox.is-empty .filter-checkbox__name,
+  .filter-checkbox.is-empty .filter-checkbox__count {
+    color: #b8b0a0;
+  }
+  .filter-checkbox.is-empty .filter-marker {
+    opacity: 0.5;
+  }
   .filter-checkbox__name {
     font-weight: 500;
   }
@@ -611,6 +621,13 @@ const t = ui[lang];
   }
   .filter-panel__search input:focus-visible {
     outline: none;
+  }
+  @media (forced-colors: active) {
+    .filter-panel__search input:focus,
+    .filter-panel__search input:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 2px;
+    }
   }
 
   .filter-panel__footer {

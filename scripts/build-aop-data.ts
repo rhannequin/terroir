@@ -2,10 +2,36 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { AopRecord } from '../src/lib/types';
 import { categorizeProduct, type ProductCategory } from './lib/categorize';
 import { parseCSV } from './lib/csv';
 import { loadSource, type Source } from './lib/fetch-cache';
 import { findPinpointCentroid } from './lib/pinpoint';
+
+const REGIONS_BY_CODE: Record<string, string> = {
+  '11': 'Île-de-France',
+  '24': 'Centre-Val de Loire',
+  '27': 'Bourgogne-Franche-Comté',
+  '28': 'Normandie',
+  '32': 'Hauts-de-France',
+  '44': 'Grand Est',
+  '52': 'Pays de la Loire',
+  '53': 'Bretagne',
+  '75': 'Nouvelle-Aquitaine',
+  '76': 'Occitanie',
+  '84': 'Auvergne-Rhône-Alpes',
+  '93': "Provence-Alpes-Côte d'Azur",
+  '94': 'Corse',
+  '01': 'Guadeloupe',
+  '02': 'Martinique',
+  '03': 'Guyane',
+  '04': 'La Réunion',
+  '06': 'Mayotte',
+};
+
+function round4(n: number): number {
+  return Math.round(n * 1e4) / 1e4;
+}
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), '../..');
 const CACHE_DIR = path.join(ROOT, '.cache');
@@ -47,32 +73,22 @@ const SOURCES = {
 interface Aire {
   ida: number;
   name: string;
-  signeFR: string | null;
   signeUE: string | null;
   products: string[];
-}
-
-interface AopOutput {
-  ida: number;
-  name: string;
-  signeUE: string | null;
-  signeFR: string | null;
-  products: string[];
-  category: ProductCategory;
-  communeCount: number;
-  centroid: [number, number]; // [lng, lat]
 }
 
 interface CommuneFeature {
   code: string;
   nom?: string;
   centre: { coordinates: [number, number] };
+  codeRegion?: string;
   surface?: number;
 }
 
 interface CommuneInfo {
   name: string | null;
   centroid: [number, number];
+  codeRegion: string | null;
   weight: number;
 }
 
@@ -155,6 +171,7 @@ async function main(): Promise<void> {
     communeByCode.set(c.code, {
       name: c.nom?.trim() ?? null,
       centroid: c.centre.coordinates,
+      codeRegion: c.codeRegion ?? null,
       weight: c.surface && c.surface > 0 ? c.surface : 1,
     });
   }
@@ -171,7 +188,6 @@ async function main(): Promise<void> {
       aire = {
         ida,
         name: row[1].trim(),
-        signeFR: trimOrNull(row[2]),
         signeUE: trimOrNull(row[3]),
         products: [],
       };
@@ -206,7 +222,7 @@ async function main(): Promise<void> {
     addCommune(Number(row[1]), row[4].trim());
   }
 
-  const result: AopOutput[] = [];
+  const result: AopRecord[] = [];
   let aireMissing = 0;
   let communeMissing = 0;
   let centroidless = 0;
@@ -222,6 +238,7 @@ async function main(): Promise<void> {
     let sumLat = 0;
     let sumWeight = 0;
     let n = 0;
+    const regionWeights = new Map<string, number>();
     for (const code of communes) {
       const info = communeByCode.get(code);
       if (!info) {
@@ -233,6 +250,12 @@ async function main(): Promise<void> {
       sumLat += lat * info.weight;
       sumWeight += info.weight;
       n++;
+      if (info.codeRegion) {
+        regionWeights.set(
+          info.codeRegion,
+          (regionWeights.get(info.codeRegion) ?? 0) + info.weight,
+        );
+      }
     }
     if (n === 0 || sumWeight === 0) {
       centroidless++;
@@ -241,19 +264,34 @@ async function main(): Promise<void> {
 
     const pinpoint = findPinpointCentroid(aire.name, communes, communeByCode);
     if (pinpoint) pinpointed++;
-    const centroid: [number, number] = pinpoint ?? [
+    const rawCentroid: [number, number] = pinpoint ?? [
       sumLng / sumWeight,
       sumLat / sumWeight,
     ];
+    const centroid: [number, number] = [
+      round4(rawCentroid[0]),
+      round4(rawCentroid[1]),
+    ];
+
+    let dominantRegionCode: string | null = null;
+    let bestWeight = 0;
+    for (const [code, w] of regionWeights) {
+      if (w > bestWeight) {
+        bestWeight = w;
+        dominantRegionCode = code;
+      }
+    }
+    const region = dominantRegionCode
+      ? (REGIONS_BY_CODE[dominantRegionCode] ?? '')
+      : '';
 
     result.push({
       ida,
       name: aire.name,
       signeUE: aire.signeUE,
-      signeFR: aire.signeFR,
       products: aire.products,
       category: resolveCategory(aire, siqo),
-      communeCount: communes.size,
+      region,
       centroid,
     });
   }

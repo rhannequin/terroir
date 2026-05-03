@@ -15,6 +15,36 @@ export const PRODUCT_CATEGORIES = [
 ] as const;
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
 
+export type DishCategory =
+  | 'main'
+  | 'soup'
+  | 'starter'
+  | 'side'
+  | 'charcuterie'
+  | 'cheese-dish'
+  | 'pastry'
+  | 'dessert'
+  | 'snack';
+
+export interface AopRecord {
+  ida: number;
+  name: string;
+  signeUE: string | null;
+  products: string[];
+  category: ProductCategory;
+  region: string;
+  centroid: [number, number];
+}
+
+export interface DishRecord {
+  id: string;
+  name: { fr: string; en: string };
+  description: { fr: string; en: string };
+  category: DishCategory;
+  region: string;
+  centroid: [number, number];
+}
+
 export type LocateErrorCode =
   | 'denied'
   | 'unavailable'

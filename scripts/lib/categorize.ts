@@ -1,17 +1,5 @@
-export const PRODUCT_CATEGORIES = [
-  'wine',
-  'spirit',
-  'cider',
-  'cheese',
-  'meat',
-  'charcuterie',
-  'seafood',
-  'oil',
-  'produce',
-  'honey',
-  'other',
-] as const;
-export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+import { PRODUCT_CATEGORIES, type ProductCategory } from '../../src/lib/types';
+export { PRODUCT_CATEGORIES, type ProductCategory };
 
 const DAIRY = new Set(['beurre', 'crème', 'lait', 'yaourt']);
 

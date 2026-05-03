@@ -23,42 +23,14 @@ const t = ui[lang];
   import { PIN_PATH, PIN_VIEWBOX } from '../lib/markers';
   import {
     PRODUCT_CATEGORIES,
+    type AopRecord,
+    type DishRecord,
     type FilterState,
     type FilterType,
     type LocateErrorCode,
     type NearbyItem,
     type ProductCategory,
   } from '../lib/types';
-
-  interface Aop {
-    ida: number;
-    name: string;
-    signeUE: string | null;
-    signeFR: string | null;
-    products: string[];
-    category: ProductCategory;
-    communeCount: number;
-    centroid: [number, number];
-  }
-
-  interface Dish {
-    id: string;
-    name: { fr: string; en: string };
-    description: { fr: string; en: string };
-    category:
-      | 'main'
-      | 'soup'
-      | 'starter'
-      | 'side'
-      | 'charcuterie'
-      | 'cheese-dish'
-      | 'pastry'
-      | 'dessert'
-      | 'snack';
-    region: string;
-    locationType: 'commune' | 'department' | 'region' | 'area' | 'national';
-    centroid: [number, number];
-  }
 
   interface Entry {
     id: string;
@@ -160,8 +132,8 @@ const t = ui[lang];
   try {
     const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     const [aops, dishes] = await Promise.all([
-      fetchJson<Aop[]>(`${base}/data/aops.json`),
-      fetchJson<Dish[]>(`${base}/data/dishes.json`),
+      fetchJson<AopRecord[]>(`${base}/data/aops.json`),
+      fetchJson<DishRecord[]>(`${base}/data/dishes.json`),
     ]);
 
     const aopCluster = L.markerClusterGroup({
@@ -211,7 +183,7 @@ const t = ui[lang];
         marker,
         type: aopType,
         category: aop.category,
-        haystack: normalize([aop.name, ...aop.products].join(' ')),
+        haystack: normalize([aop.name, ...aop.products, aop.region].join(' ')),
         name: aop.name,
         sub: sign,
         lat,
@@ -257,37 +229,49 @@ const t = ui[lang];
       search: '',
     };
 
+    const visible = new Set<string>();
+
     function applyFilter(state: FilterState): void {
       currentFilterState = state;
-      const aopMatches: L.Marker[] = [];
-      const dishMatches: L.Marker[] = [];
+      const aopAdd: L.Marker[] = [];
+      const dishAdd: L.Marker[] = [];
+      const aopRemove: L.Marker[] = [];
+      const dishRemove: L.Marker[] = [];
       const byType: Record<FilterType, number> = { aop: 0, igp: 0, dish: 0 };
       const byCategory = Object.fromEntries(
         PRODUCT_CATEGORIES.map((c) => [c, 0]),
       ) as Record<ProductCategory, number>;
       const needle = normalize(state.search);
+      let total = 0;
       for (const entry of entries) {
-        if (!state.types.has(entry.type)) continue;
-        if (entry.category && !state.categories.has(entry.category)) continue;
-        if (needle && !entry.haystack.includes(needle)) continue;
-        byType[entry.type]++;
-        if (entry.category) byCategory[entry.category]++;
-        if (entry.type === 'dish') dishMatches.push(entry.marker);
-        else aopMatches.push(entry.marker);
+        const matches =
+          state.types.has(entry.type) &&
+          (!entry.category || state.categories.has(entry.category)) &&
+          (!needle || entry.haystack.includes(needle));
+        if (matches) {
+          total++;
+          byType[entry.type]++;
+          if (entry.category) byCategory[entry.category]++;
+        }
+        const wasVisible = visible.has(entry.id);
+        if (matches && !wasVisible) {
+          visible.add(entry.id);
+          if (entry.type === 'dish') dishAdd.push(entry.marker);
+          else aopAdd.push(entry.marker);
+        } else if (!matches && wasVisible) {
+          visible.delete(entry.id);
+          if (entry.type === 'dish') dishRemove.push(entry.marker);
+          else aopRemove.push(entry.marker);
+        }
       }
-      aopCluster.clearLayers();
-      dishCluster.clearLayers();
-      aopCluster.addLayers(aopMatches);
-      dishCluster.addLayers(dishMatches);
+      if (aopRemove.length > 0) aopCluster.removeLayers(aopRemove);
+      if (dishRemove.length > 0) dishCluster.removeLayers(dishRemove);
+      if (aopAdd.length > 0) aopCluster.addLayers(aopAdd);
+      if (dishAdd.length > 0) dishCluster.addLayers(dishAdd);
 
       window.dispatchEvent(
         new CustomEvent('filter:applied', {
-          detail: {
-            count: aopMatches.length + dishMatches.length,
-            total: entries.length,
-            byType,
-            byCategory,
-          },
+          detail: { count: total, total: entries.length, byType, byCategory },
         }),
       );
     }

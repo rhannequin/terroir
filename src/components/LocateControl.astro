@@ -34,10 +34,9 @@ const t = ui[lang];
   <span class="locate-toggle__label">{t['locate.toggle']}</span>
 </button>
 
-<aside
+<section
   id="locate-panel"
   class="locate-panel"
-  role="region"
   aria-labelledby="locate-panel-title"
   inert
 >
@@ -66,7 +65,7 @@ const t = ui[lang];
       {t['locate.clear']}
     </button>
   </div>
-</aside>
+</section>
 
 <script>
   import { getClientI18n, pluralKey } from '../lib/i18n-client';
@@ -168,7 +167,7 @@ const t = ui[lang];
         window.dispatchEvent(
           new CustomEvent('locate:focus', { detail: { id: item.id } }),
         );
-        if (window.matchMedia('(max-width: 768px)').matches) closePanel();
+        if (window.matchMedia('(max-width: 1023px)').matches) closePanel();
       });
       li.appendChild(button);
       listEl.appendChild(li);
@@ -180,6 +179,9 @@ const t = ui[lang];
     panel.removeAttribute('inert');
     toggle.setAttribute('aria-expanded', 'true');
     closeBtn.focus();
+    if (hasLocation) {
+      window.dispatchEvent(new CustomEvent('locate:recompute'));
+    }
     window.dispatchEvent(new CustomEvent('locate:panel-opened'));
   }
 
@@ -343,7 +345,7 @@ const t = ui[lang];
     overscroll-behavior: contain;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1023px) {
     .locate-toggle {
       bottom: calc(env(safe-area-inset-bottom, 0px) + 2.75rem);
     }
@@ -360,7 +362,7 @@ const t = ui[lang];
     }
   }
 
-  @media (min-width: 769px) {
+  @media (min-width: 1024px) {
     .locate-panel {
       top: 0.75rem;
       left: 0.75rem;

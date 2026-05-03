@@ -1,15 +1,7 @@
+import type { DishCategory } from '../../src/lib/types';
 import type { DishLocation } from '../lib/locations';
 
-export type DishCategory =
-  | 'main'
-  | 'soup'
-  | 'starter'
-  | 'side'
-  | 'charcuterie'
-  | 'cheese-dish'
-  | 'pastry'
-  | 'dessert'
-  | 'snack';
+export type { DishCategory };
 
 export interface Dish {
   id: string;

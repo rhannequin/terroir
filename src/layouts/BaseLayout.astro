@@ -12,6 +12,8 @@ interface Props {
 const { title } = Astro.props;
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const altLang: Lang = lang === 'fr' ? 'en' : 'fr';
+const brandName = ui[lang]['site.title'];
+const skipLabel = ui[lang]['skip.toMap'];
 
 const baseNoSlash = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pathInBase = Astro.url.pathname.startsWith(baseNoSlash)
@@ -86,8 +88,10 @@ const noscriptMessage =
     <meta name="twitter:image:alt" content={ogImageAlt} />
   </head>
   <body>
-    <header class="brand-card">
-      <svg class="brand-card__mark" viewBox="0 0 64 64" aria-hidden="true">
+    <a href="#map" class="skip-link">{skipLabel}</a>
+    <h1 class="visually-hidden">{title}</h1>
+    <div class="brand-card" aria-hidden="true">
+      <svg class="brand-card__mark" viewBox="0 0 64 64">
         <path
           d="M32 4 L56 18 V46 L32 60 L8 46 V18 Z"
           fill="#ffffff"
@@ -98,8 +102,8 @@ const noscriptMessage =
           d="M12 16 L52 16 L52 26 L50 26 L50 22 L34 22 L34 47 L44 47 L44 51 L20 51 L20 47 L30 47 L30 22 L14 22 L14 26 L12 26 Z"
           fill="#707a32"></path>
       </svg>
-      <h1>{title}</h1>
-    </header>
+      <span class="brand-card__name">{brandName}</span>
+    </div>
     <nav class="nav-card" aria-label={languages[altLang]}>
       <a href={altHref} hreflang={htmlLang[altLang]} lang={htmlLang[altLang]}>
         {languages[altLang]}
@@ -163,6 +167,45 @@ const noscriptMessage =
         flex-direction: column;
       }
 
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: 0.5rem;
+        left: 0.5rem;
+        z-index: 2001;
+        padding: 0.625rem 1rem;
+        background: var(--color-terracotta);
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: var(--shadow-elevated);
+        transform: translateY(-150%);
+        transition: transform 0.15s ease;
+      }
+      .skip-link:focus {
+        transform: translateY(0);
+        outline: 2px solid white;
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .skip-link {
+          transition: none;
+        }
+      }
+
       .brand-card {
         position: fixed;
         top: 1.25rem;
@@ -185,8 +228,7 @@ const noscriptMessage =
         flex-shrink: 0;
         filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
       }
-      .brand-card h1 {
-        margin: 0;
+      .brand-card__name {
         font-family: var(--font-display);
         font-weight: 700;
         font-size: clamp(1.125rem, 3.5vw, 1.375rem);
@@ -199,7 +241,7 @@ const noscriptMessage =
         position: fixed;
         top: 1.25rem;
         right: 1.25rem;
-        z-index: 1000;
+        z-index: 1002;
         background: var(--glass-bg);
         -webkit-backdrop-filter: var(--glass-blur);
         backdrop-filter: var(--glass-blur);

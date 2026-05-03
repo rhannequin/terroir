@@ -108,7 +108,19 @@ const t = ui[lang];
     if (e.target === dialog) dialog.close();
   });
 
-  if (!hasBeenDismissed()) dialog.showModal();
+  if (!hasBeenDismissed()) {
+    const showIntro = (): void => dialog.showModal();
+    const ric = (
+      window as unknown as {
+        requestIdleCallback?: (
+          cb: () => void,
+          opts?: { timeout: number },
+        ) => void;
+      }
+    ).requestIdleCallback;
+    if (typeof ric === 'function') ric(showIntro, { timeout: 1500 });
+    else setTimeout(showIntro, 400);
+  }
 </script>
 
 <style is:global>
