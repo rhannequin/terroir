@@ -2172,7 +2172,7 @@
   },
   {
     "ida": 1,
-    "name": "Alsace suivi d’un nom de lieu-dit",
+    "name": "Alsace suivi d'un nom de lieu-dit",
     "signeUE": "AOP",
     "products": [
       "Alsace blanc (Edelzwicker)",
@@ -5407,10 +5407,10 @@
   },
   {
     "ida": 2435,
-    "name": "Bulagna de l’Ile de Beauté",
+    "name": "Bulagna de l'Ile de Beauté",
     "signeUE": "IGP",
     "products": [
-      "Bulagna de l’Ile de Beauté"
+      "Bulagna de l'Ile de Beauté"
     ],
     "category": "charcuterie",
     "region": "Corse",
@@ -8976,10 +8976,10 @@
   },
   {
     "ida": 1529,
-    "name": "Coquille Saint-Jacques des Côtes-d’Armor",
+    "name": "Coquille Saint-Jacques des Côtes-d'Armor",
     "signeUE": "IGP",
     "products": [
-      "Coquille Saint-Jacques des Côtes-d’Armor"
+      "Coquille Saint-Jacques des Côtes-d'Armor"
     ],
     "category": "seafood",
     "region": "Bretagne",
@@ -12017,10 +12017,10 @@
   },
   {
     "ida": 2437,
-    "name": "Figatelli de l’Ile de Beauté ou Figatellu de l’Ile de Beauté",
+    "name": "Figatelli de l'Ile de Beauté ou Figatellu de l'Ile de Beauté",
     "signeUE": "IGP",
     "products": [
-      "Figatelli de l’Ile de Beauté ou Figatellu de l’Ile de Beauté"
+      "Figatelli de l'Ile de Beauté ou Figatellu de l'Ile de Beauté"
     ],
     "category": "charcuterie",
     "region": "Corse",
@@ -12334,10 +12334,10 @@
   },
   {
     "ida": 2362,
-    "name": "Framboise d’Alsace",
+    "name": "Framboise d'Alsace",
     "signeUE": "IG",
     "products": [
-      "Framboise d’Alsace"
+      "Framboise d'Alsace"
     ],
     "category": "spirit",
     "region": "Grand Est",
@@ -14717,10 +14717,10 @@
   },
   {
     "ida": 2364,
-    "name": "Kirsch d’Alsace",
+    "name": "Kirsch d'Alsace",
     "signeUE": "IG",
     "products": [
-      "Kirsch d’Alsace"
+      "Kirsch d'Alsace"
     ],
     "category": "spirit",
     "region": "Grand Est",
@@ -20412,10 +20412,10 @@
   },
   {
     "ida": 2440,
-    "name": "Pancetta de l’Ile de Beauté  ou Panzetta de l’Ile de Beauté",
+    "name": "Pancetta de l'Ile de Beauté  ou Panzetta de l'Ile de Beauté",
     "signeUE": "IGP",
     "products": [
-      "Pancetta de l’Ile de Beauté ou Panzetta de l’Ile de Beauté"
+      "Pancetta de l'Ile de Beauté ou Panzetta de l'Ile de Beauté"
     ],
     "category": "charcuterie",
     "region": "Corse",
@@ -21292,10 +21292,10 @@
   },
   {
     "ida": 2432,
-    "name": "Pintade de l’Ardèche",
+    "name": "Pintade de l'Ardèche",
     "signeUE": "IGP",
     "products": [
-      "Pintade de l’Ardèche"
+      "Pintade de l'Ardèche"
     ],
     "category": "meat",
     "region": "Auvergne-Rhône-Alpes",
@@ -22954,10 +22954,10 @@
   },
   {
     "ida": 2363,
-    "name": "Quetsch d’Alsace",
+    "name": "Quetsch d'Alsace",
     "signeUE": "IG",
     "products": [
-      "Quetsch d’Alsace"
+      "Quetsch d'Alsace"
     ],
     "category": "spirit",
     "region": "Grand Est",
@@ -25126,10 +25126,10 @@
   },
   {
     "ida": 2441,
-    "name": "Saucisson sec de l’Ile de Beauté ou Salciccia de l’Ile de Beauté",
+    "name": "Saucisson sec de l'Ile de Beauté ou Salciccia de l'Ile de Beauté",
     "signeUE": "IGP",
     "products": [
-      "Saucisson sec de l’Ile de Beauté ou Salciccia de l’Ile de Beauté"
+      "Saucisson sec de l'Ile de Beauté ou Salciccia de l'Ile de Beauté"
     ],
     "category": "charcuterie",
     "region": "Corse",
@@ -27154,10 +27154,10 @@
   },
   {
     "ida": 1552,
-    "name": "Volailles d’Alsace",
+    "name": "Volailles d'Alsace",
     "signeUE": "IGP",
     "products": [
-      "Volailles d’Alsace"
+      "Volailles d'Alsace"
     ],
     "category": "meat",
     "region": "Grand Est",
@@ -27168,10 +27168,10 @@
   },
   {
     "ida": 1553,
-    "name": "Volailles d’Ancenis",
+    "name": "Volailles d'Ancenis",
     "signeUE": "IGP",
     "products": [
-      "Volailles d’Ancenis"
+      "Volailles d'Ancenis"
     ],
     "category": "meat",
     "region": "Pays de la Loire",
@@ -27182,10 +27182,10 @@
   },
   {
     "ida": 1554,
-    "name": "Volailles d’Auvergne",
+    "name": "Volailles d'Auvergne",
     "signeUE": "IGP",
     "products": [
-      "Volailles d’Auvergne"
+      "Volailles d'Auvergne"
     ],
     "category": "meat",
     "region": "Auvergne-Rhône-Alpes",
@@ -27308,10 +27308,10 @@
   },
   {
     "ida": 1564,
-    "name": "Volailles de l’Orléanais",
+    "name": "Volailles de l'Orléanais",
     "signeUE": "IGP",
     "products": [
-      "Volailles de l’Orléanais"
+      "Volailles de l'Orléanais"
     ],
     "category": "meat",
     "region": "Centre-Val de Loire",

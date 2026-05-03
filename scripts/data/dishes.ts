@@ -39,7 +39,7 @@ export const dishes: Dish[] = [
     id: 'pissaladiere',
     name: { fr: 'Pissaladière', en: 'Pissaladière' },
     description: {
-      fr: 'Tarte fine niçoise garnie d’oignons confits, d’anchois et d’olives noires.',
+      fr: "Tarte fine niçoise garnie d'oignons confits, d'anchois et d'olives noires.",
       en: 'Niçoise flatbread topped with caramelised onions, anchovies and black olives.',
     },
     category: 'starter',
@@ -61,7 +61,7 @@ export const dishes: Dish[] = [
     id: 'pan-bagnat',
     name: { fr: 'Pan-bagnat', en: 'Pan-bagnat' },
     description: {
-      fr: 'Sandwich niçois : pain rond garni des éléments d’une salade niçoise.',
+      fr: "Sandwich niçois : pain rond garni des éléments d'une salade niçoise.",
       en: 'Niçoise sandwich: a round bread roll filled with the components of a salade niçoise.',
     },
     category: 'snack',
@@ -94,7 +94,7 @@ export const dishes: Dish[] = [
     id: 'soupe-au-pistou',
     name: { fr: 'Soupe au pistou', en: 'Pistou soup' },
     description: {
-      fr: 'Soupe estivale aux haricots et légumes, parfumée d’un pistou basilic-ail-huile.',
+      fr: "Soupe estivale aux haricots et légumes, parfumée d'un pistou basilic-ail-huile.",
       en: 'Summer bean and vegetable soup, finished with a basil-garlic-oil pistou.',
     },
     category: 'soup',
@@ -105,7 +105,7 @@ export const dishes: Dish[] = [
     id: 'tapenade',
     name: { fr: 'Tapenade', en: 'Tapenade' },
     description: {
-      fr: 'Tartinade d’olives, câpres, anchois et huile d’olive, servie à l’apéritif en Provence.',
+      fr: "Tartinade d'olives, câpres, anchois et huile d'olive, servie à l'apéritif en Provence.",
       en: 'Spread of olives, capers, anchovies and olive oil, served as a Provençal apéritif.',
     },
     category: 'starter',
@@ -116,7 +116,7 @@ export const dishes: Dish[] = [
     id: 'tropezienne',
     name: { fr: 'Tarte tropézienne', en: 'Tropézienne' },
     description: {
-      fr: 'Brioche au sucre fendue et garnie d’une crème onctueuse à la fleur d’oranger.',
+      fr: "Brioche au sucre fendue et garnie d'une crème onctueuse à la fleur d'oranger.",
       en: 'Sugared brioche split and filled with an orange-blossom cream.',
     },
     category: 'pastry',
@@ -125,9 +125,9 @@ export const dishes: Dish[] = [
   },
   {
     id: 'calisson',
-    name: { fr: 'Calisson d’Aix', en: 'Calisson d’Aix' },
+    name: { fr: "Calisson d'Aix", en: "Calisson d'Aix" },
     description: {
-      fr: 'Confiserie en losange à base de melon confit, d’amandes et glaçage royal.',
+      fr: "Confiserie en losange à base de melon confit, d'amandes et glaçage royal.",
       en: 'Diamond-shaped sweet of candied melon, almonds and royal icing.',
     },
     category: 'pastry',
@@ -150,7 +150,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Pieds paquets marseillais', en: 'Pieds paquets' },
     description: {
       fr: 'Pieds de mouton et paquets de tripes farcis au lard, ail et persil, mijotés au vin blanc et à la tomate.',
-      en: 'Sheep’s trotters and parcels of tripe stuffed with bacon, garlic and parsley, simmered in white wine and tomato.',
+      en: "Sheep's trotters and parcels of tripe stuffed with bacon, garlic and parsley, simmered in white wine and tomato.",
     },
     category: 'main',
     region: 'Marseille',
@@ -160,7 +160,7 @@ export const dishes: Dish[] = [
     id: 'grand-aioli',
     name: { fr: 'Grand aïoli', en: 'Grand aïoli' },
     description: {
-      fr: 'Plat-emblème provençal : morue dessalée pochée, légumes vapeur et œufs durs autour d’une mayonnaise à l’ail.',
+      fr: "Plat-emblème provençal : morue dessalée pochée, légumes vapeur et œufs durs autour d'une mayonnaise à l'ail.",
       en: 'Iconic Provençal feast of poached salt cod, steamed vegetables and hard-boiled eggs served around a garlic mayonnaise.',
     },
     category: 'main',
@@ -171,8 +171,8 @@ export const dishes: Dish[] = [
     id: 'petits-farcis',
     name: { fr: 'Petits farcis niçois', en: 'Niçois stuffed vegetables' },
     description: {
-      fr: 'Légumes d’été — tomates, courgettes, oignons, poivrons — évidés, farcis à la viande et cuits au four.',
-      en: 'Summer vegetables — tomatoes, courgettes, onions, peppers — hollowed out, filled with a meat stuffing and baked.',
+      fr: "Légumes d'été: tomates, courgettes, oignons, poivrons, évidés, farcis à la viande et cuits au four.",
+      en: 'Summer vegetables: tomatoes, courgettes, onions, peppers, hollowed out, filled with a meat stuffing and baked.',
     },
     category: 'main',
     region: 'Nice',
@@ -205,7 +205,7 @@ export const dishes: Dish[] = [
     id: 'brandade-de-morue',
     name: { fr: 'Brandade de morue', en: 'Salt-cod brandade' },
     description: {
-      fr: 'Émulsion de morue dessalée, huile d’olive et lait, servie en gratin ou tiède.',
+      fr: "Émulsion de morue dessalée, huile d'olive et lait, servie en gratin ou tiède.",
       en: 'Whipped salt cod with olive oil and milk, served warm or as a gratin.',
     },
     category: 'main',
@@ -216,7 +216,7 @@ export const dishes: Dish[] = [
     id: 'bourride',
     name: { fr: 'Bourride sétoise', en: 'Bourride from Sète' },
     description: {
-      fr: 'Soupe de poisson blanc liée à l’aïoli, spécialité du port de Sète.',
+      fr: "Soupe de poisson blanc liée à l'aïoli, spécialité du port de Sète.",
       en: 'White-fish stew thickened with aïoli, a speciality of the port of Sète.',
     },
     category: 'soup',
@@ -250,7 +250,7 @@ export const dishes: Dish[] = [
     id: 'aligot',
     name: { fr: 'Aligot', en: 'Aligot' },
     description: {
-      fr: 'Purée de pommes de terre étirée à la tomme fraîche d’Aubrac, lisse et filante.',
+      fr: "Purée de pommes de terre étirée à la tomme fraîche d'Aubrac, lisse et filante.",
       en: 'Mashed potato whipped with fresh Aubrac tomme cheese into a smooth, stretchy ribbon.',
     },
     category: 'cheese-dish',
@@ -295,7 +295,7 @@ export const dishes: Dish[] = [
     id: 'foie-gras',
     name: { fr: 'Foie gras', en: 'Foie gras' },
     description: {
-      fr: 'Foie d’oie ou de canard gras, poêlé ou en terrine, emblème du Sud-Ouest.',
+      fr: "Foie d'oie ou de canard gras, poêlé ou en terrine, emblème du Sud-Ouest.",
       en: 'Fattened goose or duck liver, pan-seared or as a terrine. An emblem of the South-West.',
     },
     category: 'starter',
@@ -350,7 +350,7 @@ export const dishes: Dish[] = [
     id: 'piperade',
     name: { fr: 'Piperade', en: 'Piperade' },
     description: {
-      fr: 'Poêlée de poivrons, tomates, oignons et piment d’Espelette, souvent aux œufs.',
+      fr: "Poêlée de poivrons, tomates, oignons et piment d'Espelette, souvent aux œufs.",
       en: 'Pan-fried peppers, tomatoes, onions and Espelette pepper, often finished with eggs.',
     },
     category: 'main',
@@ -361,7 +361,7 @@ export const dishes: Dish[] = [
     id: 'axoa',
     name: { fr: 'Axoa de veau', en: 'Axoa' },
     description: {
-      fr: 'Émincé de veau mijoté aux poivrons et au piment d’Espelette.',
+      fr: "Émincé de veau mijoté aux poivrons et au piment d'Espelette.",
       en: 'Diced veal slow-cooked with peppers and Espelette chilli.',
     },
     category: 'main',
@@ -394,7 +394,7 @@ export const dishes: Dish[] = [
     id: 'pastis-landais',
     name: { fr: 'Pastis landais', en: 'Pastis landais' },
     description: {
-      fr: 'Brioche moelleuse parfumée à l’anis, à la fleur d’oranger et à l’armagnac.',
+      fr: "Brioche moelleuse parfumée à l'anis, à la fleur d'oranger et à l'armagnac.",
       en: 'Soft brioche flavoured with anise, orange blossom and Armagnac.',
     },
     category: 'pastry',
@@ -403,9 +403,9 @@ export const dishes: Dish[] = [
   },
   {
     id: 'tourin',
-    name: { fr: 'Tourin à l’ail', en: 'Tourin (garlic soup)' },
+    name: { fr: "Tourin à l'ail", en: 'Tourin (garlic soup)' },
     description: {
-      fr: 'Soupe à l’ail liée à l’œuf et au vinaigre, traditionnellement « chabrolée » d’un trait de vin rouge.',
+      fr: "Soupe à l'ail liée à l'œuf et au vinaigre, traditionnellement « chabrolée » d'un trait de vin rouge.",
       en: 'Garlic soup thickened with egg and vinegar, traditionally finished with a splash of red wine in the bowl.',
     },
     category: 'soup',
@@ -428,7 +428,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Poule au pot', en: 'Poule au pot' },
     description: {
       fr: 'Poule farcie pochée avec ses légumes, plat béarnais associé à Henri IV.',
-      en: 'Stuffed hen poached with its vegetables and broth — a Béarnese dish linked to Henri IV.',
+      en: 'Stuffed hen poached with its vegetables and broth, a Béarnese dish linked to Henri IV.',
     },
     category: 'main',
     region: 'Béarn',
@@ -449,7 +449,7 @@ export const dishes: Dish[] = [
     id: 'tourtiere-landaise',
     name: { fr: 'Tourtière landaise', en: 'Tourtière landaise' },
     description: {
-      fr: 'Tourte de pâte étirée à la main en feuilles fines, garnie de pommes ou de pruneaux et parfumée à l’armagnac.',
+      fr: "Tourte de pâte étirée à la main en feuilles fines, garnie de pommes ou de pruneaux et parfumée à l'armagnac.",
       en: 'Pie of paper-thin hand-stretched pastry filled with apple or prunes and scented with Armagnac.',
     },
     category: 'pastry',
@@ -506,7 +506,7 @@ export const dishes: Dish[] = [
     id: 'oeufs-en-meurette',
     name: { fr: 'Œufs en meurette', en: 'Œufs en meurette' },
     description: {
-      fr: 'Œufs pochés nappés d’une sauce au vin rouge, lardons et champignons.',
+      fr: "Œufs pochés nappés d'une sauce au vin rouge, lardons et champignons.",
       en: 'Poached eggs in a sauce of red wine, lardons and mushrooms.',
     },
     category: 'starter',
@@ -517,7 +517,7 @@ export const dishes: Dish[] = [
     id: 'gougeres',
     name: { fr: 'Gougères', en: 'Gougères' },
     description: {
-      fr: 'Petits choux salés au comté ou au gruyère, servis à l’apéritif.',
+      fr: "Petits choux salés au comté ou au gruyère, servis à l'apéritif.",
       en: 'Small savoury choux puffs with Comté or Gruyère, served with apéritifs.',
     },
     category: 'starter',
@@ -539,7 +539,7 @@ export const dishes: Dish[] = [
     id: 'pochouse',
     name: { fr: 'Pôchouse', en: 'Pôchouse' },
     description: {
-      fr: 'Matelote de poissons d’eau douce au vin blanc : brochet, anguille, perche.',
+      fr: "Matelote de poissons d'eau douce au vin blanc : brochet, anguille, perche.",
       en: 'Freshwater fish stew in white wine: pike, eel and perch.',
     },
     category: 'main',
@@ -548,7 +548,7 @@ export const dishes: Dish[] = [
   },
   {
     id: 'pain-d-epices-dijon',
-    name: { fr: 'Pain d’épices de Dijon', en: 'Dijon pain d’épices' },
+    name: { fr: "Pain d'épices de Dijon", en: "Dijon pain d'épices" },
     description: {
       fr: 'Pain dense au miel et aux épices, tradition séculaire de Dijon.',
       en: 'Dense honey-and-spice loaf, a centuries-old Dijon tradition.',
@@ -561,7 +561,7 @@ export const dishes: Dish[] = [
     id: 'pate-en-croute',
     name: { fr: 'Pâté en croûte', en: 'Pâté en croûte' },
     description: {
-      fr: 'Terrine de viande enrobée d’une pâte dorée, avec gelée. Un classique des charcutiers.',
+      fr: "Terrine de viande enrobée d'une pâte dorée, avec gelée. Un classique des charcutiers.",
       en: 'Meat terrine encased in golden pastry with jelly. A charcuterie classic.',
     },
     category: 'charcuterie',
@@ -585,10 +585,10 @@ export const dishes: Dish[] = [
   },
   {
     id: 'boite-chaude-mont-dor',
-    name: { fr: 'Boîte chaude au Mont d’Or', en: 'Baked Mont d’Or' },
+    name: { fr: "Boîte chaude au Mont d'Or", en: "Baked Mont d'Or" },
     description: {
-      fr: 'Mont d’Or AOP cuit dans sa boîte d’épicéa avec ail et vin blanc, servi à la cuillère sur des pommes de terre.',
-      en: 'PDO Mont d’Or baked in its spruce box with garlic and white wine, spooned over potatoes.',
+      fr: "Mont d'Or AOP cuit dans sa boîte d'épicéa avec ail et vin blanc, servi à la cuillère sur des pommes de terre.",
+      en: "PDO Mont d'Or baked in its spruce box with garlic and white wine, spooned over potatoes.",
     },
     category: 'cheese-dish',
     region: 'Haut-Doubs',
@@ -676,7 +676,7 @@ export const dishes: Dish[] = [
     id: 'tarte-aux-pralines',
     name: { fr: 'Tarte aux pralines', en: 'Pink praline tart' },
     description: {
-      fr: 'Tarte sablée garnie de pralines roses fondues, d’un rose éclatant.',
+      fr: "Tarte sablée garnie de pralines roses fondues, d'un rose éclatant.",
       en: 'Shortcrust tart filled with melted pink pralines, vivid pink throughout.',
     },
     category: 'pastry',
@@ -698,7 +698,7 @@ export const dishes: Dish[] = [
     id: 'gratinee-lyonnaise',
     name: { fr: 'Gratinée lyonnaise', en: 'Gratinée lyonnaise' },
     description: {
-      fr: 'Soupe à l’oignon enrichie d’une liaison œuf et porto, gratinée au gruyère.',
+      fr: "Soupe à l'oignon enrichie d'une liaison œuf et porto, gratinée au gruyère.",
       en: 'Onion soup enriched with an egg-and-port liaison and gratinated with Gruyère.',
     },
     category: 'soup',
@@ -765,7 +765,7 @@ export const dishes: Dish[] = [
     id: 'gratin-dauphinois',
     name: { fr: 'Gratin dauphinois', en: 'Gratin dauphinois' },
     description: {
-      fr: 'Pommes de terre en lamelles cuites dans la crème, le lait et l’ail, sans fromage.',
+      fr: "Pommes de terre en lamelles cuites dans la crème, le lait et l'ail, sans fromage.",
       en: 'Sliced potatoes baked in cream, milk and garlic. Traditionally no cheese.',
     },
     category: 'side',
@@ -821,7 +821,7 @@ export const dishes: Dish[] = [
     id: 'bredele',
     name: { fr: 'Bredele', en: 'Bredele' },
     description: {
-      fr: 'Petits gâteaux alsaciens variés, préparés tout au long de l’Avent.',
+      fr: "Petits gâteaux alsaciens variés, préparés tout au long de l'Avent.",
       en: 'Assorted small Alsatian cookies, prepared throughout Advent.',
     },
     category: 'pastry',
@@ -855,7 +855,7 @@ export const dishes: Dish[] = [
     id: 'quiche-lorraine',
     name: { fr: 'Quiche lorraine', en: 'Quiche lorraine' },
     description: {
-      fr: 'Tarte salée à la migaine (œufs, crème, lardons fumés), sans fromage à l’origine.',
+      fr: "Tarte salée à la migaine (œufs, crème, lardons fumés), sans fromage à l'origine.",
       en: 'Savoury tart of eggs, cream and smoked lardons, traditionally without cheese.',
     },
     category: 'main',
@@ -866,7 +866,7 @@ export const dishes: Dish[] = [
     id: 'madeleine',
     name: { fr: 'Madeleine de Commercy', en: 'Madeleine' },
     description: {
-      fr: 'Petit gâteau moelleux en coquillage, parfumé au citron ou à la fleur d’oranger.',
+      fr: "Petit gâteau moelleux en coquillage, parfumé au citron ou à la fleur d'oranger.",
       en: 'Small shell-shaped sponge cake flavoured with lemon or orange blossom.',
     },
     category: 'pastry',
@@ -888,7 +888,7 @@ export const dishes: Dish[] = [
     id: 'tarte-aux-mirabelles',
     name: { fr: 'Tarte aux mirabelles', en: 'Mirabelle plum tart' },
     description: {
-      fr: 'Tarte de fin d’été aux petites prunes dorées de Lorraine.',
+      fr: "Tarte de fin d'été aux petites prunes dorées de Lorraine.",
       en: 'Late-summer tart with the small golden plums of Lorraine.',
     },
     category: 'pastry',
@@ -911,11 +911,11 @@ export const dishes: Dish[] = [
     id: 'pieds-sainte-menehould',
     name: {
       fr: 'Pieds de cochon à la Sainte-Menehould',
-      en: 'Pig’s trotters Sainte-Menehould',
+      en: "Pig's trotters Sainte-Menehould",
     },
     description: {
-      fr: 'Pieds de porc longuement pochés jusqu’à fondre, panés à la chapelure et grillés. Spécialité née au XVIIIᵉ siècle à Sainte-Menehould.',
-      en: 'Pig’s trotters poached until meltingly tender, breaded and grilled. An 18th-century speciality born in Sainte-Menehould.',
+      fr: "Pieds de porc longuement pochés jusqu'à fondre, panés à la chapelure et grillés. Spécialité née au XVIIIᵉ siècle à Sainte-Menehould.",
+      en: "Pig's trotters poached until meltingly tender, breaded and grilled. An 18th-century speciality born in Sainte-Menehould.",
     },
     category: 'main',
     region: 'Champagne',
@@ -981,7 +981,7 @@ export const dishes: Dish[] = [
     id: 'galette-complete',
     name: { fr: 'Galette complète', en: 'Galette complète' },
     description: {
-      fr: 'Galette de sarrasin garnie d’œuf, jambon et emmental. La recette classique.',
+      fr: "Galette de sarrasin garnie d'œuf, jambon et emmental. La recette classique.",
       en: 'Buckwheat galette filled with egg, ham and Emmental. The classic recipe.',
     },
     category: 'main',
@@ -1014,7 +1014,7 @@ export const dishes: Dish[] = [
     id: 'galette-saucisse',
     name: { fr: 'Galette-saucisse', en: 'Galette-saucisse' },
     description: {
-      fr: 'Galette de sarrasin froide enroulée autour d’une saucisse grillée, street food rennais.',
+      fr: "Galette de sarrasin froide enroulée autour d'une saucisse grillée, street food rennais.",
       en: 'Cold buckwheat galette rolled around a grilled sausage, street food from Rennes.',
     },
     category: 'snack',
@@ -1025,7 +1025,7 @@ export const dishes: Dish[] = [
     id: 'kig-ha-farz',
     name: { fr: 'Kig ha farz', en: 'Kig ha farz' },
     description: {
-      fr: 'Pot-au-feu léonard de viandes et légumes, accompagné d’un pudding de blé noir.',
+      fr: "Pot-au-feu léonard de viandes et légumes, accompagné d'un pudding de blé noir.",
       en: 'Léon-style boiled-meat-and-veg dish served with a buckwheat pudding.',
     },
     category: 'main',
@@ -1037,7 +1037,7 @@ export const dishes: Dish[] = [
     name: { fr: 'Cotriade', en: 'Cotriade' },
     description: {
       fr: 'Soupe de poissons des marins bretons, à base de pommes de terre et oignons.',
-      en: 'Breton sailors’ fish soup with potatoes and onions.',
+      en: "Breton sailors' fish soup with potatoes and onions.",
     },
     category: 'soup',
     region: 'Bretagne',
@@ -1149,7 +1149,7 @@ export const dishes: Dish[] = [
     id: 'paris-brest',
     name: { fr: 'Paris-Brest', en: 'Paris-Brest' },
     description: {
-      fr: 'Couronne de pâte à choux fourrée d’une crème pralinée onctueuse.',
+      fr: "Couronne de pâte à choux fourrée d'une crème pralinée onctueuse.",
       en: 'Choux-pastry ring filled with a rich praline cream.',
     },
     category: 'pastry',
@@ -1204,7 +1204,7 @@ export const dishes: Dish[] = [
     id: 'macaron',
     name: { fr: 'Macaron parisien', en: 'Parisian macaron' },
     description: {
-      fr: 'Coques d’amande lisses, assemblées autour d’une ganache parfumée.',
+      fr: "Coques d'amande lisses, assemblées autour d'une ganache parfumée.",
       en: 'Smooth almond shells sandwiching a flavoured ganache.',
     },
     category: 'pastry',
@@ -1226,7 +1226,7 @@ export const dishes: Dish[] = [
     id: 'steak-tartare',
     name: { fr: 'Steak tartare', en: 'Steak tartare' },
     description: {
-      fr: 'Bœuf cru haché au couteau, assaisonné échalote, câpres, jaune d’œuf.',
+      fr: "Bœuf cru haché au couteau, assaisonné échalote, câpres, jaune d'œuf.",
       en: 'Hand-chopped raw beef, seasoned with shallot, capers and an egg yolk.',
     },
     category: 'main',
@@ -1257,9 +1257,9 @@ export const dishes: Dish[] = [
   },
   {
     id: 'soupe-a-l-oignon',
-    name: { fr: 'Soupe à l’oignon gratinée', en: 'Onion soup gratinée' },
+    name: { fr: "Soupe à l'oignon gratinée", en: 'Onion soup gratinée' },
     description: {
-      fr: 'Bouillon d’oignons caramélisés, gratiné de pain et de gruyère fondu.',
+      fr: "Bouillon d'oignons caramélisés, gratiné de pain et de gruyère fondu.",
       en: 'Caramelised onion broth gratinated with bread and melted Gruyère.',
     },
     category: 'soup',
@@ -1293,7 +1293,7 @@ export const dishes: Dish[] = [
     id: 'carbonade-flamande',
     name: { fr: 'Carbonade flamande', en: 'Flemish carbonnade' },
     description: {
-      fr: 'Bœuf braisé à la bière brune avec oignons, pain d’épices et moutarde.',
+      fr: "Bœuf braisé à la bière brune avec oignons, pain d'épices et moutarde.",
       en: 'Beef braised in dark beer with onions, gingerbread and mustard.',
     },
     category: 'main',
@@ -1315,7 +1315,7 @@ export const dishes: Dish[] = [
     id: 'welsh',
     name: { fr: 'Welsh', en: 'Welsh' },
     description: {
-      fr: 'Cheddar fondu à la bière, sur pain grillé, souvent surmonté d’un œuf.',
+      fr: "Cheddar fondu à la bière, sur pain grillé, souvent surmonté d'un œuf.",
       en: 'Cheddar melted with beer over toast, often topped with an egg.',
     },
     category: 'cheese-dish',
@@ -1326,7 +1326,7 @@ export const dishes: Dish[] = [
     id: 'flamiche-au-maroilles',
     name: { fr: 'Flamiche au maroilles', en: 'Maroilles flamiche' },
     description: {
-      fr: 'Tarte chaude de l’Avesnois à la pâte levée, garnie de maroilles AOP fondu lié à la crème.',
+      fr: "Tarte chaude de l'Avesnois à la pâte levée, garnie de maroilles AOP fondu lié à la crème.",
       en: 'Warm Avesnois yeasted-dough tart topped with melted PDO Maroilles bound with cream.',
     },
     category: 'cheese-dish',
@@ -1404,7 +1404,7 @@ export const dishes: Dish[] = [
     id: 'brioche-vendeenne',
     name: { fr: 'Brioche vendéenne', en: 'Vendée brioche' },
     description: {
-      fr: 'Brioche tressée IGP au beurre, parfumée à la fleur d’oranger ou à l’eau-de-vie.',
+      fr: "Brioche tressée IGP au beurre, parfumée à la fleur d'oranger ou à l'eau-de-vie.",
       en: 'PGI plaited butter brioche, scented with orange-blossom water or eau-de-vie.',
     },
     category: 'pastry',
@@ -1438,7 +1438,7 @@ export const dishes: Dish[] = [
     id: 'galette-charentaise',
     name: { fr: 'Galette charentaise', en: 'Charente galette' },
     description: {
-      fr: 'Sablé épais au beurre charentais, parfumé à la vanille ou à l’angélique.',
+      fr: "Sablé épais au beurre charentais, parfumé à la vanille ou à l'angélique.",
       en: 'Thick shortbread made with Charente butter, scented with vanilla or angelica.',
     },
     category: 'pastry',
@@ -1494,7 +1494,7 @@ export const dishes: Dish[] = [
     id: 'fiadone',
     name: { fr: 'Fiadone', en: 'Fiadone' },
     description: {
-      fr: 'Flan corse au brocciu frais, parfumé au zeste de citron et à l’eau-de-vie.',
+      fr: "Flan corse au brocciu frais, parfumé au zeste de citron et à l'eau-de-vie.",
       en: 'Corsican baked cheesecake of fresh brocciu, scented with lemon zest and eau-de-vie.',
     },
     category: 'dessert',
