@@ -1,0 +1,74 @@
+name: Dish suggestion
+description: Suggest a traditional French dish for the map.
+title: '[dish] '
+labels: ['data', 'dish']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you can open a PR yourself, see
+        [CONTRIBUTING.md](https://github.com/rhannequin/terroir/blob/main/CONTRIBUTING.md#add-a-traditional-dish).
+        Otherwise fill in what you know and a maintainer will finish it.
+  - type: input
+    id: name_fr
+    attributes:
+      label: Name (French)
+      placeholder: Cassoulet
+    validations:
+      required: true
+  - type: input
+    id: name_en
+    attributes:
+      label: Name (English)
+      description: Often the same as the French name. Translate only if there is a common English form.
+      placeholder: Cassoulet
+    validations:
+      required: true
+  - type: textarea
+    id: description_fr
+    attributes:
+      label: Short description (French)
+      placeholder: Ragoût de haricots blancs et de viandes confites, mijoté lentement.
+    validations:
+      required: true
+  - type: textarea
+    id: description_en
+    attributes:
+      label: Short description (English)
+      placeholder: Slow-cooked stew of white beans and confit meats.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - main
+        - soup
+        - starter
+        - side
+        - charcuterie
+        - cheese-dish
+        - pastry
+        - dessert
+        - snack
+    validations:
+      required: true
+  - type: input
+    id: region
+    attributes:
+      label: Region (display name)
+      placeholder: Languedoc
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Commune INSEE code if known (5 characters), otherwise département, région, or "national".
+      placeholder: '11069 (Castelnaudary)'
+  - type: textarea
+    id: source
+    attributes:
+      label: Source or reference
+      description: Link to a recipe, encyclopedia entry, or any source confirming the regional origin.

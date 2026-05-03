@@ -73,7 +73,10 @@ export const ui = {
       "Spécialités régionales placées sur leur lieu d'origine (commune, département ou région).",
     'intro.usage':
       'Cliquez sur un marqueur pour les détails. Utilisez le bouton de filtres pour affiner par type ou rechercher par nom.',
+    'intro.source':
+      'Projet open source - <a href="https://github.com/rhannequin/terroir" target="_blank" rel="noopener">consulter le code, signaler un problème ou contribuer sur GitHub</a>.',
     'intro.dismiss': "C'est compris",
+    'source.toggle': 'Code source sur GitHub',
     'locate.toggle': 'Localiser',
     'locate.locating': 'Localisation…',
     'locate.title': 'À proximité',
@@ -153,7 +156,10 @@ export const ui = {
       'Regional specialities placed at their origin (commune, department, or region).',
     'intro.usage':
       'Tap a marker for details. Use the filter button to narrow by type or search by name.',
+    'intro.source':
+      'Open source - <a href="https://github.com/rhannequin/terroir" target="_blank" rel="noopener">view the code, report an issue or contribute on GitHub</a>.',
     'intro.dismiss': 'Got it',
+    'source.toggle': 'View source on GitHub',
     'locate.toggle': 'Locate me',
     'locate.locating': 'Locating…',
     'locate.title': 'Nearby',

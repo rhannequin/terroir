@@ -1,0 +1,46 @@
+name: AOP / IGP correction
+description: Report a mistake on an AOP or IGP entry (location, name, products).
+title: '[aop] '
+labels: ['data', 'aop']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AOP and IGP data is built from open INAO datasets. If the upstream
+        data is wrong, flag it here too: we can apply a local correction.
+  - type: input
+    id: aop_name
+    attributes:
+      label: AOP or IGP name
+      placeholder: Roquefort
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Designation type
+      options:
+        - AOP
+        - IGP
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      placeholder: The marker is placed in the wrong département, or a product is missing, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it be?
+      placeholder: The marker should be near Roquefort-sur-Soulzon (12203).
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source or reference
+      description: Link to the INAO page, an official document, or any authoritative source.

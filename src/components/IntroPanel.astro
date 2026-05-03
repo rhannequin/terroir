@@ -72,6 +72,8 @@ const t = ui[lang];
 
     <p class="intro-usage">{t['intro.usage']}</p>
 
+    <p class="intro-source" set:html={t['intro.source']} />
+
     <button type="submit" class="intro-dismiss" value="dismiss">
       {t['intro.dismiss']}
     </button>
@@ -269,8 +271,28 @@ const t = ui[lang];
   .intro-usage {
     font-size: 0.875rem;
     color: var(--color-text-muted);
-    margin: 1.25rem 0 1.5rem;
+    margin: 1.25rem 0 0.75rem;
     line-height: 1.55;
+  }
+
+  .intro-source {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1.5rem;
+    line-height: 1.55;
+  }
+  .intro-source a {
+    color: var(--color-terracotta);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .intro-source a:hover {
+    text-decoration: underline;
+  }
+  .intro-source a:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 
   .intro-dismiss {
