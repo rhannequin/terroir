@@ -271,7 +271,8 @@ async function main(): Promise<void> {
     `  · ${pinpointed} pinned to an eponymous commune; ${result.length - pinpointed} fell back to surface-weighted centroid`,
   );
   const catCounts: Record<string, number> = {};
-  for (const r of result) catCounts[r.category] = (catCounts[r.category] ?? 0) + 1;
+  for (const r of result)
+    catCounts[r.category] = (catCounts[r.category] ?? 0) + 1;
   const catSummary = Object.entries(catCounts)
     .sort(([, a], [, b]) => b - a)
     .map(([k, v]) => `${k}=${v}`)

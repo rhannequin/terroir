@@ -158,8 +158,9 @@ const t = ui[lang];
   ) as HTMLInputElement;
   const typeBoxes =
     panel.querySelectorAll<HTMLInputElement>('input[data-type]');
-  const categoryBoxes =
-    panel.querySelectorAll<HTMLInputElement>('input[data-category]');
+  const categoryBoxes = panel.querySelectorAll<HTMLInputElement>(
+    'input[data-category]',
+  );
   const resultsEl = document.getElementById('filter-results') as HTMLElement;
   const countBadge = toggle.querySelector(
     '.filter-toggle__count',
