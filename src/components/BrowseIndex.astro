@@ -1,0 +1,474 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { ui, type Lang } from '../i18n/ui';
+import { classifyAop } from '../lib/aop';
+import { loadAopsWithSlugs } from '../lib/aop-pages';
+import { normalize } from '../lib/text';
+import { PRODUCT_CATEGORIES, type ProductCategory } from '../lib/types';
+
+const lang = (Astro.currentLocale ?? 'fr') as Lang;
+const t = ui[lang];
+
+const items = await loadAopsWithSlugs();
+const detailBase = getRelativeLocaleUrl(lang, '/aops/');
+
+const grouped = new Map<ProductCategory, typeof items>();
+for (const cat of PRODUCT_CATEGORIES) grouped.set(cat, []);
+for (const it of items) grouped.get(it.aop.category)!.push(it);
+for (const list of grouped.values()) {
+  list.sort((a, b) => a.aop.name.localeCompare(b.aop.name, lang));
+}
+
+const sectionsFr: Array<{ category: ProductCategory; items: typeof items }> =
+  [];
+for (const [category, list] of grouped) {
+  if (list.length > 0) sectionsFr.push({ category, items: list });
+}
+const sections = sectionsFr;
+---
+
+<div class="browse" id="content" tabindex="-1">
+  <div class="browse__inner">
+    <header class="browse__header">
+      <h1 class="browse__title">{t['browse.title']}</h1>
+      <p class="browse__lead">{t['browse.lead']}</p>
+      <div class="browse__search">
+        <label for="browse-search">{t['browse.search.label']}</label>
+        <div class="browse__search-input">
+          <span class="browse__search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <circle
+                cx="11"
+                cy="11"
+                r="6"
+                stroke="currentColor"
+                stroke-width="1.6"></circle>
+              <path
+                d="M16 16l3 3"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"></path>
+            </svg>
+          </span>
+          <input
+            id="browse-search"
+            type="search"
+            placeholder={t['browse.search.placeholder']}
+            autocomplete="off"
+            spellcheck="false"
+            data-browse-search
+          />
+        </div>
+        <p
+          class="browse__count"
+          data-browse-count
+          aria-live="polite"
+          aria-atomic="true"
+          data-singular={t['browse.results.one']}
+          data-plural={t['browse.results.other']}
+        >
+          {
+            (items.length === 1
+              ? t['browse.results.one']
+              : t['browse.results.other']
+            ).replace('{count}', String(items.length))
+          }
+        </p>
+        <p class="browse__empty" data-browse-empty hidden>
+          {t['browse.empty']}
+        </p>
+      </div>
+    </header>
+  </div>
+
+  <nav
+    class="browse__chips"
+    aria-label={t['browse.chips.label']}
+    data-browse-chips
+  >
+    <div class="browse__chips-inner">
+      <ul>
+        {
+          sections.map(({ category, items: list }) => (
+            <li data-browse-chip data-cat={category}>
+              <a href={`#browse-cat-${category}`} class="browse__chip">
+                <span>{t[`filter.category.${category}`]}</span>
+                <span class="browse__chip-count">{list.length}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+
+  <div class="browse__inner">
+    <div class="browse__sections" data-browse-sections>
+      {
+        sections.map(({ category, items: list }) => (
+          <section
+            class="browse__section"
+            data-browse-section
+            data-cat={category}
+            aria-labelledby={`browse-cat-${category}`}
+          >
+            <h2 id={`browse-cat-${category}`} class="browse__section-title">
+              <span>{t[`filter.category.${category}`]}</span>
+              <span class="browse__section-count">{list.length}</span>
+            </h2>
+            <ul class="browse__grid">
+              {list.map(({ aop, slug }) => {
+                const aopType = classifyAop(aop.signeUE);
+                const sign =
+                  aop.signeUE?.trim() || (aopType === 'igp' ? 'IGP' : 'AOP');
+                const haystack = normalize(
+                  [aop.name, ...aop.products, aop.region, sign].join(' '),
+                );
+                return (
+                  <li
+                    class="browse__card"
+                    data-browse-card
+                    data-haystack={haystack}
+                  >
+                    <a class="browse__card-link" href={`${detailBase}${slug}/`}>
+                      <span class={`browse__badge browse__badge--${aopType}`}>
+                        {sign}
+                      </span>
+                      <span class="browse__card-name">{aop.name}</span>
+                      <span class="browse__card-meta">
+                        {aop.region}
+                        {aop.products.length > 1
+                          ? ` · ${aop.products.length} ${t['aop.product.other']}`
+                          : ''}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  import { normalize } from '../lib/text';
+
+  const input = document.querySelector<HTMLInputElement>(
+    '[data-browse-search]',
+  );
+  const sections = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-browse-section]'),
+  );
+  const chipNav = document.querySelector<HTMLElement>('[data-browse-chips]');
+  const chips = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-browse-chip]'),
+  );
+  const chipByCat = new Map<string, HTMLElement>();
+  for (const chip of chips) {
+    if (chip.dataset.cat) chipByCat.set(chip.dataset.cat, chip);
+  }
+  const countEl = document.querySelector<HTMLElement>('[data-browse-count]');
+  const emptyEl = document.querySelector<HTMLElement>('[data-browse-empty]');
+  const total =
+    document.querySelectorAll<HTMLElement>('[data-browse-card]').length;
+  const singular = countEl?.dataset.singular ?? '';
+  const plural = countEl?.dataset.plural ?? '';
+
+  function format(template: string, count: number): string {
+    return template.replace('{count}', String(count));
+  }
+
+  function applyFilter(): void {
+    const q = normalize(input?.value.trim() ?? '');
+    let visible = 0;
+    for (const section of sections) {
+      const cards = Array.from(
+        section.querySelectorAll<HTMLElement>('[data-browse-card]'),
+      );
+      let sectionVisible = 0;
+      for (const card of cards) {
+        const haystack = card.dataset.haystack ?? '';
+        const match = q === '' || haystack.includes(q);
+        card.hidden = !match;
+        if (match) sectionVisible++;
+      }
+      section.hidden = sectionVisible === 0;
+      const chip = chipByCat.get(section.dataset.cat ?? '');
+      if (chip) chip.hidden = sectionVisible === 0;
+      visible += sectionVisible;
+    }
+    if (countEl) {
+      countEl.textContent = format(visible === 1 ? singular : plural, visible);
+    }
+    if (emptyEl) emptyEl.hidden = visible !== 0;
+    if (chipNav) chipNav.hidden = visible === 0;
+    if (countEl && visible === total && q === '') {
+      countEl.textContent = format(total === 1 ? singular : plural, total);
+    }
+  }
+
+  input?.addEventListener('input', applyFilter);
+</script>
+
+<style>
+  .browse {
+    padding: 5.5rem 0 4rem;
+  }
+  .browse__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .browse__header {
+    padding-bottom: 1.5rem;
+  }
+
+  .browse__chips {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 243, 231, 0.85);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 2rem;
+  }
+  .browse__chips[hidden] {
+    display: none;
+  }
+  .browse__chips-inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.625rem 1.25rem;
+  }
+  .browse__chips ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+  }
+  .browse__chips li[hidden] {
+    display: none;
+  }
+  .browse__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: white;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .browse__chip:hover {
+    background: var(--color-cream-tint);
+    border-color: var(--color-terracotta);
+    color: var(--color-terracotta);
+  }
+  .browse__chip:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .browse__chip-count {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .browse__chip {
+      transition: none;
+    }
+  }
+  .browse__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1.1;
+    margin: 0 0 0.75rem;
+    color: var(--color-text);
+  }
+  .browse__lead {
+    margin: 0 0 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    max-width: 48rem;
+    line-height: 1.5;
+  }
+
+  .browse__search {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 32rem;
+  }
+  .browse__search label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .browse__search-input {
+    position: relative;
+  }
+  .browse__search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    display: inline-flex;
+  }
+  .browse__search input {
+    width: 100%;
+    padding: 0.625rem 0.875rem 0.625rem 2.375rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: white;
+    font-size: 0.95rem;
+    color: var(--color-text);
+    font-family: inherit;
+  }
+  .browse__search input::placeholder {
+    color: var(--color-text-muted);
+  }
+  .browse__search input:focus {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+    border-color: transparent;
+  }
+  .browse__count {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  .browse__empty {
+    margin: 0.5rem 0 0;
+    padding: 0.75rem 1rem;
+    background: var(--color-cream-tint);
+    border-radius: 8px;
+    color: var(--color-text);
+    font-size: 0.95rem;
+  }
+
+  .browse__sections {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .browse__section[hidden] {
+    display: none;
+  }
+  .browse__section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+    color: var(--color-text);
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    scroll-margin-top: 6rem;
+  }
+  .browse__section-count {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    padding: 0.125rem 0.5rem;
+    background: var(--color-cream-tint);
+    border-radius: 999px;
+  }
+
+  .browse__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 0.75rem;
+  }
+  .browse__card[hidden] {
+    display: none;
+  }
+
+  .browse__card-link {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.125rem 0.75rem;
+    padding: 0.875rem 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--color-text);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+  .browse__card-link:hover {
+    border-color: var(--color-terracotta);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .browse__card-link {
+      transition: none;
+    }
+    .browse__card-link:hover {
+      transform: none;
+    }
+  }
+  .browse__card-link:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .browse__badge {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    min-width: 2.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: white;
+    background: var(--color-olive);
+    text-transform: uppercase;
+  }
+  .browse__badge--igp {
+    background: var(--color-terracotta);
+  }
+  .browse__card-name {
+    grid-column: 2;
+    grid-row: 1;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .browse__card-meta {
+    grid-column: 2;
+    grid-row: 2;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+</style>

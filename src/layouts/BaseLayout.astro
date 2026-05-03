@@ -5,15 +5,25 @@ import '@fontsource/playfair-display/latin-700.css';
 import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
 import { htmlLang, languages, ui, type Lang } from '../i18n/ui';
 
+type SkipKey = 'skip.toMap' | 'skip.toContent';
+
 interface Props {
   title: string;
+  description?: string;
+  mode?: 'app' | 'document';
+  skipTarget?: { id: string; labelKey: SkipKey };
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description: descriptionProp,
+  mode = 'app',
+  skipTarget = { id: 'map', labelKey: 'skip.toMap' },
+} = Astro.props;
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const altLang: Lang = lang === 'fr' ? 'en' : 'fr';
 const brandName = ui[lang]['site.title'];
-const skipLabel = ui[lang]['skip.toMap'];
+const skipLabel = ui[lang][skipTarget.labelKey];
 
 const baseNoSlash = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pathInBase = Astro.url.pathname.startsWith(baseNoSlash)
@@ -26,7 +36,15 @@ const altHref = getRelativeLocaleUrl(altLang, pathInDefaultLocale);
 const frHref = getAbsoluteLocaleUrl('fr', pathInDefaultLocale);
 const enHref = getAbsoluteLocaleUrl('en', pathInDefaultLocale);
 
-const description = ui[lang]['site.description'];
+const sectionHref =
+  mode === 'app'
+    ? getRelativeLocaleUrl(lang, '/aops/')
+    : getRelativeLocaleUrl(lang, '/');
+const sectionLabel =
+  mode === 'app' ? ui[lang]['nav.browse'] : ui[lang]['nav.map'];
+const brandHref = getRelativeLocaleUrl(lang, '/');
+
+const description = descriptionProp ?? ui[lang]['site.description'];
 const ogImageAlt = ui[lang]['og.image.alt'];
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const ogImageUrl = new URL(`${baseNoSlash}/og-image.png`, Astro.site).href;
@@ -87,11 +105,11 @@ const noscriptMessage =
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
   </head>
-  <body>
-    <a href="#map" class="skip-link">{skipLabel}</a>
-    <h1 class="visually-hidden">{title}</h1>
-    <div class="brand-card" aria-hidden="true">
-      <svg class="brand-card__mark" viewBox="0 0 64 64">
+  <body data-mode={mode}>
+    <a href={`#${skipTarget.id}`} class="skip-link">{skipLabel}</a>
+    {mode === 'app' && <h1 class="visually-hidden">{title}</h1>}
+    <a class="brand-card" href={brandHref}>
+      <svg class="brand-card__mark" viewBox="0 0 64 64" aria-hidden="true">
         <path
           d="M32 4 L56 18 V46 L32 60 L8 46 V18 Z"
           fill="#ffffff"
@@ -103,9 +121,16 @@ const noscriptMessage =
           fill="#707a32"></path>
       </svg>
       <span class="brand-card__name">{brandName}</span>
-    </div>
-    <nav class="nav-card" aria-label={languages[altLang]}>
-      <a href={altHref} hreflang={htmlLang[altLang]} lang={htmlLang[altLang]}>
+    </a>
+    <nav class="nav-card" aria-label={ui[lang]['nav.primary']}>
+      <a class="nav-card__link" href={sectionHref}>{sectionLabel}</a>
+      <span class="nav-card__divider" aria-hidden="true"></span>
+      <a
+        class="nav-card__link"
+        href={altHref}
+        hreflang={htmlLang[altLang]}
+        lang={htmlLang[altLang]}
+      >
         {languages[altLang]}
       </a>
     </nav>
@@ -153,18 +178,31 @@ const noscriptMessage =
         margin: 0;
         padding: 0;
       }
+      @media (prefers-reduced-motion: no-preference) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
       body {
-        height: 100dvh;
         background: var(--color-cream);
         font-family: var(--font-body);
         color: var(--color-text);
+      }
+      body[data-mode='app'] {
+        height: 100dvh;
         overflow: hidden;
       }
-      .app {
+      body[data-mode='app'] .app {
         height: 100%;
         padding: 0.75rem;
         display: flex;
         flex-direction: column;
+      }
+      body[data-mode='document'] {
+        min-height: 100dvh;
+      }
+      body[data-mode='document'] .app {
+        padding: 0;
       }
 
       .visually-hidden {
@@ -221,6 +259,17 @@ const noscriptMessage =
         border-radius: 999px;
         padding: 0.4rem 1rem 0.4rem 0.5rem;
         box-shadow: var(--shadow-soft);
+        text-decoration: none;
+        transition:
+          background 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      a.brand-card:hover {
+        background: rgba(255, 255, 255, 0.85);
+      }
+      a.brand-card:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
       }
       .brand-card__mark {
         width: 28px;
@@ -250,11 +299,16 @@ const noscriptMessage =
         padding: 0.25rem 0.5rem;
         box-shadow: var(--shadow-soft);
       }
-      .nav-card a {
+      .nav-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.125rem;
+      }
+      .nav-card__link {
         display: inline-flex;
         align-items: center;
         min-height: 36px;
-        padding: 0.25rem 0.625rem;
+        padding: 0.25rem 0.75rem;
         color: var(--color-text);
         text-decoration: none;
         font-size: 0.875rem;
@@ -262,12 +316,18 @@ const noscriptMessage =
         border-radius: 999px;
         transition: background 0.15s ease;
       }
-      .nav-card a:hover {
+      .nav-card__link:hover {
         background: rgba(0, 0, 0, 0.05);
       }
-      .nav-card a:focus-visible {
+      .nav-card__link:focus-visible {
         outline: 2px solid var(--color-focus);
         outline-offset: 2px;
+      }
+      .nav-card__divider {
+        width: 1px;
+        align-self: stretch;
+        margin: 0.375rem 0;
+        background: rgba(0, 0, 0, 0.1);
       }
 
       .noscript-message {

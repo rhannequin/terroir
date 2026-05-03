@@ -1,0 +1,13 @@
+---
+import BrowseIndex from '../../components/BrowseIndex.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ui } from '../../i18n/ui';
+---
+
+<BaseLayout
+  title={ui.fr['browse.tagTitle']}
+  mode="document"
+  skipTarget={{ id: 'content', labelKey: 'skip.toContent' }}
+>
+  <BrowseIndex />
+</BaseLayout>

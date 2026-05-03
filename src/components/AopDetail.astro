@@ -1,0 +1,309 @@
+---
+import 'leaflet/dist/leaflet.css';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { ui, type Lang } from '../i18n/ui';
+import { classifyAop } from '../lib/aop';
+import type { AopRecord } from '../lib/types';
+
+interface Props {
+  aop: AopRecord;
+}
+
+const { aop } = Astro.props;
+const lang = (Astro.currentLocale ?? 'fr') as Lang;
+const t = ui[lang];
+
+const aopType = classifyAop(aop.signeUE);
+const sign = aop.signeUE?.trim() || (aopType === 'igp' ? 'IGP' : 'AOP');
+const categoryLabel = t[`filter.category.${aop.category}`];
+const productCount = aop.products.length;
+const productsLabel =
+  productCount === 1 ? t['aop.product.one'] : t['aop.product.other'];
+
+const browseHref = getRelativeLocaleUrl(lang, '/aops/');
+const mapHref = `${getRelativeLocaleUrl(lang, '/')}?id=${aop.ida}`;
+
+const sourceValue = t['aop.detail.meta.sourceValue'].replace(
+  '{ida}',
+  String(aop.ida),
+);
+const [lng, lat] = aop.centroid;
+---
+
+<div class="aop-detail">
+  <a class="aop-detail__back" href={browseHref}>
+    <span aria-hidden="true">←</span>
+    {t['aop.detail.backToBrowse']}
+  </a>
+
+  <header class="aop-detail__header">
+    <p class="aop-detail__eyebrow">
+      <span class={`aop-detail__badge aop-detail__badge--${aopType}`}
+        >{sign}</span
+      >
+      <span class="aop-detail__region">{aop.region}</span>
+    </p>
+    <h1 id="content" class="aop-detail__title" tabindex="-1">{aop.name}</h1>
+    <p class="aop-detail__summary">
+      {productCount}
+      {productsLabel} · {categoryLabel}
+    </p>
+  </header>
+
+  <div class="aop-detail__grid">
+    <div class="aop-detail__meta">
+      <dl>
+        <div>
+          <dt>{t['aop.detail.meta.sign']}</dt>
+          <dd>{sign}</dd>
+        </div>
+        <div>
+          <dt>{t['aop.detail.meta.category']}</dt>
+          <dd>{categoryLabel}</dd>
+        </div>
+        {
+          aop.region && (
+            <div>
+              <dt>{t['aop.detail.meta.region']}</dt>
+              <dd>{aop.region}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>{t['aop.detail.meta.source']}</dt>
+          <dd>{sourceValue}</dd>
+        </div>
+      </dl>
+      <a class="aop-detail__map-link" href={mapHref}>
+        {t['aop.detail.openOnMap']}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="aop-detail__map-wrap">
+      <div
+        class="aop-detail__map"
+        data-aop-map
+        data-lat={lat}
+        data-lng={lng}
+        data-name={aop.name}
+        aria-label={t['aop.detail.map.label']}
+      >
+      </div>
+    </div>
+  </div>
+
+  <section class="aop-detail__products" aria-labelledby="aop-detail-products">
+    <h2 id="aop-detail-products">{t['aop.detail.products.title']}</h2>
+    <ul>
+      {aop.products.map((p) => <li>{p}</li>)}
+    </ul>
+  </section>
+</div>
+
+<script>
+  import L from 'leaflet';
+  import { PIN_PATH, PIN_VIEWBOX } from '../lib/markers';
+
+  const el = document.querySelector<HTMLElement>('[data-aop-map]');
+  if (el) {
+    const lat = Number(el.dataset.lat);
+    const lng = Number(el.dataset.lng);
+    const name = el.dataset.name ?? '';
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    const map = L.map(el, {
+      zoomAnimation: !reducedMotion,
+      fadeAnimation: !reducedMotion,
+      attributionControl: false,
+      zoomControl: true,
+      scrollWheelZoom: false,
+    }).setView([lat, lng], 9);
+    L.control.attribution({ position: 'bottomright' }).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+    const icon = L.divIcon({
+      className: 'aop-marker',
+      iconSize: [26, 38],
+      iconAnchor: [13, 36],
+      html: `<svg viewBox="${PIN_VIEWBOX}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="${PIN_PATH}" fill="#707a32" stroke="white" stroke-width="1.5"/><circle cx="13" cy="13" r="4.5" fill="white"/></svg>`,
+    });
+    L.marker([lat, lng], { icon, title: name, alt: name }).addTo(map);
+  }
+</script>
+
+<style>
+  .aop-detail {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 5.5rem 1.25rem 4rem;
+  }
+
+  .aop-detail__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.375rem 0.5rem;
+    border-radius: 8px;
+    margin-left: -0.5rem;
+    transition: background 0.15s ease;
+  }
+  .aop-detail__back:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+  .aop-detail__back:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .aop-detail__header {
+    margin: 1.25rem 0 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .aop-detail__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+  .aop-detail__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: white;
+    background: var(--color-olive);
+    text-transform: uppercase;
+  }
+  .aop-detail__badge--igp {
+    background: var(--color-terracotta);
+  }
+  .aop-detail__region {
+    font-weight: 500;
+  }
+  .aop-detail__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5.5vw, 3.25rem);
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+    letter-spacing: 0.005em;
+  }
+  .aop-detail__summary {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  .aop-detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .aop-detail__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .aop-detail__meta {
+    background: var(--color-cream-tint);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  .aop-detail__meta dl {
+    margin: 0;
+    display: grid;
+    gap: 0.875rem;
+  }
+  .aop-detail__meta dl > div {
+    display: grid;
+    gap: 0.125rem;
+  }
+  .aop-detail__meta dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .aop-detail__meta dd {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-text);
+  }
+  .aop-detail__map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    color: var(--color-terracotta);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .aop-detail__map-link:hover {
+    color: var(--color-terracotta-hover);
+    text-decoration: underline;
+  }
+  .aop-detail__map-link:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .aop-detail__map-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-cream-tint);
+    aspect-ratio: 4 / 3;
+  }
+  .aop-detail__map {
+    width: 100%;
+    height: 100%;
+  }
+
+  .aop-detail__products {
+    margin-top: 2.5rem;
+  }
+  .aop-detail__products h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+    color: var(--color-text);
+  }
+  .aop-detail__products ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.5rem 1rem;
+  }
+  .aop-detail__products li {
+    padding: 0.625rem 0.875rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+</style>

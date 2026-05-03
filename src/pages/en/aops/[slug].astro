@@ -1,0 +1,34 @@
+---
+import AopDetail from '../../../components/AopDetail.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { ui } from '../../../i18n/ui';
+import { getAopStaticPaths } from '../../../lib/aop-pages';
+import { classifyAop } from '../../../lib/aop';
+
+export async function getStaticPaths() {
+  return getAopStaticPaths();
+}
+
+const { aop } = Astro.props;
+const t = ui.en;
+const sign =
+  aop.signeUE?.trim() || (classifyAop(aop.signeUE) === 'igp' ? 'IGP' : 'AOP');
+const title = t['aop.detail.tagTitle']
+  .replace('{name}', aop.name)
+  .replace('{sign}', sign);
+const description = (
+  aop.region ? t['aop.detail.description'] : t['aop.detail.descriptionNoRegion']
+)
+  .replace('{name}', aop.name)
+  .replace('{sign}', sign)
+  .replace('{region}', aop.region);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  mode="document"
+  skipTarget={{ id: 'content', labelKey: 'skip.toContent' }}
+>
+  <AopDetail aop={aop} />
+</BaseLayout>

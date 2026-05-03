@@ -21,6 +21,7 @@ const t = ui[lang];
   import { haversineKm } from '../lib/distance';
   import { classifyAop } from '../lib/aop';
   import { PIN_PATH, PIN_VIEWBOX } from '../lib/markers';
+  import { buildSlugMap } from '../lib/slug';
   import {
     PRODUCT_CATEGORIES,
     type AopRecord,
@@ -136,6 +137,9 @@ const t = ui[lang];
       fetchJson<DishRecord[]>(`${base}/data/dishes.json`),
     ]);
 
+    const slugByIda = buildSlugMap(aops);
+    const detailBase = lang === 'fr' ? `${base}/aops/` : `${base}/en/aops/`;
+
     const aopCluster = L.markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 50,
@@ -165,11 +169,16 @@ const t = ui[lang];
           : singleProduct && singleProduct !== aop.name
             ? `<div class="aop-popup__single">${escapeHtml(singleProduct)}</div>`
             : '';
+      const slug = slugByIda.get(aop.ida);
+      const detailLink = slug
+        ? `<a class="aop-popup__details" href="${detailBase}${slug}/">${escapeHtml(t['aop.popup.details'])}</a>`
+        : '';
       const html = `
         <div class="aop-popup">
           <strong>${escapeHtml(aop.name)}</strong>
           ${sign ? `<div class="aop-popup__sign">${escapeHtml(sign)}</div>` : ''}
           ${productsBlock}
+          ${detailLink}
         </div>
       `;
       const marker = L.marker([lat, lng], {
@@ -281,6 +290,18 @@ const t = ui[lang];
     window.addEventListener('filter:change', (e: Event) => {
       applyFilter((e as CustomEvent<FilterState>).detail);
     });
+
+    const focusIda = Number(new URLSearchParams(location.search).get('id'));
+    if (Number.isFinite(focusIda) && focusIda > 0) {
+      const target = entries.find(
+        (e) => e.type !== 'dish' && e.id.endsWith(`:${focusIda}`),
+      );
+      if (target) {
+        aopCluster.zoomToShowLayer(target.marker, () => {
+          target.marker.openPopup();
+        });
+      }
+    }
 
     let userMarker: L.Marker | null = null;
     let userCircle: L.Circle | null = null;
@@ -542,6 +563,26 @@ const t = ui[lang];
     font-size: 0.8125rem;
     line-height: 1.4;
     color: var(--color-text);
+  }
+  .aop-popup__details {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: -0.5rem;
+    color: var(--color-terracotta);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .aop-popup__details:hover {
+    color: var(--color-terracotta-hover);
+    text-decoration: underline;
+  }
+  .aop-popup__details:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
   }
   @media (prefers-reduced-motion: reduce) {
     .aop-popup__products > summary::before {
