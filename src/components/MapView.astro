@@ -21,11 +21,13 @@ const t = ui[lang];
   import { haversineKm } from '../lib/distance';
   import { classifyAop } from '../lib/aop';
   import { PIN_PATH, PIN_VIEWBOX } from '../lib/markers';
-  import type {
-    FilterState,
-    FilterType,
-    LocateErrorCode,
-    NearbyItem,
+  import {
+    PRODUCT_CATEGORIES,
+    type FilterState,
+    type FilterType,
+    type LocateErrorCode,
+    type NearbyItem,
+    type ProductCategory,
   } from '../lib/types';
 
   interface Aop {
@@ -34,6 +36,7 @@ const t = ui[lang];
     signeUE: string | null;
     signeFR: string | null;
     products: string[];
+    category: ProductCategory;
     communeCount: number;
     centroid: [number, number];
   }
@@ -61,6 +64,7 @@ const t = ui[lang];
     id: string;
     marker: L.Marker;
     type: FilterType;
+    category: ProductCategory | null;
     haystack: string;
     name: string;
     sub: string;
@@ -206,6 +210,7 @@ const t = ui[lang];
         id: `${aopType}:${aop.ida}`,
         marker,
         type: aopType,
+        category: aop.category,
         haystack: normalize([aop.name, ...aop.products].join(' ')),
         name: aop.name,
         sub: sign,
@@ -235,6 +240,7 @@ const t = ui[lang];
         id: `dish:${dish.id}`,
         marker,
         type: 'dish',
+        category: null,
         haystack: normalize(
           [dish.name.fr, dish.name.en, dish.region].join(' '),
         ),
@@ -247,6 +253,7 @@ const t = ui[lang];
 
     let currentFilterState: FilterState = {
       types: new Set<FilterType>(['aop', 'igp', 'dish']),
+      categories: new Set<ProductCategory>(PRODUCT_CATEGORIES),
       search: '',
     };
 
@@ -254,16 +261,17 @@ const t = ui[lang];
       currentFilterState = state;
       const aopMatches: L.Marker[] = [];
       const dishMatches: L.Marker[] = [];
-      const byType: Record<FilterType, number> = {
-        aop: 0,
-        igp: 0,
-        dish: 0,
-      };
+      const byType: Record<FilterType, number> = { aop: 0, igp: 0, dish: 0 };
+      const byCategory = Object.fromEntries(
+        PRODUCT_CATEGORIES.map((c) => [c, 0]),
+      ) as Record<ProductCategory, number>;
       const needle = normalize(state.search);
       for (const entry of entries) {
         if (!state.types.has(entry.type)) continue;
+        if (entry.category && !state.categories.has(entry.category)) continue;
         if (needle && !entry.haystack.includes(needle)) continue;
         byType[entry.type]++;
+        if (entry.category) byCategory[entry.category]++;
         if (entry.type === 'dish') dishMatches.push(entry.marker);
         else aopMatches.push(entry.marker);
       }
@@ -278,6 +286,7 @@ const t = ui[lang];
             count: aopMatches.length + dishMatches.length,
             total: entries.length,
             byType,
+            byCategory,
           },
         }),
       );
@@ -301,6 +310,11 @@ const t = ui[lang];
       const results: NearbyItem[] = [];
       for (const entry of entries) {
         if (!currentFilterState.types.has(entry.type)) continue;
+        if (
+          entry.category &&
+          !currentFilterState.categories.has(entry.category)
+        )
+          continue;
         if (needle && !entry.haystack.includes(needle)) continue;
         results.push({
           id: entry.id,

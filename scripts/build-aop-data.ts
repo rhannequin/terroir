@@ -2,6 +2,7 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { categorizeProduct, type ProductCategory } from './lib/categorize';
 import { parseCSV } from './lib/csv';
 import { loadSource, type Source } from './lib/fetch-cache';
 import { findPinpointCentroid } from './lib/pinpoint';
@@ -35,6 +36,12 @@ const SOURCES = {
     file: 'communes-centroids.json',
     encoding: 'utf-8',
   },
+  siqoReferential: {
+    name: 'siqo-referential',
+    url: 'https://www.data.gouv.fr/api/1/datasets/r/76e54568-9786-4e15-8e48-dc3b8f44011d',
+    file: 'siqo-referential.csv',
+    encoding: 'utf-8',
+  },
 } as const satisfies Record<string, Source>;
 
 interface Aire {
@@ -51,6 +58,7 @@ interface AopOutput {
   signeUE: string | null;
   signeFR: string | null;
   products: string[];
+  category: ProductCategory;
   communeCount: number;
   centroid: [number, number]; // [lng, lat]
 }
@@ -73,14 +81,74 @@ function trimOrNull(s: string): string | null {
   return t.length > 0 ? t : null;
 }
 
+function normalizeKey(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}|[\u0080-\u009F\u0152\u0153'\u2018\u2019\u201B\\]/gu, '')
+    .trim();
+}
+
+interface SiqoLookup {
+  byName: Map<string, ProductCategory>;
+  byProduct: Map<string, ProductCategory>;
+  productKeysByLength: string[];
+}
+
+function buildSiqoLookup(csvText: string): SiqoLookup {
+  const rows = parseCSV(csvText.replace(/^\uFEFF/, ''), ',');
+  const header = rows[0] ?? [];
+  const iApp = header.indexOf('appellation');
+  const iCls = header.indexOf('classe_ue');
+  const iCat = header.indexOf('categorie');
+  const iProd = header.indexOf('produit');
+  const byName = new Map<string, ProductCategory>();
+  const byProduct = new Map<string, ProductCategory>();
+  for (const row of rows.slice(1)) {
+    const category = categorizeProduct(row[iCls]?.trim(), row[iCat]?.trim());
+    const name = row[iApp]?.trim();
+    const product = row[iProd]?.trim();
+    if (name) byName.set(normalizeKey(name), category);
+    if (product) byProduct.set(normalizeKey(product), category);
+  }
+  const productKeysByLength = [...byProduct.keys()].sort(
+    (a, b) => b.length - a.length,
+  );
+  return { byName, byProduct, productKeysByLength };
+}
+
+function resolveCategory(
+  aire: { name: string; products: string[] },
+  siqo: SiqoLookup,
+): ProductCategory {
+  for (const p of aire.products) {
+    const hit = siqo.byProduct.get(normalizeKey(p));
+    if (hit) return hit;
+  }
+  const byName = siqo.byName.get(normalizeKey(aire.name));
+  if (byName) return byName;
+  for (const p of aire.products) {
+    const key = normalizeKey(p);
+    for (const sk of siqo.productKeysByLength) {
+      if (sk.length > 6 && (key === sk || key.startsWith(sk + ' '))) {
+        return siqo.byProduct.get(sk)!;
+      }
+    }
+  }
+  return 'other';
+}
+
 async function main(): Promise<void> {
-  const [communesText, communesIgText, produitsText, centroidsJson] =
+  const [communesText, communesIgText, produitsText, centroidsJson, siqoText] =
     await Promise.all([
       loadSource(SOURCES.communesAires, CACHE_DIR),
       loadSource(SOURCES.communesAiresIg, CACHE_DIR),
       loadSource(SOURCES.airesProduits, CACHE_DIR),
       loadSource(SOURCES.communesCentroids, CACHE_DIR),
+      loadSource(SOURCES.siqoReferential, CACHE_DIR),
     ]);
+
+  const siqo = buildSiqoLookup(siqoText);
 
   const communeByCode = new Map<string, CommuneInfo>();
   for (const c of JSON.parse(centroidsJson) as CommuneFeature[]) {
@@ -184,6 +252,7 @@ async function main(): Promise<void> {
       signeUE: aire.signeUE,
       signeFR: aire.signeFR,
       products: aire.products,
+      category: resolveCategory(aire, siqo),
       communeCount: communes.size,
       centroid,
     });
@@ -201,6 +270,13 @@ async function main(): Promise<void> {
   console.log(
     `  · ${pinpointed} pinned to an eponymous commune; ${result.length - pinpointed} fell back to surface-weighted centroid`,
   );
+  const catCounts: Record<string, number> = {};
+  for (const r of result) catCounts[r.category] = (catCounts[r.category] ?? 0) + 1;
+  const catSummary = Object.entries(catCounts)
+    .sort(([, a], [, b]) => b - a)
+    .map(([k, v]) => `${k}=${v}`)
+    .join(', ');
+  console.log(`  · categories: ${catSummary}`);
   if (aireMissing > 0)
     console.log(
       `  · ${aireMissing} areas in communes CSV with no row in produits CSV`,

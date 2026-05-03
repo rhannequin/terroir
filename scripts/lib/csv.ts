@@ -1,4 +1,4 @@
-export function parseCSV(text: string): string[][] {
+export function parseCSV(text: string, delimiter: string = ';'): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -18,7 +18,7 @@ export function parseCSV(text: string): string[][] {
       }
     } else if (c === '"') {
       inQuotes = true;
-    } else if (c === ';') {
+    } else if (c === delimiter) {
       row.push(field);
       field = '';
     } else if (c === '\n') {

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { PRODUCT_CATEGORIES, type ProductCategory } from './lib/categorize';
 
 interface Aop {
   ida: number;
@@ -9,9 +10,12 @@ interface Aop {
   signeUE: string | null;
   signeFR: string | null;
   products: string[];
+  category: ProductCategory;
   communeCount: number;
   centroid: [number, number];
 }
+
+const KNOWN_CATEGORIES = new Set<string>(PRODUCT_CATEGORIES);
 
 const ROOT = path.resolve(fileURLToPath(import.meta.url), '../..');
 const AOPS_PATH = path.join(ROOT, 'public/data/aops.json');
@@ -42,7 +46,31 @@ describe('public/data/aops.json', () => {
         true,
       );
       expect(a.centroid, `entry ${a.ida}: centroid length`).toHaveLength(2);
+      expect(
+        KNOWN_CATEGORIES.has(a.category),
+        `entry ${a.ida}: unknown category ${a.category}`,
+      ).toBe(true);
     }
+  });
+
+  it('puts most AOPs in the wine bucket', () => {
+    const wines = aops.filter((a) => a.category === 'wine').length;
+    expect(wines / aops.length).toBeGreaterThan(0.5);
+  });
+
+  it.each([
+    ['Roquefort', 'cheese'],
+    ['Camembert de Normandie', 'cheese'],
+    ['Comté', 'cheese'],
+    ['Brie de Meaux', 'cheese'],
+    ['Châteauneuf-du-Pape', 'wine'],
+    ['Champagne', 'wine'],
+    ['Bordeaux', 'wine'],
+    ['Hermitage', 'wine'],
+    ['Chambolle-Musigny premier cru Les Véroilles', 'wine'],
+  ])('%s is %s', (name, expected) => {
+    const a = aops.find((x) => x.name === name);
+    expect(a?.category).toBe(expected);
   });
 
   it('has no duplicate IDA values', () => {

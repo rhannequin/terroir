@@ -1,5 +1,19 @@
 export type FilterType = 'aop' | 'igp' | 'dish';
 
+export const PRODUCT_CATEGORIES = [
+  'wine',
+  'spirit',
+  'cheese',
+  'meat',
+  'charcuterie',
+  'seafood',
+  'oil',
+  'produce',
+  'honey',
+  'other',
+] as const;
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
 export type LocateErrorCode =
   | 'denied'
   | 'unavailable'
@@ -16,6 +30,7 @@ export interface NearbyItem {
 
 export interface FilterState {
   types: Set<FilterType>;
+  categories: Set<ProductCategory>;
   search: string;
 }
 
@@ -23,4 +38,5 @@ export interface FilterApplied {
   count: number;
   total: number;
   byType: Record<FilterType, number>;
+  byCategory: Record<ProductCategory, number>;
 }

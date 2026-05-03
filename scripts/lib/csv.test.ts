@@ -42,4 +42,12 @@ describe('parseCSV', () => {
   it('returns an empty array for empty input', () => {
     expect(parseCSV('')).toEqual([]);
   });
+
+  it('accepts a custom delimiter', () => {
+    expect(parseCSV('a,b,c\nd,e,f', ',')).toEqual([
+      ['a', 'b', 'c'],
+      ['d', 'e', 'f'],
+    ]);
+    expect(parseCSV('"a,b",c', ',')).toEqual([['a,b', 'c']]);
+  });
 });

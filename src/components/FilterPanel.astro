@@ -1,6 +1,7 @@
 ---
 import { ui, type Lang } from '../i18n/ui';
 import { PIN_PATH, PIN_VIEWBOX, DOT_VIEWBOX } from '../lib/markers';
+import { PRODUCT_CATEGORIES } from '../lib/types';
 
 const lang = (Astro.currentLocale ?? 'fr') as Lang;
 const t = ui[lang];
@@ -100,6 +101,23 @@ const t = ui[lang];
     </label>
   </fieldset>
 
+  <fieldset class="filter-panel__group">
+    <legend>{t['filter.category.legend']}</legend>
+    {
+      PRODUCT_CATEGORIES.map((cat) => (
+        <label class="filter-checkbox filter-checkbox--plain">
+          <input type="checkbox" data-category={cat} checked />
+          <span class="filter-checkbox__name">
+            {t[`filter.category.${cat}`]}
+          </span>
+          <span class="filter-checkbox__count" data-cat-count={cat}>
+            —
+          </span>
+        </label>
+      ))
+    }
+  </fieldset>
+
   <label class="filter-panel__search">
     <span>{t['filter.search.label']}</span>
     <input
@@ -119,7 +137,13 @@ const t = ui[lang];
 <script>
   import { getClientI18n, pluralKey } from '../lib/i18n-client';
   import { trapFocus } from '../lib/focus-trap';
-  import type { FilterApplied, FilterState, FilterType } from '../lib/types';
+  import {
+    PRODUCT_CATEGORIES,
+    type FilterApplied,
+    type FilterState,
+    type FilterType,
+    type ProductCategory,
+  } from '../lib/types';
 
   const { t, numberFmt, pluralRules } = getClientI18n();
 
@@ -134,11 +158,15 @@ const t = ui[lang];
   ) as HTMLInputElement;
   const typeBoxes =
     panel.querySelectorAll<HTMLInputElement>('input[data-type]');
+  const categoryBoxes =
+    panel.querySelectorAll<HTMLInputElement>('input[data-category]');
   const resultsEl = document.getElementById('filter-results') as HTMLElement;
   const countBadge = toggle.querySelector(
     '.filter-toggle__count',
   ) as HTMLElement;
   const typeCountEls = panel.querySelectorAll<HTMLElement>('[data-count-for]');
+  const categoryCountEls =
+    panel.querySelectorAll<HTMLElement>('[data-cat-count]');
 
   const ALL_TYPES: FilterType[] = ['aop', 'igp', 'dish'];
 
@@ -147,11 +175,19 @@ const t = ui[lang];
     for (const cb of typeBoxes) {
       if (cb.checked) types.add(cb.dataset.type as FilterType);
     }
-    return { types, search: searchInput.value.trim() };
+    const categories = new Set<ProductCategory>();
+    for (const cb of categoryBoxes) {
+      if (cb.checked) categories.add(cb.dataset.category as ProductCategory);
+    }
+    return { types, categories, search: searchInput.value.trim() };
   }
 
   function isFiltering(state: FilterState): boolean {
-    return state.types.size < ALL_TYPES.length || state.search.length > 0;
+    return (
+      state.types.size < ALL_TYPES.length ||
+      state.categories.size < PRODUCT_CATEGORIES.length ||
+      state.search.length > 0
+    );
   }
 
   function emitChange(): void {
@@ -196,9 +232,11 @@ const t = ui[lang];
     searchDebounce = setTimeout(emitChange, 150);
   });
   for (const cb of typeBoxes) cb.addEventListener('change', emitChange);
+  for (const cb of categoryBoxes) cb.addEventListener('change', emitChange);
   resetBtn.addEventListener('click', () => {
     searchInput.value = '';
     for (const cb of typeBoxes) cb.checked = true;
+    for (const cb of categoryBoxes) cb.checked = true;
     emitChange();
   });
 
@@ -207,13 +245,19 @@ const t = ui[lang];
   });
 
   window.addEventListener('filter:applied', (e: Event) => {
-    const { count, total, byType } = (e as CustomEvent<FilterApplied>).detail;
+    const { count, total, byType, byCategory } = (
+      e as CustomEvent<FilterApplied>
+    ).detail;
     const tmpl = t[`filter.results.${pluralKey(pluralRules, count)}`];
     resultsEl.textContent = tmpl.replace('{count}', numberFmt.format(count));
 
     for (const el of typeCountEls) {
       const type = el.dataset.countFor as FilterType;
       el.textContent = numberFmt.format(byType[type] ?? 0);
+    }
+    for (const el of categoryCountEls) {
+      const cat = el.dataset.catCount as ProductCategory;
+      el.textContent = numberFmt.format(byCategory[cat] ?? 0);
     }
 
     const state = readState();
@@ -394,6 +438,10 @@ const t = ui[lang];
     cursor: pointer;
     font-size: 0.9375rem;
     user-select: none;
+  }
+  .filter-checkbox--plain {
+    grid-template-columns: auto 1fr auto;
+    min-height: 36px;
   }
   .filter-checkbox__name {
     font-weight: 500;
